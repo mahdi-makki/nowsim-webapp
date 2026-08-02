@@ -14,10 +14,10 @@ const groups: LinkGroup[] = [
   {
     title: "Plans",
     links: [
-      { label: "Countries", href: "/destinations" },
-      { label: "Regions", href: "/regions/europe" },
-      { label: "Global", href: "/global/unlimited" },
-      { label: "Top up", href: "/top-up" },
+      { label: "Countries", href: "#" },
+      { label: "Regions", href: "#" },
+      { label: "Global", href: "#" },
+      { label: "Top up", href: "#" },
     ],
   },
   {
@@ -35,7 +35,7 @@ const groups: LinkGroup[] = [
       { label: "Help centre", href: "#" },
       { label: "Device compatibility", href: "#" },
       { label: "Install guide", href: "#" },
-      { label: "Contact us", href: "/contact" },
+      { label: "Contact us", href: "#" },
     ],
   },
 ];

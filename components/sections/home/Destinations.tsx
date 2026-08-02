@@ -30,93 +30,93 @@ const catalog: Record<TabId, Plan[]> = {
       name: "Spain",
       art: "/images/flags/es.svg",
       from: "US$3.99",
-      href: "/destinations/spain",
+      href: "#",
     },
     {
       name: "Greece",
       art: "/images/flags/gr.svg",
       from: "US$4.49",
-      href: "/destinations/greece",
+      href: "#",
     },
     {
       name: "Italy",
       art: "/images/flags/it.svg",
       from: "US$3.99",
-      href: "/destinations/italy",
+      href: "#",
     },
     {
       name: "Turkey",
       art: "/images/flags/tr.svg",
       from: "US$3.99",
-      href: "/destinations/turkey",
+      href: "#",
     },
     {
       name: "United Kingdom",
       art: "/images/flags/gb.svg",
       from: "US$4.49",
-      href: "/destinations/united-kingdom",
+      href: "#",
     },
     {
       name: "Portugal",
       art: "/images/flags/pt.svg",
       from: "US$3.99",
-      href: "/destinations/portugal",
+      href: "#",
     },
     {
       name: "France",
       art: "/images/flags/fr.svg",
       from: "US$3.99",
-      href: "/destinations/france",
+      href: "#",
     },
     {
       name: "Germany",
       art: "/images/flags/de.svg",
       from: "US$4.49",
-      href: "/destinations/germany",
+      href: "#",
     },
     {
       name: "Netherlands",
       art: "/images/flags/nl.svg",
       from: "US$3.99",
-      href: "/destinations/netherlands",
+      href: "#",
     },
   ],
   regions: [
-    { name: "Europe", art: globeArt, from: "US$8.99", href: "/regions/europe" },
-    { name: "Asia", art: globeArt, from: "US$9.99", href: "/regions/asia" },
+    { name: "Europe", art: globeArt, from: "US$8.99", href: "#" },
+    { name: "Asia", art: globeArt, from: "US$9.99", href: "#" },
     {
       name: "North America",
       art: globeArt,
       from: "US$9.49",
-      href: "/regions/north-america",
+      href: "#",
     },
     {
       name: "Latin America",
       art: globeArt,
       from: "US$11.99",
-      href: "/regions/latin-america",
+      href: "#",
     },
     {
       name: "Middle East",
       art: globeArt,
       from: "US$10.99",
-      href: "/regions/middle-east",
+      href: "#",
     },
-    { name: "Africa", art: globeArt, from: "US$12.99", href: "/regions/africa" },
+    { name: "Africa", art: globeArt, from: "US$12.99", href: "#" },
   ],
   global: [
-    { name: "Global 60", art: globeArt, from: "US$19.99", href: "/global/60" },
+    { name: "Global 60", art: globeArt, from: "US$19.99", href: "#" },
     {
       name: "Global 120",
       art: globeArt,
       from: "US$29.99",
-      href: "/global/120",
+      href: "#",
     },
     {
       name: "Global Unlimited",
       art: globeArt,
       from: "US$49.99",
-      href: "/global/unlimited",
+      href: "#",
     },
   ],
 };
@@ -243,7 +243,7 @@ export function Destinations() {
         >
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
             {catalog[active].map((plan) => (
-              <li key={plan.href}>
+              <li key={plan.name}>
                 <Pressable
                   href={plan.href}
                   className={cn(
@@ -283,7 +283,7 @@ export function Destinations() {
 
         <div className="mt-10 flex justify-end border-t border-hairline pt-8">
           <Pressable
-            href="/destinations"
+            href="#"
             className={cn(
               "gap-2 rounded-full bg-ink px-6 py-3.5 text-base font-medium text-white",
               "hover:bg-ink-soft active:bg-ink-soft",

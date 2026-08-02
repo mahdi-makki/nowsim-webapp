@@ -39,7 +39,7 @@ export function GetApp() {
 
         <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
           <Pressable
-            href="/download"
+            href="#"
             className={cn(
               "rounded-full bg-ink px-7 py-3.5",
               "text-base font-bold text-white",
@@ -50,7 +50,7 @@ export function GetApp() {
           </Pressable>
 
           <Pressable
-            href="/destinations"
+            href="#"
             className={cn(
               "rounded-full border border-hairline px-7 py-3.5",
               "text-base font-medium text-ink",

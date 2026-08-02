@@ -92,7 +92,7 @@ export function Faq() {
           </p>
 
           <Pressable
-            href="/contact"
+            href="#"
             className={cn(
               "mt-8 rounded-full border border-hairline px-6 py-3.5",
               "text-base font-medium text-ink",

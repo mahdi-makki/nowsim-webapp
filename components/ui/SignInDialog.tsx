@@ -20,19 +20,19 @@ type Provider = {
 const providers: Provider[] = [
   {
     label: "Continue with Apple",
-    href: "/login/apple",
+    href: "#",
     Icon: FaApple,
     className: "bg-white text-ink hover:bg-white/85 active:bg-white/85",
   },
   {
     label: "Continue with Google",
-    href: "/login/google",
+    href: "#",
     Icon: FcGoogle,
     className: "bg-volt text-ink hover:bg-volt/85 active:bg-volt/85",
   },
   {
     label: "Continue with Email",
-    href: "/login/email",
+    href: "#",
     Icon: MdOutlineMail,
     className: "bg-white/10 text-white hover:bg-white/20 active:bg-white/20",
   },
