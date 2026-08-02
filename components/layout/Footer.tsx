@@ -58,6 +58,11 @@ const socials: SocialLink[] = [
   { label: "NOWSIM on LinkedIn", href: "#", Icon: FaLinkedinIn },
 ];
 
+const storeBadges = [
+  { label: "Download on the App Store", href: "#" },
+  { label: "Get it on Google Play", href: "#" },
+];
+
 /** Clears the fixed nav pill (≈3.5rem tall) sitting at the bottom of the viewport */
 const navClearance =
   "pb-[calc(4.5rem+max(1.75rem,env(safe-area-inset-bottom)+0.75rem))]";
@@ -75,8 +80,48 @@ export function Footer() {
         )}
       >
         <div className="mx-auto max-w-7xl">
+          {/* App CTA — split from the columns below by the same hairline the
+              fine print uses */}
+          <div
+            className={cn(
+              "flex flex-col gap-8 border-b border-white/10 pb-12",
+              "md:flex-row md:items-center md:justify-between md:gap-12 md:pb-14",
+            )}
+          >
+            <div>
+              <h2 className="text-h3">
+                Download NOWSIM for your next journey
+              </h2>
+
+              <p className="mt-3 max-w-[52ch] text-base text-muted-invert">
+                Buy a plan, install the eSIM, and land connected. Free on iOS
+                and Android.
+              </p>
+            </div>
+
+            <ul className="flex flex-wrap items-center gap-3 md:shrink-0">
+              {storeBadges.map((badge) => (
+                <li key={badge.label}>
+                  {/* Placeholder until the real store badge art lands — swap
+                      the inner span for next/image, keep the link chrome */}
+                  <Pressable
+                    href={badge.href}
+                    className={cn(
+                      "h-13 w-40 rounded-lg bg-black ring-1 ring-white/20",
+                      "hover:ring-white/40 active:ring-white/40",
+                    )}
+                  >
+                    <span className="px-3 text-center text-xs text-white/40">
+                      {badge.label}
+                    </span>
+                  </Pressable>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Brand + link columns */}
-          <div className="flex flex-col gap-12 pb-14 md:flex-row md:items-start md:justify-between md:gap-16 md:pb-16">
+          <div className="flex flex-col gap-12 pt-14 pb-14 md:flex-row md:items-start md:justify-between md:gap-16 md:pt-16 md:pb-16">
             <div>
               <NowsimLogo
                 id="nowsim-logo-footer"
