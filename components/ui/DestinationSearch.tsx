@@ -1,0 +1,95 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useId, useState, type FormEvent } from "react";
+
+import { Pressable } from "@/components/ui/Pressable";
+import { cn } from "@/lib/cn";
+
+function SearchIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      focusable="false"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
+  );
+}
+
+export function DestinationSearch({ className }: { className?: string }) {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const inputId = useId();
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmed = query.trim();
+    router.push(
+      trimmed
+        ? `/destinations?q=${encodeURIComponent(trimmed)}`
+        : "/destinations",
+    );
+  };
+
+  return (
+    <form
+      role="search"
+      onSubmit={onSubmit}
+      className={cn("w-full max-w-xl", className)}
+    >
+      <label htmlFor={inputId} className="sr-only">
+        Search destinations
+      </label>
+
+      <div
+        className={cn(
+          "flex items-center gap-2 rounded-full bg-white p-1.5 pl-6",
+          "shadow-xl shadow-ink/20",
+          // same press feel as Pressable, but not the `press` utility: the bar
+          // is far wider than a button, so its flat 0.94 reads as a lurch here
+          "transition-transform duration-[120ms] ease-ios active:scale-[0.985]",
+          "motion-reduce:transition-none motion-reduce:active:scale-100",
+        )}
+      >
+        <input
+          id={inputId}
+          name="q"
+          type="search"
+          autoComplete="off"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search a country or region"
+          className={cn(
+            "min-w-0 flex-1 bg-transparent py-3 text-base text-ink",
+            "placeholder:text-muted focus-visible:outline-none",
+            "[&::-webkit-search-cancel-button]:appearance-none",
+          )}
+        />
+
+        <Pressable
+          type="submit"
+          // the whole bar already scales on press — stacking the button's own
+          // scale on top of it double-shrinks the icon
+          press={false}
+          className={cn(
+            "h-12 w-12 shrink-0 rounded-full bg-ink text-volt",
+            "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+            "hover:bg-ink-soft active:bg-ink-soft",
+          )}
+        >
+          <SearchIcon />
+          <span className="sr-only">Search</span>
+        </Pressable>
+      </div>
+    </form>
+  );
+}

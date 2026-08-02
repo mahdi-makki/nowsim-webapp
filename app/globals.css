@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-brand: #5f47eb;
+  --color-volt: #beee54;
+  --color-ink: #0a2233;
+  --color-aqua: #2de2e6;
+  --color-ink-deep: #06314a;
+  --color-ink-soft: color-mix(in srgb, var(--color-ink) 86%, #ffffff);
+
+  --color-surface: #ffffff;
+  --color-surface-soft: color-mix(in srgb, var(--color-ink) 4%, #ffffff);
+  --color-hairline: color-mix(in srgb, var(--color-ink) 12%, transparent);
+
+  --color-muted: color-mix(in srgb, var(--color-ink) 62%, transparent);
+  --color-muted-invert: color-mix(in srgb, #ffffff 72%, transparent);
+
+  --font-sans:
+    var(--font-satoshi), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+
+  --text-display: clamp(2.75rem, 1.6rem + 5.6vw, 5.5rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.045em;
+  --text-display--font-weight: 900;
+
+  --text-h1: clamp(2.25rem, 1.5rem + 3.2vw, 3.5rem);
+  --text-h1--line-height: 1.03;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 900;
+
+  --text-h2: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
+  --text-h2--line-height: 1.08;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 900;
+
+  --text-h3: clamp(1.25rem, 1.1rem + 0.9vw, 1.625rem);
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.015em;
+  --text-h3--font-weight: 900;
+
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.14em;
+  --text-eyebrow--font-weight: 500;
+
+  --radius-card: 1.25rem;
+  --radius-sheet: 1.75rem;
+  --radius-control: 0.875rem;
+  --radius-screen: 1.25rem;
+  --radius-screen-lg: 2rem;
+
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* gentle both ends — for hover / state fades, where --ease-ios front-loads
+     too hard and reads as a snap */
+  --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* not a Tailwind namespace — plain token for the `press` utility below.
+     Class-side hovers use `duration-300` to match. */
+  --duration-hover: 300ms;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@utility press {
+  transition-property:
+    color, background-color, border-color, box-shadow, opacity, filter,
+    text-decoration-color, transform;
+  /* everything eases in slowly; only the press scale stays quick, so a tap
+     still feels immediate while hovers never snap */
+  transition-duration: var(--duration-hover), var(--duration-hover),
+    var(--duration-hover), var(--duration-hover), var(--duration-hover),
+    var(--duration-hover), var(--duration-hover), 120ms;
+  transition-timing-function: var(--ease-hover);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  &:active {
+    transform: scale(0.94);
+    transition-timing-function: var(--ease-ios);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 0.01ms;
+
+    &:active {
+      transform: none;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    overscroll-behavior-y: none;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 900;
+    text-wrap: balance;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-volt);
+    color: var(--color-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
