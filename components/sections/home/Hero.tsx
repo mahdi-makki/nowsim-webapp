@@ -1,5 +1,28 @@
+import type { IconType } from "react-icons";
+import { FaStar } from "react-icons/fa6";
+import { MdSignalCellularAlt } from "react-icons/md";
+import { TbDeviceMobile, TbWorld } from "react-icons/tb";
+
 import { DestinationSearch } from "@/components/ui/DestinationSearch";
 import { cn } from "@/lib/cn";
+
+type TrustPoint = {
+  icon: IconType;
+  label: string;
+  /** Trustpilot's star keeps its brand green; the rest inherit white */
+  iconClassName?: string;
+};
+
+const trustPoints: TrustPoint[] = [
+  {
+    icon: FaStar,
+    label: "Trustpilot score 4.8 out of 5!",
+    iconClassName: "text-[#00b67a]",
+  },
+  { icon: TbWorld, label: "One price, everywhere" },
+  { icon: MdSignalCellularAlt, label: "Highest available speed" },
+  { icon: TbDeviceMobile, label: "Pause the plan any time" },
+];
 
 export function Hero() {
   return (
@@ -36,6 +59,34 @@ export function Hero() {
           </p>
 
           <DestinationSearch className="mt-8" />
+
+          <ul
+            className={cn(
+              "mt-14 grid w-full max-w-xl grid-cols-2 gap-x-6 gap-y-4",
+              // four across only once the row fits without wrapping mid-label
+              "lg:flex lg:max-w-none lg:justify-center lg:gap-x-10",
+            )}
+          >
+            {trustPoints.map(({ icon: Icon, label, iconClassName }) => (
+              <li key={label} className="flex items-center gap-3 text-left">
+                <span
+                  className={cn(
+                    "flex h-10 shrink-0 items-center justify-center rounded-full px-5",
+                    "border border-white/25 bg-white/10 backdrop-blur-sm",
+                  )}
+                >
+                  <Icon
+                    aria-hidden
+                    className={cn("h-5 w-5 text-white", iconClassName)}
+                  />
+                </span>
+
+                <span className="text-base font-semibold text-white">
+                  {label}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
