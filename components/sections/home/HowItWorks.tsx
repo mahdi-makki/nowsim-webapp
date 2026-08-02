@@ -60,6 +60,18 @@ const steps: Step[] = [
  *  so a stacked card shows exactly its strip and nothing else */
 const stackStep = 6;
 
+/** A sticky card releases when its containing block's bottom reaches
+ *  `top + height`. Staircasing `top` therefore staggers the releases, and the
+ *  stack comes apart from the bottom up. Instead every card shares one `top`
+ *  and the staircase is *painted* with translateY: transforms don't touch the
+ *  layout box, so all three hit their limit on the same pixel and exit locked
+ *  together. The negative margin takes the painted offset back out of the
+ *  flow, keeping the cards adjacent on the way in. */
+const stackOffset = (index: number) => ({
+  transform: `translateY(${index * stackStep}rem)`,
+  marginTop: index === 0 ? undefined : `-${stackStep}rem`,
+});
+
 export function HowItWorks() {
   return (
     <section
@@ -86,8 +98,8 @@ export function HowItWorks() {
           {steps.map((step, index) => (
             <li
               key={step.title}
-              className="sticky mb-4 md:mb-5"
-              style={{ top: `${1 + index * stackStep}rem` }}
+              className="sticky top-4 mb-4 md:mb-5"
+              style={stackOffset(index)}
             >
               <article
                 className={cn(
@@ -154,6 +166,14 @@ export function HowItWorks() {
               </article>
             </li>
           ))}
+
+          {/* A sticky card only holds while its containing block is still
+              scrolling past, and the last card has no sibling beneath it to
+              supply that runway — without this it would unpin the instant it
+              pinned. Doubles as the assembled stack's dwell. The floor keeps
+              it clear of the 12rem the bottom card is translated by, so that
+              card never paints over the section below. */}
+          <li aria-hidden className="h-[45vh] min-h-56" />
         </ol>
       </div>
     </section>
