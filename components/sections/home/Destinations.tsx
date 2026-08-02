@@ -1,148 +1,28 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 
+import { ChevronRight } from "@/components/ui/ChevronRight";
+import { DestinationCard } from "@/components/ui/DestinationCard";
 import { Pressable } from "@/components/ui/Pressable";
+import { destinationsByKind, type DestinationKind } from "@/lib/destinations";
 import { cn } from "@/lib/cn";
 
-type TabId = "countries" | "regions" | "global";
-
-type Plan = {
-  name: string;
-  /** Flag for countries; the globe render stands in for regions and global */
-  art: string;
-  from: string;
-  href: string;
-};
-
-const globeArt = "/images/home/globe.png";
-
-const tabs: { id: TabId; label: string; badge?: string }[] = [
-  { id: "countries", label: "Countries" },
-  { id: "regions", label: "Regions" },
+const tabs: { id: DestinationKind; label: string; badge?: string }[] = [
+  { id: "country", label: "Countries" },
+  { id: "region", label: "Regions" },
   { id: "global", label: "Global", badge: "New" },
 ];
 
-const catalog: Record<TabId, Plan[]> = {
-  countries: [
-    {
-      name: "Spain",
-      art: "/images/flags/es.svg",
-      from: "US$3.99",
-      href: "#",
-    },
-    {
-      name: "Greece",
-      art: "/images/flags/gr.svg",
-      from: "US$4.49",
-      href: "#",
-    },
-    {
-      name: "Italy",
-      art: "/images/flags/it.svg",
-      from: "US$3.99",
-      href: "#",
-    },
-    {
-      name: "Turkey",
-      art: "/images/flags/tr.svg",
-      from: "US$3.99",
-      href: "#",
-    },
-    {
-      name: "United Kingdom",
-      art: "/images/flags/gb.svg",
-      from: "US$4.49",
-      href: "#",
-    },
-    {
-      name: "Portugal",
-      art: "/images/flags/pt.svg",
-      from: "US$3.99",
-      href: "#",
-    },
-    {
-      name: "France",
-      art: "/images/flags/fr.svg",
-      from: "US$3.99",
-      href: "#",
-    },
-    {
-      name: "Germany",
-      art: "/images/flags/de.svg",
-      from: "US$4.49",
-      href: "#",
-    },
-    {
-      name: "Netherlands",
-      art: "/images/flags/nl.svg",
-      from: "US$3.99",
-      href: "#",
-    },
-  ],
-  regions: [
-    { name: "Europe", art: globeArt, from: "US$8.99", href: "#" },
-    { name: "Asia", art: globeArt, from: "US$9.99", href: "#" },
-    {
-      name: "North America",
-      art: globeArt,
-      from: "US$9.49",
-      href: "#",
-    },
-    {
-      name: "Latin America",
-      art: globeArt,
-      from: "US$11.99",
-      href: "#",
-    },
-    {
-      name: "Middle East",
-      art: globeArt,
-      from: "US$10.99",
-      href: "#",
-    },
-    { name: "Africa", art: globeArt, from: "US$12.99", href: "#" },
-  ],
-  global: [
-    { name: "Global 60", art: globeArt, from: "US$19.99", href: "#" },
-    {
-      name: "Global 120",
-      art: globeArt,
-      from: "US$29.99",
-      href: "#",
-    },
-    {
-      name: "Global Unlimited",
-      art: globeArt,
-      from: "US$49.99",
-      href: "#",
-    },
-  ],
+/** The home section teases a slice; /all-destinations carries the full list */
+const preview: Record<DestinationKind, number> = {
+  country: 9,
+  region: 6,
+  global: 3,
 };
 
-function ChevronRight({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      focusable="false"
-      className={className}
-    >
-      <path
-        d="m9 6 6 6-6 6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export function Destinations() {
-  const [active, setActive] = useState<TabId>("countries");
+  const [active, setActive] = useState<DestinationKind>("country");
   const tablistRef = useRef<HTMLDivElement>(null);
 
   // Roving focus across the tablist. Pressable doesn't forward refs, so the
@@ -242,48 +122,19 @@ export function Destinations() {
           className="mt-10 md:mt-14"
         >
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
-            {catalog[active].map((plan) => (
-              <li key={plan.name}>
-                <Pressable
-                  href={plan.href}
-                  className={cn(
-                    "group w-full justify-start gap-4 rounded-card px-5 py-5 text-left md:py-6",
-                    "bg-surface-soft hover:bg-ink/[0.07] active:bg-ink/[0.07]",
-                  )}
-                >
-                  {/* Decorative — the plan name right next to it carries the label */}
-                  <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-ink/8">
-                    <Image
-                      src={plan.art}
-                      alt=""
-                      fill
-                      sizes="48px"
-                      // SVG flags stay untouched; the optimizer rejects them
-                      // unless dangerouslyAllowSVG is on
-                      unoptimized={plan.art.endsWith(".svg")}
-                      className="object-cover"
-                    />
-                  </span>
-
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-lg font-black tracking-[-0.02em]">
-                      {plan.name}
-                    </span>
-                    <span className="block text-sm font-medium text-muted">
-                      From {plan.from}
-                    </span>
-                  </span>
-
-                  <ChevronRight className="h-4 w-4 shrink-0 text-ink/30 transition-transform duration-300 ease-hover group-hover:translate-x-0.5 motion-reduce:transition-none" />
-                </Pressable>
-              </li>
-            ))}
+            {destinationsByKind(active)
+              .slice(0, preview[active])
+              .map((destination) => (
+                <li key={destination.name}>
+                  <DestinationCard destination={destination} />
+                </li>
+              ))}
           </ul>
         </div>
 
         <div className="mt-10 flex justify-end border-t border-hairline pt-8">
           <Pressable
-            href="#"
+            href="/all-destinations"
             className={cn(
               "gap-2 rounded-full bg-ink px-6 py-3.5 text-base font-medium text-white",
               "hover:bg-ink-soft active:bg-ink-soft",
