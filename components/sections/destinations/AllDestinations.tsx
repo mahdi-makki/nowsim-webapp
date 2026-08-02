@@ -34,17 +34,31 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
-export function AllDestinations() {
+export function AllDestinations({
+  initialQuery = "",
+}: {
+  /** Seeded from ?q= by the page, so hero searches land pre-filtered */
+  initialQuery?: string;
+}) {
   const [active, setActive] = useState<Filter>("all");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
+  const [lastSeed, setLastSeed] = useState(initialQuery);
   const tablistRef = useRef<HTMLDivElement>(null);
+
+  // A second hero search while this component is still mounted arrives as a
+  // new prop, and has to overwrite whatever is in the box. All is the widest
+  // tab, so a hero search always lands somewhere with results.
+  if (initialQuery !== lastSeed) {
+    setLastSeed(initialQuery);
+    setQuery(initialQuery);
+    setActive("all");
+  }
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
 
     return destinations.filter((destination) => {
-      const kindMatches = active === "all" || destination.kind === active;
-      if (!kindMatches) return false;
+      if (active !== "all" && destination.kind !== active) return false;
 
       return !needle || destination.name.toLowerCase().includes(needle);
     });

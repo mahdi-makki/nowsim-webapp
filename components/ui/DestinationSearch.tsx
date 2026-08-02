@@ -35,8 +35,8 @@ export function DestinationSearch({ className }: { className?: string }) {
     const trimmed = query.trim();
     router.push(
       trimmed
-        ? `/destinations?q=${encodeURIComponent(trimmed)}`
-        : "/destinations",
+        ? `/all-destinations?q=${encodeURIComponent(trimmed)}`
+        : "/all-destinations",
     );
   };
 

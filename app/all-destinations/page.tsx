@@ -8,7 +8,16 @@ export const metadata: Metadata = {
     "Browse NOWSIM data plans across 200+ countries, regional bundles, and global plans. Pick a destination and connect the moment you land.",
 };
 
-export default function AllDestinationsPage() {
+export default async function AllDestinationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  // Read on the server so the filtered list ships in the HTML — useSearchParams
+  // would bail the whole listing out to client-side rendering
+  const q = (await searchParams).q;
+  const initialQuery = Array.isArray(q) ? (q[0] ?? "") : (q ?? "");
+
   return (
     <section className="px-3 py-20 md:px-4 md:py-28">
       <div className="mx-auto max-w-7xl">
@@ -21,7 +30,7 @@ export default function AllDestinationsPage() {
           instant activation, and no roaming bill wherever you go.
         </p>
 
-        <AllDestinations />
+        <AllDestinations initialQuery={initialQuery} />
       </div>
     </section>
   );

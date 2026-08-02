@@ -29,7 +29,7 @@ export function Header() {
           "pointer-events-auto mx-auto hidden w-fit items-center gap-1 rounded-full p-1.5 md:flex",
         )}
       >
-        <Pressable href="#" hit className="rounded-full p-2.5 text-ink">
+        <Pressable href="/" hit className="rounded-full p-2.5 text-ink">
           <NowsimEmblem id="nowsim-emblem-desktop" className="h-6 w-6" />
           <span className="sr-only">NOWSIM home</span>
         </Pressable>
