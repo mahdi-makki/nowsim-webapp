@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import "./globals.css";
 
 const satoshi = localFont({
@@ -23,7 +24,7 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "NOWSIM: Stay connected, wherever's next",
+  title: "nowsim: Stay connected, wherever's next",
   description:
     "Travel eSIMs for every destination. Pick a country, buy a data plan, and connect the moment you land.",
 };
@@ -36,6 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${satoshi.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <SmoothScroll />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

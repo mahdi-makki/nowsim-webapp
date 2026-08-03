@@ -14,7 +14,7 @@ const tabs: { id: DestinationKind; label: string; badge?: string }[] = [
   { id: "global", label: "Global", badge: "New" },
 ];
 
-/** The home section teases a slice; /all-destinations carries the full list */
+/** The home section teases a slice; /destinations carries the full list */
 const preview: Record<DestinationKind, number> = {
   country: 9,
   region: 6,
@@ -59,7 +59,7 @@ export function Destinations() {
           <div>
             <h2
               id="destinations-heading"
-              className="max-w-[15ch] text-h1 uppercase tracking-[-0.045em] subpixel-antialiased md:text-display [-webkit-text-stroke:0.022em_currentColor]"
+              className="max-w-[15ch] text-h1 font-extrabold uppercase tracking-[-0.03em] md:text-display"
             >
               Every network worth using
             </h2>
@@ -103,7 +103,7 @@ export function Destinations() {
                     <span
                       className={cn(
                         "rounded-full bg-volt px-2 py-1 text-ink",
-                        "text-[0.625rem] font-black uppercase tracking-[0.08em]",
+                        "text-[0.625rem] font-bold uppercase tracking-[0.08em]",
                       )}
                     >
                       {tab.badge}
@@ -134,7 +134,7 @@ export function Destinations() {
 
         <div className="mt-10 flex justify-end border-t border-hairline pt-8">
           <Pressable
-            href="/all-destinations"
+            href="/destinations"
             className={cn(
               "gap-2 rounded-full bg-ink px-6 py-3.5 text-base font-medium text-white",
               "hover:bg-ink-soft active:bg-ink-soft",

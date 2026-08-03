@@ -170,9 +170,8 @@ export function Benefits() {
         <h2
           id="benefits-heading"
           className={cn(
-            "mx-auto max-w-[16ch] text-center uppercase",
-            "text-h1 tracking-[-0.045em] subpixel-antialiased",
-            "[-webkit-text-stroke:0.022em_currentColor]",
+            "mx-auto mt-24 max-w-[16ch] text-center uppercase md:mt-32",
+            "text-h1 font-extrabold tracking-[-0.045em]",
           )}
         >
           What you get

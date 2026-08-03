@@ -7,7 +7,8 @@ type Step = {
   label: string;
   title: string;
   body: string;
-  image: { src: string; alt: string };
+  /** Transparent phone cutout — intrinsic dims so the box wraps the artwork */
+  image: { src: string; alt: string; width: number; height: number };
   surface: string;
   /** Header rule + number ring, tuned per surface */
   chrome: string;
@@ -21,8 +22,10 @@ const steps: Step[] = [
     title: "200+ countries, one account",
     body: "Search where you're going and choose a country, a region, or a global plan. Prices are the same wherever you activate — no local surcharge, no dynamic pricing.",
     image: {
-      src: "/images/home/img-1.jpg",
-      alt: "Traveller checking her phone on a stone wall above a hillside town",
+      src: "/images/home/phone-1.png",
+      alt: "App dialler showing a Dutch number with the per-minute rate and remaining balance",
+      width: 1179,
+      height: 1558,
     },
     surface: "bg-brand text-white",
     chrome: "border-white/35",
@@ -34,8 +37,10 @@ const steps: Step[] = [
     title: "No SIM tray, no kiosk",
     body: "The eSIM installs straight from the app. Scan once, and the plan sits alongside your normal SIM — your own number keeps ringing while data moves to the local network.",
     image: {
-      src: "/images/home/img-3.jpg",
-      alt: "Two travellers taking a selfie on a sunny street",
+      src: "/images/home/phone-2.png",
+      alt: "App plan screen with a 20 GB worldwide plan ready to activate",
+      width: 1179,
+      height: 1558,
     },
     surface: "bg-volt text-ink",
     chrome: "border-ink/30",
@@ -46,8 +51,10 @@ const steps: Step[] = [
     title: "Highest speed, no commitment",
     body: "We connect to the top networks in each country, so you land on the fastest connection on offer. Run out? Top up in seconds — no new eSIM, no reinstall, no contract.",
     image: {
-      src: "/images/home/img-2.jpg",
-      alt: "Traveller using her phone above a city skyline at sunset",
+      src: "/images/home/phone-3.png",
+      alt: "Free, Classic and Unlimited plan tiers stacked as a choice",
+      width: 1200,
+      height: 1558,
     },
     surface: "bg-ink text-white",
     chrome: "border-white/30",
@@ -85,11 +92,10 @@ export function HowItWorks() {
           id="how-it-works-heading"
           className={cn(
             "mx-auto max-w-[16ch] text-center uppercase",
-            "text-h1 tracking-[-0.045em] subpixel-antialiased",
-            "[-webkit-text-stroke:0.022em_currentColor]",
+            "text-h1 font-extrabold tracking-[-0.045em]",
           )}
         >
-          How NOWSIM works
+          How nowsim works
         </h2>
 
         {/* Each card sticks a little lower than the one before, so the strips
@@ -110,17 +116,17 @@ export function HowItWorks() {
                 <div className="flex h-24 items-center gap-4 px-6 md:px-10">
                   <span
                     className={cn(
-                      "flex h-9 shrink-0 items-center justify-center rounded-full border px-5",
+                      "flex h-10 shrink-0 items-center justify-center rounded-full border px-5.5",
                       // leading-none drops the ascender slack that leaves the
                       // digit riding high in the ring
-                      "text-sm font-black italic leading-none",
+                      "text-base font-bold italic leading-none",
                       step.chrome,
                     )}
                   >
                     {index + 1}
                   </span>
 
-                  <span className="text-lg font-semibold tracking-[-0.01em]">
+                  <span className="text-xl font-semibold tracking-[-0.01em]">
                     {step.label}
                   </span>
                 </div>
@@ -134,8 +140,7 @@ export function HowItWorks() {
                   <div>
                     <h3
                       className={cn(
-                        "max-w-[16ch] text-h2 uppercase subpixel-antialiased",
-                        "[-webkit-text-stroke:0.02em_currentColor]",
+                        "max-w-[16ch] text-h2 font-extrabold uppercase",
                         step.heading,
                       )}
                     >
@@ -152,14 +157,20 @@ export function HowItWorks() {
                     </p>
                   </div>
 
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-black/10 md:aspect-[5/4]">
+                  {/* The screens are phone cutouts, so they sit *in* the card
+                      rather than filling a frame. Intrinsic sizing (not `fill`)
+                      keeps the box tight to the artwork, which is what lets the
+                      top rounding clip the screen itself. -mb cancels the
+                      grid's pb so the cutout meets the card's bottom edge. */}
+                  <div className="-mb-10 flex justify-center self-end">
                     <Image
                       src={step.image.src}
                       alt={step.image.alt}
-                      fill
+                      width={step.image.width}
+                      height={step.image.height}
                       quality={90}
-                      sizes="(min-width: 1024px) 420px, (min-width: 768px) 42vw, 100vw"
-                      className="object-cover object-center"
+                      sizes="(min-width: 1024px) 368px, (min-width: 768px) 34vw, 80vw"
+                      className="h-auto w-full max-w-[23rem] rounded-t-screen-lg"
                     />
                   </div>
                 </div>

@@ -12,7 +12,7 @@ type Entry = {
 
 const entries: Entry[] = [
   {
-    question: "What is a NOWSIM eSIM?",
+    question: "What is a nowsim eSIM?",
     answer:
       "It's a data plan that lives on your phone instead of a plastic SIM. Pick a destination, pay once, and the plan installs itself — no tray, no kiosk, no swapping cards at the airport.",
   },
@@ -29,7 +29,7 @@ const entries: Entry[] = [
   {
     question: "Do I keep my own number?",
     answer:
-      "Yes. Your NOWSIM plan runs alongside your normal SIM, so calls and texts on your regular number keep working. Data just moves to the local network instead of roaming.",
+      "Yes. Your nowsim plan runs alongside your normal SIM, so calls and texts on your regular number keep working. Data just moves to the local network instead of roaming.",
   },
   {
     question: "What happens if I run out of data?",
@@ -81,7 +81,7 @@ export function Faq() {
         <div className="md:pt-2">
           <h2
             id="faq-heading"
-            className="max-w-[18ch] text-h1 uppercase tracking-[-0.045em] subpixel-antialiased [-webkit-text-stroke:0.022em_currentColor]"
+            className="max-w-[18ch] text-h1 font-extrabold uppercase tracking-[-0.045em]"
           >
             Questions about the local plans?
           </h2>
@@ -96,7 +96,8 @@ export function Faq() {
             className={cn(
               "mt-8 rounded-full border border-hairline px-6 py-3.5",
               "text-base font-medium text-ink",
-              "hover:bg-surface-soft active:bg-surface-soft",
+              "hover:border-ink/25 hover:bg-surface-soft",
+              "active:border-ink/25 active:bg-surface-soft",
             )}
           >
             Talk to our team

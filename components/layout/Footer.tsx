@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { IconType } from "react-icons";
 import { FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 
@@ -53,14 +54,25 @@ type SocialLink = {
 };
 
 const socials: SocialLink[] = [
-  { label: "NOWSIM on X", href: "#", Icon: FaXTwitter },
-  { label: "NOWSIM on Instagram", href: "#", Icon: FaInstagram },
-  { label: "NOWSIM on LinkedIn", href: "#", Icon: FaLinkedinIn },
+  { label: "nowsim on X", href: "#", Icon: FaXTwitter },
+  { label: "nowsim on Instagram", href: "#", Icon: FaInstagram },
+  { label: "nowsim on LinkedIn", href: "#", Icon: FaLinkedinIn },
 ];
 
+/** Both badges are 120x40 artboards, so one intrinsic size covers the pair */
+const badgeSize = { width: 120, height: 40 };
+
 const storeBadges = [
-  { label: "Download on the App Store", href: "#" },
-  { label: "Get it on Google Play", href: "#" },
+  {
+    label: "Download on the App Store",
+    href: "#",
+    src: "/buttons/download-appstore.svg",
+  },
+  {
+    label: "Get it on Google Play",
+    href: "#",
+    src: "/buttons/download-googleplay.svg",
+  },
 ];
 
 /** Clears the fixed nav pill (≈3.5rem tall) sitting at the bottom of the viewport */
@@ -90,7 +102,7 @@ export function Footer() {
           >
             <div>
               <h2 className="text-h3">
-                Download NOWSIM for your next journey
+                Download nowsim for your next journey
               </h2>
 
               <p className="mt-3 max-w-[52ch] text-base text-muted-invert">
@@ -102,18 +114,19 @@ export function Footer() {
             <ul className="flex flex-wrap items-center gap-3 md:shrink-0">
               {storeBadges.map((badge) => (
                 <li key={badge.label}>
-                  {/* Placeholder until the real store badge art lands — swap
-                      the inner span for next/image, keep the link chrome */}
-                  <Pressable
-                    href={badge.href}
-                    className={cn(
-                      "h-13 w-40 rounded-lg bg-black ring-1 ring-white/20",
-                      "hover:ring-white/40 active:ring-white/40",
-                    )}
-                  >
-                    <span className="px-3 text-center text-xs text-white/40">
-                      {badge.label}
-                    </span>
+                  {/* The badge art carries its own black plate and border, so
+                      the link stays bare and only handles the press feel */}
+                  <Pressable href={badge.href} className="rounded-lg">
+                    <Image
+                      src={badge.src}
+                      alt={badge.label}
+                      width={badgeSize.width}
+                      height={badgeSize.height}
+                      // the optimiser leaves SVG alone unless it is told to
+                      // rasterise, which would only cost sharpness here
+                      unoptimized
+                      className="h-[3.25rem] w-auto"
+                    />
                   </Pressable>
                 </li>
               ))}
@@ -181,7 +194,7 @@ export function Footer() {
 
           {/* Fine print */}
           <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-white/45 md:flex-row md:items-center md:justify-between">
-            <p>&copy; {year} NOWSIM. All rights reserved.</p>
+            <p>&copy; {year} nowsim. All rights reserved.</p>
 
             <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {legal.map((item) => (

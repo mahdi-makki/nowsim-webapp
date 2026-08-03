@@ -8,8 +8,7 @@ import { cn } from "@/lib/cn";
 export function DestinationCard({ destination }: { destination: Destination }) {
   return (
     <Pressable
-      // no plan routes yet — every card parks on #
-      href="#"
+      href={`/destinations/${destination.slug}`}
       className={cn(
         "group w-full justify-start gap-4 rounded-card px-5 py-5 text-left md:py-6",
         "bg-surface-soft hover:bg-ink/[0.07] active:bg-ink/[0.07]",
@@ -30,7 +29,7 @@ export function DestinationCard({ destination }: { destination: Destination }) {
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-lg font-black tracking-[-0.02em]">
+        <span className="block truncate text-lg font-bold tracking-[-0.02em]">
           {destination.name}
         </span>
         <span className="block text-sm font-medium text-muted">
@@ -39,7 +38,7 @@ export function DestinationCard({ destination }: { destination: Destination }) {
         </span>
       </span>
 
-      <ChevronRight className="h-4 w-4 shrink-0 text-ink/30 transition-transform duration-300 ease-hover group-hover:translate-x-0.5 motion-reduce:transition-none" />
+      <ChevronRight className="h-4 w-4 shrink-0 text-ink/30 transition-[color,translate] duration-300 ease-hover group-hover:translate-x-0.5 group-hover:text-ink/60 motion-reduce:transition-none" />
     </Pressable>
   );
 }

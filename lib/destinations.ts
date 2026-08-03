@@ -1,6 +1,13 @@
+import { buildPlans, type Plan } from "@/lib/plans";
+import { slugify } from "@/lib/slugify";
+
 export type DestinationKind = "country" | "region" | "global";
 
-export type Destination = {
+/**
+ * Authored shape. Slug, blurb and plans are derived in `build` below so the
+ * rows stay one-liners — set any of them on a row to override the derivation.
+ */
+type DestinationSeed = {
   name: string;
   kind: DestinationKind;
   /** Flag for countries; the globe render stands in for regions and global */
@@ -8,14 +15,44 @@ export type Destination = {
   from: string;
   /** How many countries a region or global plan covers */
   covers?: number;
+  /** Which countries, for the detail page's coverage list */
+  coversList?: string[];
+  /** Detail-page photo. Falls back to `heroPlaceholder` until the real one lands */
+  hero?: string;
+  blurb?: string;
+  slug?: string;
+  /** Only when the generated ladder doesn't fit this destination's real pricing */
+  plans?: Plan[];
+};
+
+export type Destination = Omit<
+  DestinationSeed,
+  "slug" | "blurb" | "plans" | "hero"
+> & {
+  /** Always set — the placeholder stands in until a real photo is authored */
+  hero: string;
+  /**
+   * URL segment for /destinations/[slug]. Derived from the name, but carried
+   * as real data so a later copy edit to the name can't silently move a URL
+   * that is already indexed
+   */
+  slug: string;
+  blurb: string;
+  plans: Plan[];
 };
 
 /** Regions and global plans share the globe render until bespoke art lands */
 export const globeArt = "/images/home/globe.png";
 
+/**
+ * Stand-in detail-page photo. Every destination points here until its own
+ * photo is shot — set `hero` on a row to swap one over
+ */
+export const heroPlaceholder = "/images/home/los-angeles.jpg";
+
 const flag = (code: string) => `/images/flags/${code}.svg`;
 
-const countries: Destination[] = [
+const countries: DestinationSeed[] = [
   { name: "Argentina", kind: "country", art: flag("ar"), from: "US$5.29" },
   { name: "Australia", kind: "country", art: flag("au"), from: "US$4.99" },
   { name: "Austria", kind: "country", art: flag("at"), from: "US$3.99" },
@@ -71,7 +108,7 @@ const countries: Destination[] = [
   { name: "Vietnam", kind: "country", art: flag("vn"), from: "US$4.99" },
 ];
 
-const regions: Destination[] = [
+const regions: DestinationSeed[] = [
   {
     name: "Africa",
     kind: "region",
@@ -123,7 +160,7 @@ const regions: Destination[] = [
   },
 ];
 
-const global: Destination[] = [
+const global: DestinationSeed[] = [
   {
     name: "Global 60",
     kind: "global",
@@ -147,12 +184,49 @@ const global: Destination[] = [
   },
 ];
 
+function blurbFor({ name, kind, covers }: DestinationSeed): string {
+  if (kind === "country") {
+    return `Get a travel eSIM for ${name} and enjoy reliable, affordable internet the moment you land.`;
+  }
+
+  if (kind === "region") {
+    return `One eSIM for ${covers} countries across ${name}. Hop borders on the same plan, with no roaming bill waiting for you.`;
+  }
+
+  return `A travel eSIM that follows you across ${covers} destinations. One plan, one account, wherever the trip goes.`;
+}
+
+function build(seeds: DestinationSeed[]): Destination[] {
+  return seeds.map((seed) => ({
+    ...seed,
+    slug: seed.slug ?? slugify(seed.name),
+    hero: seed.hero ?? heroPlaceholder,
+    blurb: seed.blurb ?? blurbFor(seed),
+    plans:
+      seed.plans ??
+      buildPlans(seed.from, seed.kind === "country" ? "country" : "bundle"),
+  }));
+}
+
 /** Sorted the way the listing renders it — alphabetical across every kind */
-export const destinations: Destination[] = [
+export const destinations: Destination[] = build([
   ...countries,
   ...regions,
   ...global,
-].sort((a, b) => a.name.localeCompare(b.name));
+]).sort((a, b) => a.name.localeCompare(b.name));
+
+const bySlug = new Map(
+  destinations.map((destination) => [destination.slug, destination]),
+);
+
+export function getDestination(slug: string): Destination | undefined {
+  return bySlug.get(slug);
+}
+
+/** Feeds generateStaticParams for /destinations/[slug] */
+export const destinationSlugs: string[] = destinations.map(
+  (destination) => destination.slug,
+);
 
 export function destinationsByKind(kind: DestinationKind): Destination[] {
   return destinations.filter((destination) => destination.kind === kind);
