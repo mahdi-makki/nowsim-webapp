@@ -21,8 +21,10 @@ export default async function AllDestinationsPage({
   const q = (await searchParams).q;
   const initialQuery = Array.isArray(q) ? (q[0] ?? "") : (q ?? "");
 
+  // The nav pill sits at the top on every page but home, so small screens need
+  // the extra headroom
   return (
-    <section className="px-3 py-20 md:px-4 md:py-28">
+    <section className="px-3 pb-20 pt-28 md:px-4 md:py-28">
       <div className="mx-auto max-w-7xl">
         <Pressable
           href="/"

@@ -52,10 +52,10 @@ export function ActivationNote() {
         <p className="font-bold text-ink">Can I activate my plan later?</p>
 
         <p className="mt-1">
-          All plans have a {ACTIVATION_WINDOW_DAYS}-day activation period.
+          Every plan has a {ACTIVATION_WINDOW_DAYS}-day activation window.
           {deadline
-            ? ` Buy today and leave it untouched until ${deadline}, and it activates itself.`
-            : " Buy today and leave it untouched to the end of that window, and it activates itself."}
+            ? ` Leave it untouched and it activates itself on ${deadline}.`
+            : " Leave it untouched and it activates itself at the end of it."}
         </p>
       </div>
     </div>

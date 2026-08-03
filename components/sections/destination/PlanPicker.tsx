@@ -1,16 +1,30 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { FaStar } from "react-icons/fa6";
 import { MdVerifiedUser } from "react-icons/md";
 
 import { ActivationNote } from "@/components/sections/destination/ActivationNote";
+import { DeviceDialog } from "@/components/ui/DeviceDialog";
 import { Pressable } from "@/components/ui/Pressable";
 import { formatTotal, parsePrice, type Plan } from "@/lib/plans";
 import { cn } from "@/lib/cn";
 
 /** One order can't run away with the cart */
 const MAX_ESIMS = 10;
+
+const stepper = cn(
+  "h-10 w-10 rounded-full border border-hairline text-xl leading-none",
+  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+);
+
+// Adding is the step we want people to take, so only the plus fills in. At the
+// top of the range it drops back to the outline, which Pressable then dims
+const stepperAdd = cn(
+  stepper,
+  "enabled:border-ink enabled:bg-ink enabled:text-white",
+  "enabled:hover:border-ink-soft enabled:hover:bg-ink-soft",
+);
 
 export function PlanPicker({
   plans,
@@ -35,6 +49,9 @@ export function PlanPicker({
   );
 
   const [quantity, setQuantity] = useState(1);
+
+  const [deviceOpen, setDeviceOpen] = useState(false);
+  const closeDevices = useCallback(() => setDeviceOpen(false), []);
 
   const selectedPlan = plans.find((plan) => plan.id === selectedId) ?? plans[0];
   const selectedDuration =
@@ -148,12 +165,12 @@ export function PlanPicker({
           <p className="text-sm text-muted">How many travellers?</p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-full border border-hairline p-1.5">
+        <div className="flex items-center gap-1 rounded-full border border-hairline p-1.5">
           <Pressable
             onClick={() => setQuantity((current) => Math.max(1, current - 1))}
             disabled={quantity <= 1}
             aria-label="Remove one eSIM"
-            className="h-10 w-10 rounded-full border border-hairline text-xl leading-none hover:bg-surface-soft"
+            className={cn(stepper, "hover:bg-surface-soft")}
           >
             &minus;
           </Pressable>
@@ -161,7 +178,7 @@ export function PlanPicker({
           {/* Announced on change so the count isn't a silent visual-only update */}
           <span
             aria-live="polite"
-            className="min-w-[5.5rem] text-center text-base font-bold"
+            className="min-w-[4.75rem] text-center text-base font-bold"
           >
             {quantity} eSIM{quantity > 1 ? "s" : ""}
           </span>
@@ -172,7 +189,7 @@ export function PlanPicker({
             }
             disabled={quantity >= MAX_ESIMS}
             aria-label="Add one eSIM"
-            className="h-10 w-10 rounded-full border border-hairline text-xl leading-none hover:bg-surface-soft"
+            className={stepperAdd}
           >
             +
           </Pressable>
@@ -181,11 +198,13 @@ export function PlanPicker({
 
       {/* Checkout isn't wired up yet, so the button is live but inert */}
       <Pressable className="mt-8 w-full rounded-full bg-volt px-8 py-4 text-base font-bold text-ink hover:bg-volt/85">
-        Go to checkout — {total}
+        Go to checkout - {total}
       </Pressable>
 
-      {/* Same for the compatibility checker */}
       <Pressable
+        aria-haspopup="dialog"
+        aria-expanded={deviceOpen}
+        onClick={() => setDeviceOpen(true)}
         className={cn(
           "mt-3 w-full rounded-full border border-ink px-8 py-4",
           "text-base font-bold text-ink",
@@ -194,6 +213,8 @@ export function PlanPicker({
       >
         Device compatibility
       </Pressable>
+
+      <DeviceDialog open={deviceOpen} onClose={closeDevices} />
 
       <ul className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
         <li className="flex items-center gap-2 text-base font-medium text-ink">

@@ -34,7 +34,14 @@ function ToggleIcon({ open }: { open: boolean }) {
   );
 }
 
-export function MobileNav({ links }: { links: NavLink[] }) {
+export function MobileNav({
+  links,
+  /** The panel unfolds away from the pill, so it follows the pill's position */
+  openUp = true,
+}: {
+  links: NavLink[];
+  openUp?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
@@ -54,7 +61,10 @@ export function MobileNav({ links }: { links: NavLink[] }) {
       <div
         id={panelId}
         className={cn(
-          "absolute inset-x-0 bottom-full origin-bottom pb-2",
+          "absolute inset-x-0",
+          openUp
+            ? "bottom-full origin-bottom pb-2"
+            : "top-full origin-top pt-2",
           // the fade runs at half the scale's duration — a panel still at 40%
           // opacity reads as "not there yet", so matching both to 300ms makes
           // the menu feel like it lags the tap
