@@ -86,6 +86,36 @@
   }
 }
 
+/* Opt-in scrollbar for dark surfaces. The page rail below is tuned for the
+   light background and reads as a bright stripe on an ink panel — this one is
+   a hairline thumb on no track at all. */
+@utility scroll-subtle {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, #ffffff 22%, transparent) transparent;
+
+  /* Safari has no scrollbar-color; the base rule's webkit fallback would
+     otherwise paint its light track and 2px border here */
+  @supports not (scrollbar-color: auto) {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, #ffffff 22%, transparent);
+      border: 0;
+      border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, #ffffff 36%, transparent);
+    }
+  }
+}
+
 @layer base {
   html {
     overscroll-behavior-y: none;

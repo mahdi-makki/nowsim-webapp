@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 import { NowsimEmblem } from "@/components/ui/NowsimEmblem";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
@@ -12,15 +16,21 @@ const glass =
 const label = "text-base font-medium";
 
 export function Header() {
+  // The home hero is built around a pill floating over the video, so only that
+  // route keeps it at the bottom — every other page gets a conventional top bar
+  const atBottom = usePathname() === "/";
+
   return (
     <header
       className={cn(
         "fixed inset-x-0 z-50 px-5 md:px-3",
-        "bottom-[max(1.75rem,calc(env(safe-area-inset-bottom)+0.75rem))]",
+        atBottom
+          ? "bottom-[max(1.75rem,calc(env(safe-area-inset-bottom)+0.75rem))]"
+          : "top-[max(1.75rem,calc(env(safe-area-inset-top)+0.75rem))]",
         "pointer-events-none",
       )}
     >
-      <MobileNav links={navLinks} />
+      <MobileNav links={navLinks} openUp={atBottom} />
 
       <nav
         aria-label="Main"

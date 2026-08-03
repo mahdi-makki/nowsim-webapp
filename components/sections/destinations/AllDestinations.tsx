@@ -89,63 +89,73 @@ export function AllDestinations({
 
   return (
     <>
-      <div
-        ref={tablistRef}
-        role="tablist"
-        aria-label="Destination type"
-        onKeyDown={onTablistKeyDown}
-        className="mt-10 inline-flex items-center gap-1 rounded-full border border-hairline bg-surface-soft p-1 md:mt-12"
-      >
-        {tabs.map((tab) => {
-          const selected = tab.id === active;
+      {/* Search reads first so the desktop row runs in DOM order; column-reverse
+          keeps the tabs on top once the two stack */}
+      <div className="mt-10 flex flex-col-reverse gap-4 md:mt-12 md:flex-row md:items-stretch md:gap-5">
+        <div className="relative min-w-0 flex-1">
+          <SearchIcon className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/40" />
 
-          return (
-            <Pressable
-              key={tab.id}
-              role="tab"
-              id={`all-destinations-tab-${tab.id}`}
-              aria-selected={selected}
-              aria-controls="all-destinations-panel"
-              tabIndex={selected ? 0 : -1}
-              onClick={() => setActive(tab.id)}
-              className={cn(
-                "gap-2 rounded-full px-5 py-2.5 text-sm font-medium md:px-6 md:py-3 md:text-base",
-                selected ? "bg-ink text-white" : "text-ink/60 hover:text-ink",
-              )}
-            >
-              {tab.label}
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search for a destination"
+            aria-label="Search for a destination"
+            className={cn(
+              // py-4 sizes it on its own while stacked; on the desktop row the
+              // stretched wrapper hands it the tablist's height instead
+              "w-full rounded-full border border-hairline bg-surface py-4 pl-13 pr-5",
+              "md:h-full md:py-0",
+              "text-base font-medium text-ink placeholder:text-ink/40",
+              "transition-colors duration-300 ease-hover",
+              // the global focus ring would sit outside the pill, so the border
+              // itself carries focus — a denser hairline, faded in
+              "focus-visible:border-ink/40 focus-visible:outline-none",
+              "motion-reduce:transition-none",
+            )}
+          />
+        </div>
 
-              {tab.badge ? (
-                <span
-                  className={cn(
-                    "rounded-full bg-volt px-2 py-1 text-ink",
-                    "text-[0.625rem] font-bold uppercase tracking-[0.08em]",
-                  )}
-                >
-                  {tab.badge}
-                </span>
-              ) : null}
-            </Pressable>
-          );
-        })}
-      </div>
+        <div
+          ref={tablistRef}
+          role="tablist"
+          aria-label="Destination type"
+          onKeyDown={onTablistKeyDown}
+          className="flex w-fit shrink-0 items-center gap-1 rounded-full border border-hairline bg-surface-soft p-1"
+        >
+          {tabs.map((tab) => {
+            const selected = tab.id === active;
 
-      <div className="relative mt-6 md:mt-8">
-        <SearchIcon className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/40" />
+            return (
+              <Pressable
+                key={tab.id}
+                role="tab"
+                id={`all-destinations-tab-${tab.id}`}
+                aria-selected={selected}
+                aria-controls="all-destinations-panel"
+                tabIndex={selected ? 0 : -1}
+                onClick={() => setActive(tab.id)}
+                className={cn(
+                  "gap-2 rounded-full px-5 py-2.5 text-sm font-medium md:px-6 md:py-3 md:text-base",
+                  selected ? "bg-ink text-white" : "text-ink/60 hover:text-ink",
+                )}
+              >
+                {tab.label}
 
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search for a destination"
-          aria-label="Search for a destination"
-          className={cn(
-            "w-full rounded-full border border-hairline bg-surface py-4 pl-13 pr-5",
-            "text-base font-medium text-ink placeholder:text-ink/40",
-            "transition-colors duration-300 ease-hover hover:border-ink/20",
-            "motion-reduce:transition-none",
-          )}
-        />
+                {tab.badge ? (
+                  <span
+                    className={cn(
+                      "rounded-full bg-volt px-2 py-1 text-ink",
+                      "text-[0.625rem] font-bold uppercase tracking-[0.08em]",
+                    )}
+                  >
+                    {tab.badge}
+                  </span>
+                ) : null}
+              </Pressable>
+            );
+          })}
+        </div>
       </div>
 
       <div

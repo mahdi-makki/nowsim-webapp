@@ -1,0 +1,276 @@
+/**
+ * Which countries each region and global plan reaches.
+ *
+ * Placeholder data — plausible rather than contractual, in the same spirit as
+ * the seeded prices in `destinations.ts`. Swap the lists for the real coverage
+ * feed when it lands; nothing below is derived from an operator agreement.
+ *
+ * These lists are the source of truth for the counts a destination shows, so a
+ * region's `covers` number can never drift from the list behind it.
+ */
+
+const africa = [
+  "Algeria",
+  "Angola",
+  "Benin",
+  "Botswana",
+  "Burkina Faso",
+  "Cameroon",
+  "Cape Verde",
+  "Chad",
+  "Congo",
+  "Côte d'Ivoire",
+  "Egypt",
+  "Eswatini",
+  "Ethiopia",
+  "Gabon",
+  "Gambia",
+  "Ghana",
+  "Guinea",
+  "Kenya",
+  "Lesotho",
+  "Madagascar",
+  "Malawi",
+  "Mali",
+  "Mauritius",
+  "Morocco",
+  "Mozambique",
+  "Namibia",
+  "Nigeria",
+  "Rwanda",
+  "Senegal",
+  "Seychelles",
+  "South Africa",
+  "Tanzania",
+  "Tunisia",
+  "Uganda",
+  "Zambia",
+];
+
+const asiaAndOceania = [
+  "Australia",
+  "Bangladesh",
+  "Cambodia",
+  "China",
+  "Fiji",
+  "Hong Kong",
+  "India",
+  "Indonesia",
+  "Japan",
+  "Laos",
+  "Malaysia",
+  "Nepal",
+  "New Zealand",
+  "Papua New Guinea",
+  "Philippines",
+  "Singapore",
+  "South Korea",
+  "Sri Lanka",
+  "Taiwan",
+  "Thailand",
+  "Uzbekistan",
+  "Vietnam",
+];
+
+const caribbean = [
+  "Anguilla",
+  "Antigua and Barbuda",
+  "Aruba",
+  "Bahamas",
+  "Barbados",
+  "Bermuda",
+  "British Virgin Islands",
+  "Cayman Islands",
+  "Curaçao",
+  "Dominica",
+  "Dominican Republic",
+  "Grenada",
+  "Haiti",
+  "Jamaica",
+  "Puerto Rico",
+  "Saint Lucia",
+  "Trinidad and Tobago",
+  "Turks and Caicos Islands",
+];
+
+const europe = [
+  "Albania",
+  "Austria",
+  "Belgium",
+  "Bosnia and Herzegovina",
+  "Bulgaria",
+  "Croatia",
+  "Cyprus",
+  "Czechia",
+  "Denmark",
+  "Estonia",
+  "Finland",
+  "France",
+  "Germany",
+  "Greece",
+  "Hungary",
+  "Iceland",
+  "Ireland",
+  "Italy",
+  "Latvia",
+  "Liechtenstein",
+  "Lithuania",
+  "Luxembourg",
+  "Malta",
+  "Moldova",
+  "Monaco",
+  "Montenegro",
+  "Netherlands",
+  "North Macedonia",
+  "Norway",
+  "Poland",
+  "Portugal",
+  "Romania",
+  "Serbia",
+  "Slovakia",
+  "Slovenia",
+  "Spain",
+  "Sweden",
+  "Switzerland",
+  "United Kingdom",
+];
+
+const latinAmerica = [
+  "Argentina",
+  "Belize",
+  "Bolivia",
+  "Brazil",
+  "Chile",
+  "Colombia",
+  "Costa Rica",
+  "Ecuador",
+  "El Salvador",
+  "Guatemala",
+  "Guyana",
+  "Honduras",
+  "Mexico",
+  "Nicaragua",
+  "Panama",
+  "Paraguay",
+  "Peru",
+  "Suriname",
+  "Uruguay",
+  "Venezuela",
+];
+
+const middleEast = [
+  "Armenia",
+  "Azerbaijan",
+  "Bahrain",
+  "Georgia",
+  "Iraq",
+  "Israel",
+  "Jordan",
+  "Kuwait",
+  "Lebanon",
+  "Oman",
+  "Qatar",
+  "Saudi Arabia",
+  "Turkey",
+  "United Arab Emirates",
+];
+
+const northAmerica = ["Canada", "Mexico", "United States"];
+
+/** Reachable on the global tiers, but not sold as part of a region bundle */
+const beyondTheRegions = [
+  "Andorra",
+  "Bhutan",
+  "Burundi",
+  "Central African Republic",
+  "Comoros",
+  "Cuba",
+  "Democratic Republic of the Congo",
+  "Djibouti",
+  "Equatorial Guinea",
+  "Eritrea",
+  "Faroe Islands",
+  "French Guiana",
+  "Greenland",
+  "Guadeloupe",
+  "Guam",
+  "Guinea-Bissau",
+  "Kosovo",
+  "Kyrgyzstan",
+  "Liberia",
+  "Libya",
+  "Maldives",
+  "Marshall Islands",
+  "Martinique",
+  "Mauritania",
+  "Micronesia",
+  "Montserrat",
+  "Myanmar",
+  "Nauru",
+  "New Caledonia",
+  "Niger",
+  "Palau",
+  "Palestine",
+  "Réunion",
+  "Saint Kitts and Nevis",
+  "Saint Vincent and the Grenadines",
+  "Samoa",
+  "San Marino",
+  "São Tomé and Príncipe",
+  "Sierra Leone",
+  "Solomon Islands",
+  "Somalia",
+  "South Sudan",
+  "Tajikistan",
+  "Timor-Leste",
+  "Togo",
+  "Tonga",
+  "Turkmenistan",
+  "Tuvalu",
+  "Vanuatu",
+  "Zimbabwe",
+];
+
+const regionCoverage: Record<string, string[]> = {
+  Africa: africa,
+  "Asia and Oceania": asiaAndOceania,
+  Caribbean: caribbean,
+  Europe: europe,
+  "Latin America": latinAmerica,
+  "Middle East": middleEast,
+  "North America": northAmerica,
+};
+
+/**
+ * Densest networks first, so slicing a global tier off the front reads like a
+ * real reach list rather than an alphabetical cut. Mexico sits in two regions,
+ * hence the dedupe.
+ */
+const byReach = [
+  ...new Set([
+    ...europe,
+    ...asiaAndOceania,
+    ...northAmerica,
+    ...latinAmerica,
+    ...middleEast,
+    ...caribbean,
+    ...africa,
+    ...beyondTheRegions,
+  ]),
+];
+
+const globalCoverage: Record<string, string[]> = {
+  "Global 60": byReach.slice(0, 120),
+  "Global 120": byReach.slice(0, 160),
+  "Global Unlimited": byReach,
+};
+
+/** Alphabetical, since that is the only order a reader can scan */
+const collator = new Intl.Collator("en");
+
+/** The countries a region or global plan covers, sorted for display */
+export function coverageFor(name: string): string[] | undefined {
+  const countries = regionCoverage[name] ?? globalCoverage[name];
+
+  return countries ? [...countries].sort(collator.compare) : undefined;
+}

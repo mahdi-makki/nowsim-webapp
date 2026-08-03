@@ -1,3 +1,4 @@
+import { coverageFor } from "@/lib/coverage";
 import { buildPlans, type Plan } from "@/lib/plans";
 import { slugify } from "@/lib/slugify";
 
@@ -108,80 +109,22 @@ const countries: DestinationSeed[] = [
   { name: "Vietnam", kind: "country", art: flag("vn"), from: "US$4.99" },
 ];
 
+// `covers` is left off deliberately — lib/coverage.ts carries the country list
+// for each of these, and `build` counts it
 const regions: DestinationSeed[] = [
-  {
-    name: "Africa",
-    kind: "region",
-    art: globeArt,
-    from: "US$12.99",
-    covers: 35,
-  },
-  {
-    name: "Asia and Oceania",
-    kind: "region",
-    art: globeArt,
-    from: "US$9.99",
-    covers: 22,
-  },
-  {
-    name: "Caribbean",
-    kind: "region",
-    art: globeArt,
-    from: "US$11.49",
-    covers: 18,
-  },
-  {
-    name: "Europe",
-    kind: "region",
-    art: globeArt,
-    from: "US$8.99",
-    covers: 39,
-  },
-  {
-    name: "Latin America",
-    kind: "region",
-    art: globeArt,
-    from: "US$11.99",
-    covers: 20,
-  },
-  {
-    name: "Middle East",
-    kind: "region",
-    art: globeArt,
-    from: "US$10.99",
-    covers: 14,
-  },
-  {
-    name: "North America",
-    kind: "region",
-    art: globeArt,
-    from: "US$9.49",
-    covers: 3,
-  },
+  { name: "Africa", kind: "region", art: globeArt, from: "US$12.99" },
+  { name: "Asia and Oceania", kind: "region", art: globeArt, from: "US$9.99" },
+  { name: "Caribbean", kind: "region", art: globeArt, from: "US$11.49" },
+  { name: "Europe", kind: "region", art: globeArt, from: "US$8.99" },
+  { name: "Latin America", kind: "region", art: globeArt, from: "US$11.99" },
+  { name: "Middle East", kind: "region", art: globeArt, from: "US$10.99" },
+  { name: "North America", kind: "region", art: globeArt, from: "US$9.49" },
 ];
 
 const global: DestinationSeed[] = [
-  {
-    name: "Global 60",
-    kind: "global",
-    art: globeArt,
-    from: "US$19.99",
-    covers: 120,
-  },
-  {
-    name: "Global 120",
-    kind: "global",
-    art: globeArt,
-    from: "US$29.99",
-    covers: 160,
-  },
-  {
-    name: "Global Unlimited",
-    kind: "global",
-    art: globeArt,
-    from: "US$49.99",
-    covers: 200,
-  },
+  { name: "Global 60", kind: "global", art: globeArt, from: "US$19.99" },
+  { name: "Global 120", kind: "global", art: globeArt, from: "US$29.99" },
+  { name: "Global Unlimited", kind: "global", art: globeArt, from: "US$49.99" },
 ];
 
 function blurbFor({ name, kind, covers }: DestinationSeed): string {
@@ -197,15 +140,26 @@ function blurbFor({ name, kind, covers }: DestinationSeed): string {
 }
 
 function build(seeds: DestinationSeed[]): Destination[] {
-  return seeds.map((seed) => ({
-    ...seed,
-    slug: seed.slug ?? slugify(seed.name),
-    hero: seed.hero ?? heroPlaceholder,
-    blurb: seed.blurb ?? blurbFor(seed),
-    plans:
-      seed.plans ??
-      buildPlans(seed.from, seed.kind === "country" ? "country" : "bundle"),
-  }));
+  return seeds.map((seed) => {
+    // The coverage list owns the count, so the number on the page and the
+    // countries behind it can't drift apart
+    const coversList = seed.coversList ?? coverageFor(seed.name);
+    const resolved = {
+      ...seed,
+      coversList,
+      covers: coversList?.length ?? seed.covers,
+    };
+
+    return {
+      ...resolved,
+      slug: seed.slug ?? slugify(seed.name),
+      hero: seed.hero ?? heroPlaceholder,
+      blurb: seed.blurb ?? blurbFor(resolved),
+      plans:
+        seed.plans ??
+        buildPlans(seed.from, seed.kind === "country" ? "country" : "bundle"),
+    };
+  });
 }
 
 /** Sorted the way the listing renders it — alphabetical across every kind */
@@ -218,6 +172,21 @@ export const destinations: Destination[] = build([
 const bySlug = new Map(
   destinations.map((destination) => [destination.slug, destination]),
 );
+
+/**
+ * Flag art, keyed by country name, for the countries we sell on their own.
+ * Coverage lists reach far past that set, so a lookup here can miss — callers
+ * fall back rather than pointing at an asset that was never drawn.
+ */
+const flags = new Map(
+  destinations
+    .filter((destination) => destination.kind === "country")
+    .map((destination) => [destination.name, destination.art]),
+);
+
+export function flagFor(country: string): string | undefined {
+  return flags.get(country);
+}
 
 export function getDestination(slug: string): Destination | undefined {
   return bySlug.get(slug);
