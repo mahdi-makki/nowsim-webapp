@@ -119,7 +119,7 @@ export function AllDestinations({
                 <span
                   className={cn(
                     "rounded-full bg-volt px-2 py-1 text-ink",
-                    "text-[0.625rem] font-black uppercase tracking-[0.08em]",
+                    "text-[0.625rem] font-bold uppercase tracking-[0.08em]",
                   )}
                 >
                   {tab.badge}

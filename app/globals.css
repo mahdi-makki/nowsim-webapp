@@ -22,22 +22,22 @@
   --text-display: clamp(2.75rem, 1.6rem + 5.6vw, 5.5rem);
   --text-display--line-height: 0.95;
   --text-display--letter-spacing: -0.045em;
-  --text-display--font-weight: 900;
+  --text-display--font-weight: 700;
 
   --text-h1: clamp(2.25rem, 1.5rem + 3.2vw, 3.5rem);
   --text-h1--line-height: 1.03;
   --text-h1--letter-spacing: -0.025em;
-  --text-h1--font-weight: 900;
+  --text-h1--font-weight: 700;
 
   --text-h2: clamp(1.75rem, 1.3rem + 2vw, 2.5rem);
   --text-h2--line-height: 1.08;
   --text-h2--letter-spacing: -0.02em;
-  --text-h2--font-weight: 900;
+  --text-h2--font-weight: 700;
 
   --text-h3: clamp(1.25rem, 1.1rem + 0.9vw, 1.625rem);
   --text-h3--line-height: 1.2;
   --text-h3--letter-spacing: -0.015em;
-  --text-h3--font-weight: 900;
+  --text-h3--font-weight: 700;
 
   --text-eyebrow: 0.75rem;
   --text-eyebrow--line-height: 1;
@@ -90,6 +90,32 @@
   html {
     overscroll-behavior-y: none;
     -webkit-text-size-adjust: 100%;
+    /* track sits just under the page tone so the gutter reads as a rail */
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-ink) 22%, transparent)
+      color-mix(in srgb, var(--color-ink) 8%, #ffffff);
+  }
+
+  /* Safari has no scrollbar-color; same look via the webkit pseudos */
+  @supports not (scrollbar-color: auto) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: color-mix(in srgb, var(--color-ink) 8%, #ffffff);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+      border: 2px solid color-mix(in srgb, var(--color-ink) 8%, #ffffff);
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, var(--color-ink) 34%, transparent);
+    }
   }
 
   body {
@@ -105,7 +131,7 @@
   h2,
   h3,
   h4 {
-    font-weight: 900;
+    font-weight: 700;
     text-wrap: balance;
   }
 

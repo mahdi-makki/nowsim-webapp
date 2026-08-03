@@ -31,7 +31,7 @@ export function Header() {
       >
         <Pressable href="/" hit className="rounded-full p-2.5 text-ink">
           <NowsimEmblem id="nowsim-emblem-desktop" className="h-6 w-6" />
-          <span className="sr-only">NOWSIM home</span>
+          <span className="sr-only">nowsim home</span>
         </Pressable>
 
         <ul className="flex items-center">

@@ -9,12 +9,12 @@ export function About() {
         {/* Column 1: copy block above, quote card below */}
         <div className="flex flex-col gap-6">
           <div>
-            <h2 className="text-h1 uppercase tracking-[-0.045em] subpixel-antialiased [-webkit-text-stroke:0.022em_currentColor]">
+            <h2 className="text-h1 font-extrabold uppercase tracking-[-0.045em]">
               The future of mobile data
             </h2>
 
             <p className="mt-5 max-w-[36ch] text-base text-muted">
-              With NOWSIM you&rsquo;re connected to every network worth using,
+              With nowsim you&rsquo;re connected to every network worth using,
               in every country worth visiting. One eSIM, one account, no roaming
               bills and no plastic. Because staying online shouldn&rsquo;t
               depend on which border you just crossed. Pick a destination, tap
@@ -50,7 +50,7 @@ export function About() {
             <div className="relative overflow-hidden rounded-full bg-surface-soft">
               <Image
                 src="/images/home/pose.jpg"
-                alt="Portrait of a NOWSIM traveller framing their face with both hands"
+                alt="Portrait of a nowsim traveller framing their face with both hands"
                 fill
                 quality={90}
                 sizes="(min-width: 1200px) 210px, (min-width: 768px) 18vw, 100vw"
@@ -65,7 +65,7 @@ export function About() {
                   <NowsimEmblem className="absolute inset-[27%]" />
                 </div>
                 <div className="flex flex-1 flex-col items-center justify-center rounded-card bg-brand px-5 py-6 text-center text-white">
-                  <p className="text-[clamp(2.25rem,4.6vw,3.25rem)] font-black subpixel-antialiased leading-none tracking-[-0.05em] tabular-nums [-webkit-text-stroke:0.03em_currentColor]">
+                  <p className="text-[clamp(2.25rem,4.6vw,3.25rem)] font-extrabold leading-none tracking-[-0.05em] tabular-nums">
                     4.9
                   </p>
                   <p className="mt-2 max-w-[22ch] text-xs leading-snug font-bold text-muted-invert md:text-sm">
@@ -76,11 +76,11 @@ export function About() {
 
               {/* Row 2b: usage stat card */}
               <div className="flex flex-1 flex-col items-center justify-center rounded-card bg-aqua px-5 py-6 text-center text-ink">
-                <p className="text-[clamp(1.75rem,5.4vw,3.75rem)] font-black subpixel-antialiased leading-none tracking-[-0.05em] tabular-nums [-webkit-text-stroke:0.03em_currentColor]">
+                <p className="text-[clamp(1.75rem,5.4vw,3.75rem)] font-extrabold leading-none tracking-[-0.05em] tabular-nums">
                   1,657,382,391
                 </p>
                 <p className="mt-2 text-xs leading-snug font-bold text-ink/70 md:text-sm">
-                  Gigabytes delivered on NOWSIM
+                  Gigabytes delivered on nowsim
                 </p>
               </div>
             </div>

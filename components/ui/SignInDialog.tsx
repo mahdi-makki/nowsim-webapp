@@ -1,5 +1,6 @@
 "use client";
 
+import { useLenis } from "lenis/react";
 import { useEffect, useId, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import type { IconType } from "react-icons";
@@ -77,6 +78,8 @@ export function SignInDialog({
   const mounted = useSyncExternalStore(subscribe, onClient, onServer);
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  // undefined when smoothing is off (reduced motion), so every call is guarded
+  const lenis = useLenis();
 
   useEffect(() => {
     if (!open) return;
@@ -85,6 +88,10 @@ export function SignInDialog({
     const opener = document.activeElement as HTMLElement | null;
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
+
+    // the overflow lock stops the page painting, but Lenis would keep taking
+    // wheel events and banking scroll, then snap to it on close
+    lenis?.stop();
 
     panelRef.current?.querySelector<HTMLElement>(focusable)?.focus();
 
@@ -117,9 +124,10 @@ export function SignInDialog({
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = overflow;
+      lenis?.start();
       opener?.focus();
     };
-  }, [open, onClose]);
+  }, [open, onClose, lenis]);
 
   if (!mounted) return null;
 

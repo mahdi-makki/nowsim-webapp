@@ -49,7 +49,7 @@ export function Hero() {
             "pb-[calc(3.5rem+max(1.75rem,env(safe-area-inset-bottom)+0.75rem))]",
           )}
         >
-          <h1 className="max-w-4xl text-display tracking-[0.02em] text-white subpixel-antialiased [-webkit-text-stroke:0.04em_currentColor]">
+          <h1 className="max-w-4xl text-display font-black tracking-[0.02em] text-white">
             STAY <span className="text-volt">CONNECTED</span>{" "}
             {"WHENEVER’S NEXT"}
           </h1>
