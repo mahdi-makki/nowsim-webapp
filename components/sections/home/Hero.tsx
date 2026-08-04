@@ -4,7 +4,14 @@ import { cn } from "@/lib/cn";
 
 export function Hero() {
   return (
-    <section className="h-[100dvh] p-3 pt-[max(0.75rem,env(safe-area-inset-top))] md:p-4">
+    <section
+      className={cn(
+        "relative z-[55]",
+        "mt-[calc(var(--header-height)+env(safe-area-inset-top))]",
+        "h-[calc(100dvh-var(--header-height)-env(safe-area-inset-top))]",
+        "px-3 pb-3 md:px-4 md:pb-4",
+      )}
+    >
       <div className="relative h-full w-full overflow-hidden rounded-screen bg-ink md:rounded-screen-lg">
         <video
           aria-hidden
@@ -22,9 +29,6 @@ export function Hero() {
         <div
           className={cn(
             "absolute inset-0 flex flex-col items-center justify-center px-6 text-center",
-            // reserve exactly the nav pill's height + offset, so the block centers
-            // between the top of the viewport and the top of the pill
-            "pb-[calc(3.5rem+max(1.75rem,env(safe-area-inset-bottom)+0.75rem))]",
           )}
         >
           <h1 className="max-w-4xl text-display font-black tracking-[0.02em] text-white">

@@ -56,7 +56,6 @@ function matches(device: string, query: string) {
   return device.toLowerCase().includes(query);
 }
 
-/** Drops the devices that miss the query, then the groups left empty by that */
 function filterGroups(groups: DeviceGroup[], query: string): DeviceGroup[] {
   if (!query) return groups;
 
@@ -76,7 +75,6 @@ export function DeviceDialog({
   onClose: () => void;
 }) {
   const baseId = useId();
-  // "All" leads, so a search works before the brand is narrowed down
   const [platformId, setPlatformId] = useState(ALL_DEVICES);
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -90,9 +88,6 @@ export function DeviceDialog({
     [platform, search],
   );
 
-  // A search that only hits another tab looks like "no results" otherwise, so
-  // the empty state names the tabs that do have something. "All" is skipped —
-  // it's a superset of whatever brand tab is named alongside it
   const elsewhere = useMemo(() => {
     if (!search || groups.length > 0) return [];
 
@@ -134,13 +129,11 @@ export function DeviceDialog({
             "hover:bg-white/[0.14] focus:bg-white/[0.14]",
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-volt",
             "motion-reduce:transition-none",
-            // Safari paints its own clear button, which fights the styling
             "[&::-webkit-search-cancel-button]:appearance-none",
           )}
         />
       </div>
 
-      {/* Toggle chips rather than tabs: one panel, no arrow-key contract */}
       <div
         role="group"
         aria-label="Filter devices by brand"
@@ -170,12 +163,9 @@ export function DeviceDialog({
         })}
       </div>
 
-      {/* The only scrolling region — the header, search and chips stay put */}
       <div
         className={cn(
           "-mx-2 mt-4 min-h-0 flex-1 px-2",
-          // `overscroll-contain` keeps a flick at the end of the list from
-          // handing the scroll back to the page behind the dialog
           "scroll-subtle overflow-y-auto overscroll-contain",
         )}
       >
@@ -190,8 +180,6 @@ export function DeviceDialog({
         ) : (
           <ul className="flex flex-col gap-2">
             {groups.map((group) => {
-              // A search has already narrowed things down, so hiding the hits
-              // behind another tap would just be a second search
               const isOpen = search !== "" || expanded === group.id;
               const panelId = `${baseId}-${group.id}-panel`;
               const triggerId = `${baseId}-${group.id}-trigger`;
@@ -215,8 +203,6 @@ export function DeviceDialog({
                       "motion-reduce:transition-none",
                     )}
                   >
-                    {/* flex-1 pushes the chevron to the edge — `justify-between`
-                        would lose to Pressable's own `justify-center` */}
                     <span className="flex-1">{group.label}</span>
 
                     <span className="text-sm font-medium text-white/45">
@@ -253,9 +239,6 @@ export function DeviceDialog({
                             key={device}
                             className="flex items-start gap-2.5 text-sm text-white/70"
                           >
-                            {/* every listed device is eSIM capable by
-                                definition, so the tick is decoration — the
-                                sheet's copy already says what absence means */}
                             <CheckIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-volt" />
                             {device}
                           </li>

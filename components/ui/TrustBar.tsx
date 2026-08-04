@@ -8,7 +8,6 @@ import { cn } from "@/lib/cn";
 type TrustPoint = {
   icon: IconType;
   label: string;
-  /** Trustpilot's star keeps its brand green; the rest follow the tone */
   iconClassName?: string;
 };
 
@@ -24,7 +23,6 @@ const trustPoints: TrustPoint[] = [
 ];
 
 export function TrustBar({
-  /** `dark` sits on the hero video, `light` on the plain page background */
   tone = "dark",
   className,
 }: {
@@ -37,10 +35,7 @@ export function TrustBar({
     <ul
       className={cn(
         "mx-auto grid w-full max-w-xl grid-cols-2",
-        // four across only once the row fits without wrapping mid-label
         "lg:flex lg:max-w-none lg:justify-center",
-        // the light bar owns a full section, so it can breathe; the hero's is
-        // one element in a stack and stays tight
         onVideo
           ? "gap-x-6 gap-y-4 lg:gap-x-10"
           : "gap-x-8 gap-y-8 lg:gap-x-16",

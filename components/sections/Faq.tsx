@@ -125,8 +125,6 @@ export function Faq() {
                     "motion-reduce:transition-none",
                   )}
                 >
-                  {/* flex-1 pushes the chevron to the edge — `justify-between`
-                      would lose to Pressable's own `justify-center` */}
                   <span className="flex-1">{entry.question}</span>
 
                   <ChevronDown

@@ -7,46 +7,46 @@ import { MdVerifiedUser } from "react-icons/md";
 import { ActivationNote } from "@/components/sections/destination/ActivationNote";
 import { DeviceDialog } from "@/components/ui/DeviceDialog";
 import { Pressable } from "@/components/ui/Pressable";
-import { formatTotal, parsePrice, type Plan } from "@/lib/plans";
+import { checkoutHref } from "@/lib/order";
+import { MAX_ESIMS, formatTotal, parsePrice, type Plan } from "@/lib/plans";
 import { cn } from "@/lib/cn";
-
-/** One order can't run away with the cart */
-const MAX_ESIMS = 10;
 
 const stepper = cn(
   "h-10 w-10 rounded-full border border-hairline text-xl leading-none",
   "transition-colors duration-300 ease-hover motion-reduce:transition-none",
 );
 
-// Adding is the step we want people to take, so only the plus fills in. At the
-// top of the range it drops back to the outline, which Pressable then dims
 const stepperAdd = cn(
   stepper,
   "enabled:border-ink enabled:bg-ink enabled:text-white",
   "enabled:hover:border-ink-soft enabled:hover:bg-ink-soft",
 );
 
+const card = cn(
+  "relative flex flex-col rounded-card border px-5 py-4",
+  "press",
+  "has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink",
+);
+
+const cardIdle = cn(
+  "border-hairline bg-surface",
+  "hover:border-ink/25 hover:shadow-lg hover:shadow-ink/8",
+);
+
+const cardPicked = "border-ink bg-surface-soft";
+
 export function PlanPicker({
   plans,
   destinationName,
+  destinationSlug,
 }: {
   plans: Plan[];
   destinationName: string;
+  destinationSlug: string;
 }) {
   const groupId = useId();
 
-  // The highlighted tier is the one most people want, so it starts selected
-  const [selectedId, setSelectedId] = useState(
-    () => (plans.find((plan) => plan.best) ?? plans[0]).id,
-  );
-
-  // Only multi-duration plans need this, but keying every plan keeps a switch
-  // back to a plan you already configured from losing your choice
-  const [daysByPlan, setDaysByPlan] = useState<Record<string, number>>(() =>
-    Object.fromEntries(
-      plans.map((plan) => [plan.id, plan.durations[0].days]),
-    ),
-  );
+  const [selectedId, setSelectedId] = useState(() => plans[0].id);
 
   const [quantity, setQuantity] = useState(1);
 
@@ -54,12 +54,8 @@ export function PlanPicker({
   const closeDevices = useCallback(() => setDeviceOpen(false), []);
 
   const selectedPlan = plans.find((plan) => plan.id === selectedId) ?? plans[0];
-  const selectedDuration =
-    selectedPlan.durations.find(
-      (duration) => duration.days === daysByPlan[selectedPlan.id],
-    ) ?? selectedPlan.durations[0];
 
-  const total = formatTotal(parsePrice(selectedDuration.price) * quantity);
+  const total = formatTotal(parsePrice(selectedPlan.price) * quantity);
 
   return (
     <>
@@ -71,84 +67,50 @@ export function PlanPicker({
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => {
             const inputId = `${groupId}-${plan.id}`;
-            const days = daysByPlan[plan.id];
-            const duration =
-              plan.durations.find((entry) => entry.days === days) ??
-              plan.durations[0];
+            const picked = plan.id === selectedId;
 
             return (
               <li
                 key={plan.id}
-                className={cn(
-                  "relative rounded-card border px-5 py-5",
-                  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-                  plan.best ? "border-ink" : "border-hairline",
-                  "hover:border-ink/40",
-                  "has-[:checked]:border-ink has-[:checked]:bg-surface-soft",
-                  "has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ink",
-                )}
+                className={cn(card, picked ? cardPicked : cardIdle)}
               >
-                {plan.best ? (
-                  <span className="mb-3 inline-block rounded-full bg-volt px-2 py-1 text-[0.625rem] font-bold uppercase tracking-[0.08em] text-ink">
-                    Best choice
-                  </span>
-                ) : null}
+                <input
+                  type="radio"
+                  id={inputId}
+                  name={groupId}
+                  value={plan.id}
+                  checked={picked}
+                  onChange={() => setSelectedId(plan.id)}
+                  className="sr-only"
+                />
 
-                <div className="flex items-start gap-3">
-                  <input
-                    type="radio"
-                    id={inputId}
-                    name={groupId}
-                    value={plan.id}
-                    checked={plan.id === selectedId}
-                    onChange={() => setSelectedId(plan.id)}
-                    className={cn(
-                      "mt-0.5 h-5 w-5 shrink-0 cursor-pointer appearance-none rounded-full",
-                      "border border-ink/25 checked:border-[6px] checked:border-ink",
-                      // The card owns the focus ring, so the input drops its own
-                      "outline-none",
-                    )}
-                  />
-
-                  {/* Stretched over the card so the whole tile is the hit area */}
+                <div className="flex items-start justify-between gap-3">
                   <label
                     htmlFor={inputId}
-                    className="cursor-pointer text-lg font-bold tracking-[-0.02em] after:absolute after:inset-0 after:content-['']"
+                    className="cursor-pointer text-xl font-bold tracking-[-0.02em] after:absolute after:inset-0 after:content-['']"
                   >
                     {plan.data}
+                    <span className="sr-only">, {plan.days} days</span>
                   </label>
+
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "mt-1 h-5 w-5 shrink-0 rounded-full border",
+                      "transition-[border-width,border-color] duration-300 ease-hover",
+                      "motion-reduce:transition-none",
+                      picked ? "border-[6px] border-ink" : "border-ink/25",
+                    )}
+                  />
                 </div>
 
-                {plan.durations.length > 1 ? (
-                  <select
-                    value={days}
-                    onChange={(event) =>
-                      setDaysByPlan((current) => ({
-                        ...current,
-                        [plan.id]: Number(event.target.value),
-                      }))
-                    }
-                    aria-label={`Duration for the ${plan.data} plan`}
-                    // Above the stretched label, or the select can't be opened
-                    className={cn(
-                      "relative z-10 mt-3 w-full cursor-pointer rounded-full",
-                      "border border-hairline bg-surface px-4 py-2",
-                      "text-sm font-medium text-ink",
-                    )}
-                  >
-                    {plan.durations.map((entry) => (
-                      <option key={entry.days} value={entry.days}>
-                        {entry.days} days
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <p className="mt-2 text-sm font-medium text-muted">
-                    {duration.days} days
-                  </p>
-                )}
+                <p aria-hidden className="mt-2 text-sm font-medium text-muted">
+                  {plan.days} days
+                </p>
 
-                <p className="mt-3 text-base font-bold">{duration.price}</p>
+                <p className="mt-auto pt-4 text-right text-lg font-bold tracking-[-0.02em]">
+                  {plan.price}
+                </p>
               </li>
             );
           })}
@@ -175,7 +137,6 @@ export function PlanPicker({
             &minus;
           </Pressable>
 
-          {/* Announced on change so the count isn't a silent visual-only update */}
           <span
             aria-live="polite"
             className="min-w-[4.75rem] text-center text-base font-bold"
@@ -196,8 +157,10 @@ export function PlanPicker({
         </div>
       </div>
 
-      {/* Checkout isn't wired up yet, so the button is live but inert */}
-      <Pressable className="mt-8 w-full rounded-full bg-volt px-8 py-4 text-base font-bold text-ink hover:bg-volt/85">
+      <Pressable
+        href={checkoutHref(destinationSlug, selectedPlan.id, quantity)}
+        className="mt-8 w-full rounded-full bg-volt px-8 py-4 text-base font-bold text-ink hover:bg-volt/85"
+      >
         Go to checkout - {total}
       </Pressable>
 

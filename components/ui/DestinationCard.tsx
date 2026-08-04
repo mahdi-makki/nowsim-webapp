@@ -14,15 +14,12 @@ export function DestinationCard({ destination }: { destination: Destination }) {
         "bg-surface-soft hover:bg-ink/[0.07] active:bg-ink/[0.07]",
       )}
     >
-      {/* Decorative — the name right next to it carries the label */}
       <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-ink/8">
         <Image
           src={destination.art}
           alt=""
           fill
           sizes="48px"
-          // SVG flags stay untouched; the optimizer rejects them unless
-          // dangerouslyAllowSVG is on
           unoptimized={destination.art.endsWith(".svg")}
           className="object-cover"
         />

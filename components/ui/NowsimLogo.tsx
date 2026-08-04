@@ -3,7 +3,6 @@ type NowsimLogoProps = {
   id?: string;
 };
 
-/** Full wordmark (`public/brand/nowsim-logo.svg`), recoloured via currentColor */
 export function NowsimLogo({
   className,
   id = "nowsim-logo-fade",

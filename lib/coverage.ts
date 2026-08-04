@@ -1,14 +1,3 @@
-/**
- * Which countries each region and global plan reaches.
- *
- * Placeholder data — plausible rather than contractual, in the same spirit as
- * the seeded prices in `destinations.ts`. Swap the lists for the real coverage
- * feed when it lands; nothing below is derived from an operator agreement.
- *
- * These lists are the source of truth for the counts a destination shows, so a
- * region's `covers` number can never drift from the list behind it.
- */
-
 const africa = [
   "Algeria",
   "Angola",
@@ -177,7 +166,6 @@ const middleEast = [
 
 const northAmerica = ["Canada", "Mexico", "United States"];
 
-/** Reachable on the global tiers, but not sold as part of a region bundle */
 const beyondTheRegions = [
   "Andorra",
   "Bhutan",
@@ -241,11 +229,6 @@ const regionCoverage: Record<string, string[]> = {
   "North America": northAmerica,
 };
 
-/**
- * Densest networks first, so slicing a global tier off the front reads like a
- * real reach list rather than an alphabetical cut. Mexico sits in two regions,
- * hence the dedupe.
- */
 const byReach = [
   ...new Set([
     ...europe,
@@ -265,10 +248,8 @@ const globalCoverage: Record<string, string[]> = {
   "Global Unlimited": byReach,
 };
 
-/** Alphabetical, since that is the only order a reader can scan */
 const collator = new Intl.Collator("en");
 
-/** The countries a region or global plan covers, sorted for display */
 export function coverageFor(name: string): string[] | undefined {
   const countries = regionCoverage[name] ?? globalCoverage[name];
 

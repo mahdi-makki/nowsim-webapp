@@ -3,14 +3,11 @@ import Image from "next/image";
 import { cn } from "@/lib/cn";
 
 type Step = {
-  /** Short label shown in the header strip that stays visible once stacked */
   label: string;
   title: string;
   body: string;
-  /** Transparent phone cutout — intrinsic dims so the box wraps the artwork */
   image: { src: string; alt: string; width: number; height: number };
   surface: string;
-  /** Header rule + number ring, tuned per surface */
   chrome: string;
   copy: string;
   heading?: string;
@@ -63,17 +60,8 @@ const steps: Step[] = [
   },
 ];
 
-/** Header strip height in rem — also the offset each card gains as it pins,
- *  so a stacked card shows exactly its strip and nothing else */
 const stackStep = 6;
 
-/** A sticky card releases when its containing block's bottom reaches
- *  `top + height`. Staircasing `top` therefore staggers the releases, and the
- *  stack comes apart from the bottom up. Instead every card shares one `top`
- *  and the staircase is *painted* with translateY: transforms don't touch the
- *  layout box, so all three hit their limit on the same pixel and exit locked
- *  together. The negative margin takes the painted offset back out of the
- *  flow, keeping the cards adjacent on the way in. */
 const stackOffset = (index: number) => ({
   transform: `translateY(${index * stackStep}rem)`,
   marginTop: index === 0 ? undefined : `-${stackStep}rem`,
@@ -85,8 +73,6 @@ export function HowItWorks() {
       aria-labelledby="how-it-works-heading"
       className="px-3 py-20 md:px-4 md:py-28"
     >
-      {/* narrower than the 7xl sections around it — the stack reads better
-          as a column than as a full-bleed slab */}
       <div className="mx-auto max-w-5xl">
         <h2
           id="how-it-works-heading"
@@ -98,8 +84,6 @@ export function HowItWorks() {
           How nowsim works
         </h2>
 
-        {/* Each card sticks a little lower than the one before, so the strips
-            pile up while the bodies scroll away underneath */}
         <ol className="mt-10 md:mt-16">
           {steps.map((step, index) => (
             <li
@@ -117,8 +101,6 @@ export function HowItWorks() {
                   <span
                     className={cn(
                       "flex h-10 shrink-0 items-center justify-center rounded-full border px-5.5",
-                      // leading-none drops the ascender slack that leaves the
-                      // digit riding high in the ring
                       "text-base font-bold italic leading-none",
                       step.chrome,
                     )}
@@ -157,11 +139,6 @@ export function HowItWorks() {
                     </p>
                   </div>
 
-                  {/* The screens are phone cutouts, so they sit *in* the card
-                      rather than filling a frame. Intrinsic sizing (not `fill`)
-                      keeps the box tight to the artwork, which is what lets the
-                      top rounding clip the screen itself. -mb cancels the
-                      grid's pb so the cutout meets the card's bottom edge. */}
                   <div className="-mb-10 flex justify-center self-end">
                     <Image
                       src={step.image.src}
@@ -178,12 +155,6 @@ export function HowItWorks() {
             </li>
           ))}
 
-          {/* A sticky card only holds while its containing block is still
-              scrolling past, and the last card has no sibling beneath it to
-              supply that runway — without this it would unpin the instant it
-              pinned. Doubles as the assembled stack's dwell. The floor keeps
-              it clear of the 12rem the bottom card is translated by, so that
-              card never paints over the section below. */}
           <li aria-hidden className="h-[45vh] min-h-56" />
         </ol>
       </div>

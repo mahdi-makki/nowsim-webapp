@@ -54,8 +54,6 @@ export function DestinationSearch({ className }: { className?: string }) {
         className={cn(
           "flex items-center gap-2 rounded-full bg-white p-1.5 pl-6",
           "shadow-xl shadow-ink/20",
-          // same press feel as Pressable, but not the `press` utility: the bar
-          // is far wider than a button, so its flat 0.94 reads as a lurch here
           "transition-transform duration-[120ms] ease-ios active:scale-[0.985]",
           "motion-reduce:transition-none motion-reduce:active:scale-100",
         )}
@@ -77,8 +75,6 @@ export function DestinationSearch({ className }: { className?: string }) {
 
         <Pressable
           type="submit"
-          // the whole bar already scales on press — stacking the button's own
-          // scale on top of it double-shrinks the icon
           press={false}
           className={cn(
             "h-12 w-12 shrink-0 rounded-full bg-ink text-volt",

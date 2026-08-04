@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 import { AllDestinations } from "@/components/sections/destinations/AllDestinations";
-import { ArrowLeft } from "@/components/ui/ArrowLeft";
-import { Pressable } from "@/components/ui/Pressable";
-import { cn } from "@/lib/cn";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import type { DestinationFilter } from "@/lib/destinations";
+import { isDestinationFilter } from "@/lib/destinations";
 
 export const metadata: Metadata = {
   title: "All destinations | nowsim",
@@ -16,33 +16,24 @@ export default async function AllDestinationsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Read on the server so the filtered list ships in the HTML — useSearchParams
-  // would bail the whole listing out to client-side rendering
-  const q = (await searchParams).q;
+  const { q, kind } = await searchParams;
   const initialQuery = Array.isArray(q) ? (q[0] ?? "") : (q ?? "");
 
-  // The nav pill sits at the top on every page but home, so small screens need
-  // the extra headroom
+  const rawKind = Array.isArray(kind) ? kind[0] : kind;
+  const initialKind: DestinationFilter = isDestinationFilter(rawKind)
+    ? rawKind
+    : "all";
+
   return (
     <section className="px-3 pb-20 pt-28 md:px-4 md:py-28">
       <div className="mx-auto max-w-7xl">
-        <Pressable
-          href="/"
-          className={cn(
-            "group mb-10 gap-2 rounded-full border border-hairline px-6 py-3.5",
-            "text-base font-medium text-ink",
-            "hover:border-ink/25 hover:bg-surface-soft",
-            "active:border-ink/25 active:bg-surface-soft",
-          )}
-        >
-          <ArrowLeft
-            className={cn(
-              "h-4 w-4 transition-[translate] duration-300 ease-hover",
-              "group-hover:-translate-x-0.5 motion-reduce:transition-none",
-            )}
-          />
-          Back to home
-        </Pressable>
+        <Breadcrumb
+          className="mb-10"
+          items={[
+            { label: "eSIM card for travel", href: "/" },
+            { label: "All destinations" },
+          ]}
+        />
 
         <h1 className="max-w-[14ch] text-h1 font-extrabold uppercase tracking-[-0.045em]">
           All destinations
@@ -53,7 +44,7 @@ export default async function AllDestinationsPage({
           instant activation, and no roaming bill wherever you go.
         </p>
 
-        <AllDestinations initialQuery={initialQuery} />
+        <AllDestinations initialQuery={initialQuery} initialKind={initialKind} />
       </div>
     </section>
   );

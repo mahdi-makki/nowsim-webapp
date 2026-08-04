@@ -1,12 +1,3 @@
-/**
- * eSIM-capable hardware, grouped the way the compatibility sheet reads it:
- * one tab per platform, one collapsible group per form factor.
- *
- * Anything absent from this list is treated as "not eSIM capable" by the
- * dialog copy, so keep additions conservative.
- */
-
-/** The `all` tab is synthetic — nothing else should have to special-case it */
 export const ALL_DEVICES = "all";
 
 export type DeviceGroup = {
@@ -192,11 +183,6 @@ const platforms: DevicePlatform[] = [
   },
 ];
 
-/**
- * Every platform folded into one set of form-factor groups, so a search can
- * run without knowing which brand tab the device lives under. Model names
- * carry their own brand, so the merge stays readable.
- */
 const allGroups: DeviceGroup[] = platforms.reduce<DeviceGroup[]>(
   (groups, platform) => {
     for (const group of platform.groups) {
@@ -211,7 +197,6 @@ const allGroups: DeviceGroup[] = platforms.reduce<DeviceGroup[]>(
   [],
 );
 
-/** What the dialog renders as chips, widest net first */
 export const deviceTabs: DevicePlatform[] = [
   { id: ALL_DEVICES, label: "All", groups: allGroups },
   ...platforms,

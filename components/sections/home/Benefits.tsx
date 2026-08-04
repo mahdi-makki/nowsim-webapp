@@ -92,7 +92,6 @@ function PersonIcon({ className }: { className?: string }) {
   );
 }
 
-/** Split into two rows so the card widths mirror the 5/7 + thirds rhythm. */
 const primary: Benefit[] = [
   {
     title: "Local number",
@@ -178,7 +177,6 @@ export function Benefits() {
         </h2>
 
         <div className="mt-10 flex flex-col gap-4 md:mt-16 md:gap-5">
-          {/* Row 1 — two cards, 5/7 split */}
           <ul className="grid gap-4 md:grid-cols-12 md:gap-5">
             {primary.map((benefit, index) => (
               <Card
@@ -189,7 +187,6 @@ export function Benefits() {
             ))}
           </ul>
 
-          {/* Row 2 — three equal cards */}
           <ul className="grid gap-4 md:grid-cols-3 md:gap-5">
             {secondary.map((benefit) => (
               <Card key={benefit.title} benefit={benefit} />

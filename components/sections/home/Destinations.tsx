@@ -14,7 +14,6 @@ const tabs: { id: DestinationKind; label: string; badge?: string }[] = [
   { id: "global", label: "Global", badge: "New" },
 ];
 
-/** The home section teases a slice; /destinations carries the full list */
 const preview: Record<DestinationKind, number> = {
   country: 9,
   region: 6,
@@ -25,8 +24,6 @@ export function Destinations() {
   const [active, setActive] = useState<DestinationKind>("country");
   const tablistRef = useRef<HTMLDivElement>(null);
 
-  // Roving focus across the tablist. Pressable doesn't forward refs, so the
-  // tabs get looked up off the container instead of held individually.
   const onTablistKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
     if (!keys.includes(event.key)) return;

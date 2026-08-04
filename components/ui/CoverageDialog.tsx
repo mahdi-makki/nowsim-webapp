@@ -82,22 +82,17 @@ export function CoverageDialog({
             "hover:bg-white/[0.14] focus:bg-white/[0.14]",
             "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-volt",
             "motion-reduce:transition-none",
-            // Safari paints its own clear button, which fights the styling
             "[&::-webkit-search-cancel-button]:appearance-none",
           )}
         />
       </div>
 
-      {/* The only scrolling region — the header and search stay put */}
       <div
         className={cn(
           "-mx-2 mt-4 min-h-0 flex-1 px-2",
-          // `overscroll-contain` keeps a flick at the end of the list from
-          // handing the scroll back to the page behind the dialog
           "scroll-subtle overflow-y-auto overscroll-contain",
         )}
       >
-        {/* aria-live so a screen reader hears the count change while typing */}
         <p aria-live="polite" className="sr-only">
           {results.length} countries
         </p>
@@ -117,8 +112,6 @@ export function CoverageDialog({
                   key={country}
                   className="flex items-center gap-3 py-2.5 text-base font-bold text-white"
                 >
-                  {/* Only the countries we sell on their own have flag art, so
-                      the rest wear their initial in the same circle */}
                   <span
                     aria-hidden
                     className={cn(

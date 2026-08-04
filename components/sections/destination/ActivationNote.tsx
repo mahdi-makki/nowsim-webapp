@@ -33,9 +33,6 @@ function deadlineFromToday() {
 }
 
 export function ActivationNote() {
-  // The page is prerendered, so a build-time date would go stale on the shelf
-  // and a render-time one would mismatch on hydration. This resolves to false
-  // in the server HTML and true once the client takes over.
   const onClient = useSyncExternalStore(
     subscribe,
     () => true,

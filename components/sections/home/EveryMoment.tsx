@@ -41,8 +41,6 @@ export function EveryMoment() {
             <p
               className={cn(
                 "max-w-[32ch] font-semibold tracking-[-0.015em]",
-                // a step above --text-h3 without reaching --text-h2, which
-                // would read as a heading next to the section title
                 "text-[clamp(1.4rem,1.2rem+0.95vw,1.875rem)]/[1.2]",
               )}
             >

@@ -4,12 +4,10 @@ import { useMemo, useRef, useState } from "react";
 
 import { DestinationCard } from "@/components/ui/DestinationCard";
 import { Pressable } from "@/components/ui/Pressable";
-import { destinations, type DestinationKind } from "@/lib/destinations";
+import { destinations, type DestinationFilter } from "@/lib/destinations";
 import { cn } from "@/lib/cn";
 
-type Filter = "all" | DestinationKind;
-
-const tabs: { id: Filter; label: string; badge?: string }[] = [
+const tabs: { id: DestinationFilter; label: string; badge?: string }[] = [
   { id: "all", label: "All" },
   { id: "country", label: "Countries" },
   { id: "region", label: "Regions" },
@@ -36,22 +34,20 @@ function SearchIcon({ className }: { className?: string }) {
 
 export function AllDestinations({
   initialQuery = "",
+  initialKind = "all",
 }: {
-  /** Seeded from ?q= by the page, so hero searches land pre-filtered */
   initialQuery?: string;
+  initialKind?: DestinationFilter;
 }) {
-  const [active, setActive] = useState<Filter>("all");
+  const [active, setActive] = useState<DestinationFilter>(initialKind);
   const [query, setQuery] = useState(initialQuery);
-  const [lastSeed, setLastSeed] = useState(initialQuery);
+  const [seed, setSeed] = useState({ query: initialQuery, kind: initialKind });
   const tablistRef = useRef<HTMLDivElement>(null);
 
-  // A second hero search while this component is still mounted arrives as a
-  // new prop, and has to overwrite whatever is in the box. All is the widest
-  // tab, so a hero search always lands somewhere with results.
-  if (initialQuery !== lastSeed) {
-    setLastSeed(initialQuery);
+  if (initialQuery !== seed.query || initialKind !== seed.kind) {
+    setSeed({ query: initialQuery, kind: initialKind });
     setQuery(initialQuery);
-    setActive("all");
+    setActive(initialKind);
   }
 
   const results = useMemo(() => {
@@ -64,7 +60,6 @@ export function AllDestinations({
     });
   }, [active, query]);
 
-  // Roving focus across the tablist, same handling as the home section
   const onTablistKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
     if (!keys.includes(event.key)) return;
@@ -89,8 +84,6 @@ export function AllDestinations({
 
   return (
     <>
-      {/* Search reads first so the desktop row runs in DOM order; column-reverse
-          keeps the tabs on top once the two stack */}
       <div className="mt-10 flex flex-col-reverse gap-4 md:mt-12 md:flex-row md:items-stretch md:gap-5">
         <div className="relative min-w-0 flex-1">
           <SearchIcon className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/40" />
@@ -102,14 +95,10 @@ export function AllDestinations({
             placeholder="Search for a destination"
             aria-label="Search for a destination"
             className={cn(
-              // py-4 sizes it on its own while stacked; on the desktop row the
-              // stretched wrapper hands it the tablist's height instead
               "w-full rounded-full border border-hairline bg-surface py-4 pl-13 pr-5",
               "md:h-full md:py-0",
               "text-base font-medium text-ink placeholder:text-ink/40",
               "transition-colors duration-300 ease-hover",
-              // the global focus ring would sit outside the pill, so the border
-              // itself carries focus — a denser hairline, faded in
               "focus-visible:border-ink/40 focus-visible:outline-none",
               "motion-reduce:transition-none",
             )}
@@ -164,7 +153,6 @@ export function AllDestinations({
         aria-labelledby={`all-destinations-tab-${active}`}
         className="mt-8 md:mt-10"
       >
-        {/* aria-live so a screen reader hears the count change while typing */}
         <p aria-live="polite" className="sr-only">
           {results.length} destinations
         </p>

@@ -59,7 +59,6 @@ const socials: SocialLink[] = [
   { label: "nowsim on LinkedIn", href: "#", Icon: FaLinkedinIn },
 ];
 
-/** Both badges are 120x40 artboards, so one intrinsic size covers the pair */
 const badgeSize = { width: 120, height: 40 };
 
 const storeBadges = [
@@ -75,9 +74,8 @@ const storeBadges = [
   },
 ];
 
-/** Clears the fixed nav pill (≈3.5rem tall) sitting at the bottom of the viewport */
-const navClearance =
-  "pb-[calc(4.5rem+max(1.75rem,env(safe-area-inset-bottom)+0.75rem))]";
+const bottomPadding =
+  "pb-[max(3.5rem,calc(env(safe-area-inset-bottom)+2.5rem))]";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -88,12 +86,10 @@ export function Footer() {
         className={cn(
           "overflow-hidden rounded-t-screen bg-ink text-white md:rounded-t-screen-lg",
           "px-6 pt-14 md:px-12 md:pt-20",
-          navClearance,
+          bottomPadding,
         )}
       >
         <div className="mx-auto max-w-7xl">
-          {/* App CTA — split from the columns below by the same hairline the
-              fine print uses */}
           <div
             className={cn(
               "flex flex-col gap-8 border-b border-white/10 pb-12",
@@ -114,16 +110,12 @@ export function Footer() {
             <ul className="flex flex-wrap items-center gap-3 md:shrink-0">
               {storeBadges.map((badge) => (
                 <li key={badge.label}>
-                  {/* The badge art carries its own black plate and border, so
-                      the link stays bare and only handles the press feel */}
                   <Pressable href={badge.href} className="rounded-lg">
                     <Image
                       src={badge.src}
                       alt={badge.label}
                       width={badgeSize.width}
                       height={badgeSize.height}
-                      // the optimiser leaves SVG alone unless it is told to
-                      // rasterise, which would only cost sharpness here
                       unoptimized
                       className="h-[3.25rem] w-auto"
                     />
@@ -133,7 +125,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Brand + link columns */}
           <div className="flex flex-col gap-12 pt-14 pb-14 md:flex-row md:items-start md:justify-between md:gap-16 md:pt-16 md:pb-16">
             <div>
               <NowsimLogo
@@ -192,7 +183,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Fine print */}
           <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-white/45 md:flex-row md:items-center md:justify-between">
             <p>&copy; {year} nowsim. All rights reserved.</p>
 

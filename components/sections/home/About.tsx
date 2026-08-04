@@ -6,7 +6,6 @@ export function About() {
   return (
     <section className="px-3 py-16 md:px-4 md:py-24">
       <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-[minmax(0,4.5fr)_minmax(0,7.5fr)] md:gap-6">
-        {/* Column 1: copy block above, quote card below */}
         <div className="flex flex-col gap-6">
           <div>
             <h2 className="text-h1 font-extrabold uppercase tracking-[-0.045em]">
@@ -31,9 +30,7 @@ export function About() {
           </div>
         </div>
 
-        {/* Column 2: wide image on top, portrait + stat cluster below */}
         <div className="flex flex-col gap-5 md:gap-6">
-          {/* Row 1: wide image */}
           <div className="relative aspect-[16/6] overflow-hidden rounded-full bg-surface-soft">
             <Image
               src="/images/home/fisheye.jpg"
@@ -45,7 +42,6 @@ export function About() {
             />
           </div>
 
-          {/* Row 2: portrait image + stat cluster */}
           <div className="grid flex-1 gap-5 md:grid-cols-[minmax(0,3fr)_minmax(0,7fr)] md:gap-6">
             <div className="relative overflow-hidden rounded-full bg-surface-soft">
               <Image
@@ -59,7 +55,6 @@ export function About() {
             </div>
 
             <div className="flex flex-col gap-5 md:gap-6">
-              {/* Row 2a: emblem badge + rating card */}
               <div className="flex flex-1 gap-5 md:gap-6">
                 <div className="relative aspect-square shrink-0 rounded-full bg-volt text-ink">
                   <NowsimEmblem className="absolute inset-[27%]" />
@@ -74,7 +69,6 @@ export function About() {
                 </div>
               </div>
 
-              {/* Row 2b: usage stat card */}
               <div className="flex flex-1 flex-col items-center justify-center rounded-card bg-aqua px-5 py-6 text-center text-ink">
                 <p className="text-[clamp(1.75rem,5.4vw,3.75rem)] font-extrabold leading-none tracking-[-0.05em] tabular-nums">
                   1,657,382,391

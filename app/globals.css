@@ -52,21 +52,17 @@
 
   --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* gentle both ends — for hover / state fades, where --ease-ios front-loads
-     too hard and reads as a snap */
   --ease-hover: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* not a Tailwind namespace — plain token for the `press` utility below.
-     Class-side hovers use `duration-300` to match. */
   --duration-hover: 300ms;
+
+  --header-height: 4.5rem;
 }
 
 @utility press {
   transition-property:
     color, background-color, border-color, box-shadow, opacity, filter,
     text-decoration-color, transform;
-  /* everything eases in slowly; only the press scale stays quick, so a tap
-     still feels immediate while hovers never snap */
   transition-duration: var(--duration-hover), var(--duration-hover),
     var(--duration-hover), var(--duration-hover), var(--duration-hover),
     var(--duration-hover), var(--duration-hover), 120ms;
@@ -86,15 +82,10 @@
   }
 }
 
-/* Opt-in scrollbar for dark surfaces. The page rail below is tuned for the
-   light background and reads as a bright stripe on an ink panel — this one is
-   a hairline thumb on no track at all. */
 @utility scroll-subtle {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, #ffffff 22%, transparent) transparent;
 
-  /* Safari has no scrollbar-color; the base rule's webkit fallback would
-     otherwise paint its light track and 2px border here */
   @supports not (scrollbar-color: auto) {
     &::-webkit-scrollbar {
       width: 6px;
@@ -120,13 +111,11 @@
   html {
     overscroll-behavior-y: none;
     -webkit-text-size-adjust: 100%;
-    /* track sits just under the page tone so the gutter reads as a rail */
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--color-ink) 22%, transparent)
       color-mix(in srgb, var(--color-ink) 8%, #ffffff);
   }
 
-  /* Safari has no scrollbar-color; same look via the webkit pseudos */
   @supports not (scrollbar-color: auto) {
     ::-webkit-scrollbar {
       width: 8px;
