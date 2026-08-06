@@ -1,4 +1,5 @@
-import { ChevronRight } from "@/components/ui/ChevronRight";
+import { MdChevronRight } from "react-icons/md";
+
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
 
@@ -23,7 +24,10 @@ export function Breadcrumb({
           return (
             <li key={item.label} className="flex items-center">
               {index > 0 ? (
-                <ChevronRight className="mx-0.5 h-4 w-4 shrink-0 text-ink/30" />
+                <MdChevronRight
+                  aria-hidden
+                  className="mx-0.5 h-4 w-4 shrink-0 text-ink/30"
+                />
               ) : null}
 
               {last || !item.href ? (

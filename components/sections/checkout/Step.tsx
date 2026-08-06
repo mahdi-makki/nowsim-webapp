@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { FaCheck } from "react-icons/fa6";
+import { MdCheck } from "react-icons/md";
 
 import { cn } from "@/lib/cn";
 
@@ -26,7 +26,7 @@ export function Step({
             done ? "bg-volt text-ink" : "bg-ink text-white",
           )}
         >
-          {done ? <FaCheck className="h-3.5 w-3.5" /> : index}
+          {done ? <MdCheck className="h-3.5 w-3.5" /> : index}
         </span>
 
         <h2 className="text-h3 font-bold">

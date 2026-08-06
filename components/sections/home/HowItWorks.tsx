@@ -88,7 +88,10 @@ export function HowItWorks() {
           {steps.map((step, index) => (
             <li
               key={step.title}
-              className="sticky top-4 mb-4 md:mb-5"
+              className={cn(
+                "sticky mb-4 md:mb-5",
+                "top-[calc(env(safe-area-inset-top)+var(--header-height)+3rem)]",
+              )}
               style={stackOffset(index)}
             >
               <article

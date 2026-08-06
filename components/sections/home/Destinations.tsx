@@ -2,10 +2,11 @@
 
 import { useRef, useState } from "react";
 
-import { ChevronRight } from "@/components/ui/ChevronRight";
-import { DestinationCard } from "@/components/ui/DestinationCard";
+import { MdChevronRight } from "react-icons/md";
+
+import { DestinationCard } from "@/components/common/DestinationCard";
 import { Pressable } from "@/components/ui/Pressable";
-import { destinationsByKind, type DestinationKind } from "@/lib/destinations";
+import type { DestinationKind, DestinationSummary } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const tabs: { id: DestinationKind; label: string; badge?: string }[] = [
@@ -14,13 +15,11 @@ const tabs: { id: DestinationKind; label: string; badge?: string }[] = [
   { id: "global", label: "Global", badge: "New" },
 ];
 
-const preview: Record<DestinationKind, number> = {
-  country: 9,
-  region: 6,
-  global: 3,
-};
-
-export function Destinations() {
+export function Destinations({
+  previews,
+}: {
+  previews: Record<DestinationKind, DestinationSummary[]>;
+}) {
   const [active, setActive] = useState<DestinationKind>("country");
   const tablistRef = useRef<HTMLDivElement>(null);
 
@@ -119,13 +118,11 @@ export function Destinations() {
           className="mt-10 md:mt-14"
         >
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
-            {destinationsByKind(active)
-              .slice(0, preview[active])
-              .map((destination) => (
-                <li key={destination.name}>
-                  <DestinationCard destination={destination} />
-                </li>
-              ))}
+            {previews[active].map((destination) => (
+              <li key={`${destination.kind}/${destination.slug}`}>
+                <DestinationCard destination={destination} />
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -138,7 +135,7 @@ export function Destinations() {
             )}
           >
             Browse all destinations
-            <ChevronRight className="h-4 w-4" />
+            <MdChevronRight aria-hidden className="h-4 w-4" />
           </Pressable>
         </div>
       </div>

@@ -6,9 +6,9 @@ import {
   FaCcApplePay,
   FaCcMastercard,
   FaCcVisa,
-  FaLock,
   FaStripe,
 } from "react-icons/fa6";
+import { MdLock } from "react-icons/md";
 
 import { Step } from "@/components/sections/checkout/Step";
 import { Pressable } from "@/components/ui/Pressable";
@@ -39,7 +39,7 @@ export function PaymentStep({
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-card border border-hairline bg-surface-soft p-4">
         <p className="flex items-center gap-2.5 text-sm font-bold">
-          <FaLock aria-hidden className="h-4 w-4 text-[#12b76a]" />
+          <MdLock aria-hidden className="h-4 w-4 text-success" />
           Secure payment powered by
           <FaStripe aria-hidden className="h-6 w-auto" />
           <span className="sr-only">Stripe</span>

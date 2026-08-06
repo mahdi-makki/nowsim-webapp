@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { AllDestinations } from "@/components/sections/destinations/AllDestinations";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import type { DestinationFilter } from "@/lib/destinations";
-import { isDestinationFilter } from "@/lib/destinations";
+import { getDestinationSummaries } from "@/lib/data/catalog";
+import { isDestinationFilter, type DestinationFilter } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "All destinations | nowsim",
@@ -16,7 +16,11 @@ export default async function AllDestinationsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { q, kind } = await searchParams;
+  const [{ q, kind }, destinations] = await Promise.all([
+    searchParams,
+    getDestinationSummaries(),
+  ]);
+
   const initialQuery = Array.isArray(q) ? (q[0] ?? "") : (q ?? "");
 
   const rawKind = Array.isArray(kind) ? kind[0] : kind;
@@ -30,7 +34,7 @@ export default async function AllDestinationsPage({
         <Breadcrumb
           className="mb-10"
           items={[
-            { label: "eSIM card for travel", href: "/" },
+            { label: "Home", href: "/" },
             { label: "All destinations" },
           ]}
         />
@@ -44,7 +48,11 @@ export default async function AllDestinationsPage({
           instant activation, and no roaming bill wherever you go.
         </p>
 
-        <AllDestinations initialQuery={initialQuery} initialKind={initialKind} />
+        <AllDestinations
+          destinations={destinations}
+          initialQuery={initialQuery}
+          initialKind={initialKind}
+        />
       </div>
     </section>
   );

@@ -2,19 +2,27 @@ import { Hero } from "@/components/sections/home/Hero";
 import { Destinations } from "@/components/sections/home/Destinations";
 import { About } from "@/components/sections/home/About";
 import { HowItWorks } from "@/components/sections/home/HowItWorks";
-import { Benefits } from "@/components/sections/home/Benefits";
-import { EveryMoment } from "@/components/sections/home/EveryMoment";
-import { Faq } from "@/components/sections/Faq";
+import { Faq } from "@/components/common/Faq";
+import { getFeaturedSummaries } from "@/lib/data/catalog";
+import type { DestinationKind, DestinationSummary } from "@/lib/types";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [country, region, global] = await Promise.all(
+    (["country", "region", "global"] as const).map(getFeaturedSummaries),
+  );
+
+  const previews: Record<DestinationKind, DestinationSummary[]> = {
+    country,
+    region,
+    global,
+  };
+
   return (
     <>
       <Hero />
-      <Destinations />
+      <Destinations previews={previews} />
       <About />
       <HowItWorks />
-      <Benefits />
-      <EveryMoment />
       <Faq />
     </>
   );

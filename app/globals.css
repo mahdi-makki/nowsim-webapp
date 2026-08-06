@@ -15,6 +15,9 @@
   --color-muted: color-mix(in srgb, var(--color-ink) 62%, transparent);
   --color-muted-invert: color-mix(in srgb, #ffffff 72%, transparent);
 
+  --color-success: #12b76a;
+  --color-trustpilot: #00b67a;
+
   --font-sans:
     var(--font-satoshi), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     sans-serif;

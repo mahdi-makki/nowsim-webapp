@@ -1,107 +1,30 @@
+import type { IconType } from "react-icons";
+import {
+  MdCall,
+  MdCheckCircleOutline,
+  MdClose,
+  MdPerson,
+  MdSignalCellularAlt,
+} from "react-icons/md";
+
 import { cn } from "@/lib/cn";
 
 type Benefit = {
   title: string;
   body: string;
-  icon: (props: { className?: string }) => React.ReactElement;
+  icon: IconType;
 };
-
-function PhoneIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      focusable="false"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M6.5 3.5h2l1.5 4-1.8 1.2a11 11 0 0 0 5.1 5.1l1.2-1.8 4 1.5v2a2.5 2.5 0 0 1-2.7 2.5A15.5 15.5 0 0 1 4 6.2 2.5 2.5 0 0 1 6.5 3.5Z" />
-    </svg>
-  );
-}
-
-function SignalIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      focusable="false"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      className={className}
-    >
-      <path d="M5 18v-3M10 18v-6M15 18v-9M20 18V6" />
-    </svg>
-  );
-}
-
-function CheckCircleIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      focusable="false"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="m8.5 12 2.5 2.5 4.5-5" />
-    </svg>
-  );
-}
-
-function CrossIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      focusable="false"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      className={className}
-    >
-      <path d="m7 7 10 10M17 7 7 17" />
-    </svg>
-  );
-}
-
-function PersonIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      focusable="false"
-      fill="currentColor"
-      className={className}
-    >
-      <circle cx="12" cy="8" r="3.6" />
-      <path d="M4.5 19.5a7.5 7.5 0 0 1 15 0 .9.9 0 0 1-.9.9H5.4a.9.9 0 0 1-.9-.9Z" />
-    </svg>
-  );
-}
 
 const primary: Benefit[] = [
   {
     title: "Local number",
     body: "A real local phone number for everyday use",
-    icon: PhoneIcon,
+    icon: MdCall,
   },
   {
     title: "Unlimited",
     body: "Unlimited calling, SMS, and text included",
-    icon: SignalIcon,
+    icon: MdSignalCellularAlt,
   },
 ];
 
@@ -109,17 +32,17 @@ const secondary: Benefit[] = [
   {
     title: "No roaming fees",
     body: "International roaming included, so you stay connected abroad",
-    icon: CheckCircleIcon,
+    icon: MdCheckCircleOutline,
   },
   {
     title: "No network drops",
     body: "If one network drops, we connect you to another network",
-    icon: CrossIcon,
+    icon: MdClose,
   },
   {
     title: "Simple plan",
     body: "Data, calling, and SMS in one clear monthly plan without surprises",
-    icon: PersonIcon,
+    icon: MdPerson,
   },
 ];
 

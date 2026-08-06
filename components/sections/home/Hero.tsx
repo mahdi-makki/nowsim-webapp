@@ -1,12 +1,12 @@
-import { DestinationSearch } from "@/components/ui/DestinationSearch";
-import { TrustBar } from "@/components/ui/TrustBar";
+import { DestinationSearch } from "@/components/sections/home/DestinationSearch";
+import { TrustBar } from "@/components/common/TrustBar";
 import { cn } from "@/lib/cn";
 
 export function Hero() {
   return (
     <section
       className={cn(
-        "relative z-[55]",
+        "relative",
         "mt-[calc(var(--header-height)+env(safe-area-inset-top))]",
         "h-[calc(100dvh-var(--header-height)-env(safe-area-inset-top))]",
         "px-3 pb-3 md:px-4 md:pb-4",
@@ -31,7 +31,7 @@ export function Hero() {
             "absolute inset-0 flex flex-col items-center justify-center px-6 text-center",
           )}
         >
-          <h1 className="max-w-4xl text-display font-black tracking-[0.02em] text-white">
+          <h1 className="max-w-4xl text-display font-black tracking-[-0.01em] text-white">
             STAY <span className="text-volt">CONNECTED</span>{" "}
             {"WHENEVER’S NEXT"}
           </h1>

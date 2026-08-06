@@ -2,23 +2,10 @@
 
 import { useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { MdClose } from "react-icons/md";
 
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
-
-function CloseIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden focusable="false" className="h-5 w-5">
-      <path
-        d="m6 6 12 12M18 6 6 18"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 const focusable = cn(
   "a[href], button:not([disabled]), input:not([disabled]),",
@@ -143,7 +130,7 @@ export function Dialog({
               "hover:bg-white/20 hover:text-white active:bg-white/20",
             )}
           >
-            <CloseIcon />
+            <MdClose aria-hidden className="h-5 w-5" />
             <span className="sr-only">Close</span>
           </Pressable>
 

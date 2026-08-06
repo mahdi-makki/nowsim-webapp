@@ -1,6 +1,19 @@
 import Image from "next/image";
+import { cacheLife } from "next/cache";
 import type { IconType } from "react-icons";
-import { FaInstagram, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
+import {
+  FaCcAmex,
+  FaCcApplePay,
+  FaCcDinersClub,
+  FaCcDiscover,
+  FaCcJcb,
+  FaCcMastercard,
+  FaCcPaypal,
+  FaCcVisa,
+  FaInstagram,
+  FaLinkedinIn,
+  FaXTwitter,
+} from "react-icons/fa6";
 
 import { NowsimLogo } from "@/components/ui/NowsimLogo";
 import { Pressable } from "@/components/ui/Pressable";
@@ -41,10 +54,20 @@ const groups: LinkGroup[] = [
   },
 ];
 
-const legal = [
-  { label: "Privacy", href: "#" },
-  { label: "Terms", href: "#" },
-  { label: "Cookies", href: "#" },
+type PaymentMethod = {
+  label: string;
+  Icon: IconType;
+};
+
+const payments: PaymentMethod[] = [
+  { label: "Visa", Icon: FaCcVisa },
+  { label: "Mastercard", Icon: FaCcMastercard },
+  { label: "American Express", Icon: FaCcAmex },
+  { label: "Discover", Icon: FaCcDiscover },
+  { label: "Diners Club", Icon: FaCcDinersClub },
+  { label: "JCB", Icon: FaCcJcb },
+  { label: "PayPal", Icon: FaCcPaypal },
+  { label: "Apple Pay", Icon: FaCcApplePay },
 ];
 
 type SocialLink = {
@@ -65,20 +88,33 @@ const storeBadges = [
   {
     label: "Download on the App Store",
     href: "#",
-    src: "/buttons/download-appstore.svg",
+    src: "/buttons/app-store.svg",
   },
   {
     label: "Get it on Google Play",
     href: "#",
-    src: "/buttons/download-googleplay.svg",
+    src: "/buttons/google-play.svg",
   },
 ];
 
 const bottomPadding =
   "pb-[max(3.5rem,calc(env(safe-area-inset-bottom)+2.5rem))]";
 
-export function Footer() {
-  const year = new Date().getFullYear();
+/**
+ * Under `cacheComponents`, reading the clock during a prerender is an error
+ * unless it happens inside a cache boundary. A copyright year only changes once
+ * a year, so caching it for a day is free.
+ */
+async function currentYear(): Promise<number> {
+  "use cache";
+
+  cacheLife("days");
+
+  return new Date().getFullYear();
+}
+
+export async function Footer() {
+  const year = await currentYear();
 
   return (
     <footer>
@@ -97,9 +133,7 @@ export function Footer() {
             )}
           >
             <div>
-              <h2 className="text-h3">
-                Download nowsim for your next journey
-              </h2>
+              <h2 className="text-h3">Download nowsim for your next journey</h2>
 
               <p className="mt-3 max-w-[52ch] text-base text-muted-invert">
                 Buy a plan, install the eSIM, and land connected. Free on iOS
@@ -169,7 +203,7 @@ export function Footer() {
                         <Pressable
                           href={link.href}
                           className={cn(
-                            "-mx-1 w-full origin-left justify-start px-1 py-1.5",
+                            "-mx-1 px-1 py-1.5",
                             "text-base font-medium text-muted-invert hover:text-volt",
                           )}
                         >
@@ -186,15 +220,14 @@ export function Footer() {
           <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-white/45 md:flex-row md:items-center md:justify-between">
             <p>&copy; {year} nowsim. All rights reserved.</p>
 
-            <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-              {legal.map((item) => (
-                <li key={item.label}>
-                  <Pressable
-                    href={item.href}
-                    className="py-1 hover:text-white"
-                  >
-                    {item.label}
-                  </Pressable>
+            <ul
+              aria-label="Accepted payment methods"
+              className="flex flex-wrap items-center gap-x-4 gap-y-3 text-white/70"
+            >
+              {payments.map((payment) => (
+                <li key={payment.label}>
+                  <payment.Icon aria-hidden className="h-7 w-auto" />
+                  <span className="sr-only">{payment.label}</span>
                 </li>
               ))}
             </ul>
