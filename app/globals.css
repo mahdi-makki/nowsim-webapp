@@ -114,6 +114,8 @@
   html {
     overscroll-behavior-y: none;
     -webkit-text-size-adjust: 100%;
+    /* The header is fixed, so a hash target would otherwise land underneath it. */
+    scroll-padding-top: calc(var(--header-height) + env(safe-area-inset-top));
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--color-ink) 22%, transparent)
       color-mix(in srgb, var(--color-ink) 8%, #ffffff);

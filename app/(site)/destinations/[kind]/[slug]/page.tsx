@@ -89,7 +89,7 @@ export default async function DestinationPage({ params }: PageProps) {
                   "text-[clamp(2rem,1.4rem+2.6vw,3rem)] leading-[1.03]",
                 )}
               >
-                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-ink/8">
+                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-hairline bg-ink/8">
                   <Image
                     src={art}
                     alt=""

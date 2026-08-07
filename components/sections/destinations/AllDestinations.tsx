@@ -70,10 +70,30 @@ export function AllDestinations({
   return (
     <>
       <div className="mt-10 flex flex-col-reverse gap-4 md:mt-12 md:flex-row md:items-stretch md:gap-5">
-        <div className="relative min-w-0 flex-1">
+        <div className="group relative min-w-0 flex-1">
           <MdSearch
             aria-hidden
-            className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-ink/40"
+            className={cn(
+              "pointer-events-none absolute left-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2",
+              "text-ink/40 transition-colors duration-300 ease-hover",
+              "group-focus-within:text-ink",
+              "motion-reduce:transition-none",
+            )}
+          />
+
+          {/*
+            A halo rather than a ring on the input itself: it sits behind, so it
+            can grow past the border without nudging the field or the tabs it
+            shares a row with.
+          */}
+          <span
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute -inset-1 rounded-full bg-ink/15 blur-md",
+              "scale-95 opacity-0 transition-[opacity,transform] duration-500 ease-hover",
+              "group-focus-within:scale-100 group-focus-within:opacity-100",
+              "motion-reduce:transition-none motion-reduce:scale-100",
+            )}
           />
 
           <input
@@ -83,11 +103,13 @@ export function AllDestinations({
             placeholder="Search for a destination"
             aria-label="Search for a destination"
             className={cn(
-              "w-full rounded-full border border-hairline bg-surface py-4 pl-13 pr-5",
+              "relative w-full rounded-full border border-hairline bg-surface py-4 pl-13 pr-5",
               "md:h-full md:py-0",
               "text-base font-medium text-ink placeholder:text-ink/40",
-              "transition-colors duration-300 ease-hover",
-              "focus-visible:border-ink/40 focus-visible:outline-none",
+              "transition-[border-color,box-shadow] duration-300 ease-hover",
+              "hover:border-ink/25",
+              "focus-visible:border-ink/45 focus-visible:outline-none",
+              "focus-visible:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-ink)_10%,transparent)]",
               "motion-reduce:transition-none",
             )}
           />

@@ -12,11 +12,16 @@ import { MenuPanel, MenuToggle } from "@/components/layout/MobileMenu";
 
 const HOME = "/";
 
+/**
+ * Every link points at a route that exists. `/destinations` carries the filter
+ * in the query string, which is where `/destinations/<kind>` redirects to
+ * anyway — linking straight to the query form skips that hop.
+ */
 const navLinks = [
-  { label: "Personal", href: "#" },
-  { label: "Business", href: "#" },
-  { label: "Use Cases", href: "#" },
-  { label: "About", href: "#" },
+  { label: "Countries", href: "/destinations?kind=country" },
+  { label: "Regions", href: "/destinations?kind=region" },
+  { label: "Global", href: "/destinations?kind=global" },
+  { label: "How it works", href: "/#how-it-works" },
 ];
 
 function useScrolled(pathname: string) {

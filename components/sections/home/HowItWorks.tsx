@@ -70,6 +70,7 @@ const stackOffset = (index: number) => ({
 export function HowItWorks() {
   return (
     <section
+      id="how-it-works"
       aria-labelledby="how-it-works-heading"
       className="px-3 py-20 md:px-4 md:py-28"
     >

@@ -27,7 +27,7 @@ export function DestinationSearch({ className }: { className?: string }) {
     <form
       role="search"
       onSubmit={onSubmit}
-      className={cn("w-full max-w-xl", className)}
+      className={cn("group relative w-full max-w-xl", className)}
     >
       <label htmlFor={inputId} className="sr-only">
         Search destinations
@@ -35,9 +35,10 @@ export function DestinationSearch({ className }: { className?: string }) {
 
       <div
         className={cn(
-          "flex items-center gap-2 rounded-full bg-white p-1.5 pl-6",
+          "relative flex items-center gap-2 rounded-full bg-white p-1.5 pl-6",
           "shadow-xl shadow-ink/20",
-          "transition-transform duration-[120ms] ease-ios active:scale-[0.985]",
+          "ring-0 ring-white/40 group-focus-within:ring-4",
+          "transition-[transform,box-shadow] duration-[120ms] ease-ios active:scale-[0.985]",
           "motion-reduce:transition-none motion-reduce:active:scale-100",
         )}
       >

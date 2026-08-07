@@ -33,7 +33,7 @@ const cardIdle = cn(
   "hover:border-ink/25 hover:shadow-lg hover:shadow-ink/8",
 );
 
-const cardPicked = "border-ink bg-surface-soft";
+const cardPicked = "border-brand bg-brand/5";
 
 export function PlanPicker({
   plans,
@@ -103,16 +103,22 @@ export function PlanPicker({
                       "mt-1 h-5 w-5 shrink-0 rounded-full border",
                       "transition-[border-width,border-color] duration-300 ease-hover",
                       "motion-reduce:transition-none",
-                      picked ? "border-[6px] border-ink" : "border-ink/25",
+                      picked ? "border-[6px] border-brand" : "border-ink/25",
                     )}
                   />
                 </div>
 
-                <p aria-hidden className="mt-2 text-sm font-medium text-muted">
+                <p
+                  aria-hidden
+                  className={cn(
+                    "mt-2 w-fit rounded-full border border-hairline px-2.5 py-0.5",
+                    "text-xs font-medium text-muted",
+                  )}
+                >
                   {plan.days} days
                 </p>
 
-                <p className="mt-auto pt-4 text-right text-lg font-bold tracking-[-0.02em]">
+                <p className="mt-auto pt-2 text-right text-lg font-bold tracking-[-0.02em]">
                   {formatMoney(plan.price)}
                 </p>
               </li>

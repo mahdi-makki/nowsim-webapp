@@ -113,13 +113,36 @@ function cheapest(plans: Plan[]): Money {
 }
 
 /**
- * Names only — no flags. `countries_included`, `countryIso2` and `iso3` are
- * each sorted independently, so index 3 of one is not index 3 of another
- * (in the Europe plan, `countries_included[3]` is Croatia while `iso3[3]` is
- * CHE, Switzerland). Pairing a name with a flag by position would show the
- * wrong flag, so `CoverageDialog` falls back to the first letter instead.
+ * Country name -> flag URL, built from the country plans in the same payload.
+ *
+ * A region plan cannot supply its own flags: `countries_included`, `countryIso2`
+ * and `iso3` are each sorted independently, so index 3 of one is not index 3 of
+ * another (in the Europe plan, `countries_included[3]` is Croatia while
+ * `iso3[3]` is CHE, Switzerland). Pairing a name with a flag by position would
+ * show the wrong flag.
+ *
+ * A single-country plan has no such ambiguity — one name, one `image` — so its
+ * flag is safe to reuse wherever a region lists that same name. That covers 120
+ * of the 121 names regions mention (only Zambia has no country plan of its own);
+ * the rest fall back to the first letter in `CoverageDialog`. Costs no extra
+ * request: this is the `/plans` array the catalog already fetched.
  */
-function coverageOf(apiPlans: ApiPlan[]): CoveredCountry[] {
+function flagsByCountry(apiPlans: ApiPlan[]): Map<string, string> {
+  const flags = new Map<string, string>();
+
+  for (const plan of apiPlans) {
+    if (plan.countries_included.length !== 1 || !plan.image) continue;
+
+    flags.set(plan.countries_included[0].toLowerCase(), plan.image);
+  }
+
+  return flags;
+}
+
+function coverageOf(
+  apiPlans: ApiPlan[],
+  flags: Map<string, string>,
+): CoveredCountry[] {
   const names = new Set<string>();
 
   for (const plan of apiPlans) {
@@ -128,10 +151,17 @@ function coverageOf(apiPlans: ApiPlan[]): CoveredCountry[] {
 
   return [...names]
     .sort(collator.compare)
-    .map((name) => ({ name }) satisfies CoveredCountry);
+    .map(
+      (name) =>
+        ({ name, art: flags.get(name.toLowerCase()) }) satisfies CoveredCountry,
+    );
 }
 
-function build(kind: DestinationKind, apiPlans: ApiPlan[]): Destination {
+function build(
+  kind: DestinationKind,
+  apiPlans: ApiPlan[],
+  flags: Map<string, string>,
+): Destination {
   const first = apiPlans[0];
   const name = displayName(first, kind);
 
@@ -139,7 +169,7 @@ function build(kind: DestinationKind, apiPlans: ApiPlan[]): Destination {
     .map(toPlan)
     .sort((a, b) => a.days - b.days || a.price.amount - b.price.amount);
 
-  const coversList = coverageOf(apiPlans);
+  const coversList = coverageOf(apiPlans, flags);
   const covers = kind === "country" ? undefined : coversList.length;
 
   return {
@@ -169,6 +199,8 @@ function build(kind: DestinationKind, apiPlans: ApiPlan[]): Destination {
  * each code maps to one name, while region and global group by that same name.
  */
 export function toDestinations(apiPlans: ApiPlan[]): Destination[] {
+  const flags = flagsByCountry(apiPlans);
+
   const groups = new Map<string, { kind: DestinationKind; plans: ApiPlan[] }>();
 
   for (const plan of apiPlans) {
@@ -182,6 +214,6 @@ export function toDestinations(apiPlans: ApiPlan[]): Destination[] {
   }
 
   return [...groups.values()]
-    .map(({ kind, plans }) => build(kind, plans))
+    .map(({ kind, plans }) => build(kind, plans, flags))
     .sort((a, b) => collator.compare(a.name, b.name));
 }
