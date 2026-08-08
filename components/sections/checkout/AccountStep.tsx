@@ -1,15 +1,20 @@
 "use client";
 
-import { useId, useState, type FormEvent } from "react";
+import { useState, useTransition } from "react";
+import { MdPerson } from "react-icons/md";
 
+import { signOut } from "@/app/actions/auth";
+import { EmailSignIn, lightTone } from "@/components/auth/EmailSignIn";
+import { useSetAccount } from "@/components/layout/SessionProvider";
 import { Step } from "@/components/sections/checkout/Step";
 import { Pressable } from "@/components/ui/Pressable";
-import { authProviders, legalLinks, providerNames, type ProviderId } from "@/lib/auth";
-import { nameFromEmail, signIn, signOut, type Account } from "@/lib/session";
+import { useRouter } from "next/navigation";
+import type { Account } from "@/lib/auth/account";
+import { authProviders, legalLinks, providerNames } from "@/lib/auth/providers";
+import type { ProviderId } from "@/lib/auth/providers";
 import { cn } from "@/lib/cn";
 
 const tones: Record<ProviderId, string> = {
-  apple: "bg-ink text-white hover:bg-ink-soft active:bg-ink-soft",
   google:
     "border border-hairline hover:border-ink/25 hover:bg-surface-soft active:bg-surface-soft",
   email:
@@ -20,11 +25,6 @@ const providerButton = cn(
   "w-full gap-3 rounded-full px-5 py-3.5",
   "text-base font-bold tracking-[-0.01em]",
 );
-
-const sampleAccounts: Record<"apple" | "google", Omit<Account, "provider">> = {
-  apple: { name: "Alex Rivera", email: "alex.rivera@icloud.com" },
-  google: { name: "Alex Rivera", email: "alex.rivera@gmail.com" },
-};
 
 function Legal() {
   return (
@@ -56,21 +56,33 @@ function Legal() {
 }
 
 function SignedIn({ account }: { account: Account }) {
+  const setAccount = useSetAccount();
+  const router = useRouter();
+  const [leaving, startLeaving] = useTransition();
+
+  function leave() {
+    startLeaving(async () => {
+      await signOut();
+
+      setAccount(null);
+      router.refresh();
+    });
+  }
+
   return (
     <>
       <div className="mt-6 flex flex-wrap items-center gap-4 rounded-card border border-hairline bg-surface-soft p-4">
         <span
           aria-hidden
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-volt text-lg font-bold text-ink"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-volt text-ink"
         >
-          {account.name.slice(0, 1).toUpperCase()}
+          <MdPerson className="h-6 w-6" />
         </span>
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-base font-bold tracking-[-0.01em]">
-            {account.name}
+            {account.email}
           </p>
-          <p className="truncate text-sm text-muted">{account.email}</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -79,14 +91,15 @@ function SignedIn({ account }: { account: Account }) {
           </span>
 
           <Pressable
-            onClick={signOut}
+            onClick={leave}
+            disabled={leaving}
             className={cn(
               "rounded-full border border-hairline px-4 py-2",
               "text-sm font-bold",
               "hover:border-ink/25 hover:bg-surface active:bg-surface",
             )}
           >
-            Sign out
+            {leaving ? "Signing out…" : "Sign out"}
           </Pressable>
         </div>
       </div>
@@ -100,17 +113,20 @@ function SignedIn({ account }: { account: Account }) {
 }
 
 function SignedOut() {
-  const [emailOpen, setEmailOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const emailId = useId();
+  const [email, setEmail] = useState(false);
 
-  function submitEmail(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  if (email) {
+    return (
+      <div className="mt-6">
+        <EmailSignIn
+          tone={lightTone}
+          cancelLabel="Back"
+          onCancel={() => setEmail(false)}
+        />
 
-    const address = email.trim();
-    if (!address) return;
-
-    signIn({ name: nameFromEmail(address), email: address, provider: "email" });
+        <Legal />
+      </div>
+    );
   }
 
   return (
@@ -123,59 +139,14 @@ function SignedOut() {
       <ul className="mt-6 flex flex-col gap-3">
         {authProviders.map((provider) => (
           <li key={provider.id}>
-            {provider.id === "email" && emailOpen ? (
-              <form onSubmit={submitEmail} className="flex flex-col gap-3">
-                <label htmlFor={emailId} className="text-sm font-bold">
-                  Email address
-                </label>
-
-                <input
-                  id={emailId}
-                  type="email"
-                  name="email"
-                  required
-                  autoFocus
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className={cn(
-                    "w-full rounded-control border border-hairline bg-surface px-4 py-3",
-                    "text-base font-medium placeholder:text-muted",
-                    "focus:border-ink focus:outline-none",
-                    "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-                  )}
-                />
-
-                <Pressable
-                  type="submit"
-                  className={cn(
-                    providerButton,
-                    "bg-ink text-white hover:bg-ink-soft active:bg-ink-soft",
-                  )}
-                >
-                  Continue
-                </Pressable>
-              </form>
-            ) : (
-              <Pressable
-                onClick={() => {
-                  if (provider.id === "email") {
-                    setEmailOpen(true);
-                    return;
-                  }
-
-                  signIn({
-                    ...sampleAccounts[provider.id],
-                    provider: provider.id,
-                  });
-                }}
-                className={cn(providerButton, tones[provider.id])}
-              >
-                <provider.Icon aria-hidden className="h-5 w-5 shrink-0" />
-                {provider.label}
-              </Pressable>
-            )}
+            <Pressable
+              onClick={provider.ready ? () => setEmail(true) : undefined}
+              disabled={!provider.ready}
+              className={cn(providerButton, tones[provider.id])}
+            >
+              <provider.Icon aria-hidden className="h-5 w-5 shrink-0" />
+              {provider.label}
+            </Pressable>
           </li>
         ))}
       </ul>

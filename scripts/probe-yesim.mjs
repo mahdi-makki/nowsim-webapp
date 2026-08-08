@@ -1,11 +1,3 @@
-/**
- * Saves the raw /plans and /supported_devices responses to
- * lib/api/__fixtures__/ and prints what the mappers need to know.
- *
- *   node --env-file=.env.local scripts/probe-yesim.mjs
- *
- * The fixtures are the offline input for the mapper unit tests in Phase 6.
- */
 import fs from "node:fs/promises";
 import path from "node:path";
 

@@ -1,7 +1,9 @@
-# nowsim — what's left
+# nowsim — what's left to go live
 
-Phases 1 and 2 are done: the codebase is consistent and the catalog is live from Yesim.
-Everything below is outstanding.
+Everything in this file is outstanding. Done work is not listed.
+
+The site builds clean today: 176 pages prerender, typecheck and lint pass, the catalog
+is live from Yesim, and email OTP sign-in works end to end. **It cannot take money.**
 
 ---
 
@@ -9,126 +11,47 @@ Everything below is outstanding.
 
 **Base:** `https://partners-api.yesim.biz/<endpoint>?token=<YESIM_API_TOKEN>`
 
-| Endpoint | Phase | Use |
-|---|---|---|
-| `GET /plans` | done | The whole catalog |
-| `GET /supported_devices` | done | Device compatibility list |
-| `POST /new_user` | 3 | Email → `user_id`. Called **after** we verify the email |
-| `GET /user` | 3 | Account page |
-| `GET /new_esim` | 4 | Issue the eSIM. **Only from the Stripe webhook** |
-| `GET /orders` | 4 | Order history |
-| `GET /sim_info` | 5 | eSIM status and data remaining |
-| `GET /balance` | 4 | Partner float — see the balance guard |
-| `POST /set_notification_url` | 5 | Yesim pushes eSIM status changes to us |
+| Endpoint | Use |
+|---|---|
+| `GET /user` | Account page |
+| `GET /new_esim` | Issue the eSIM. **Only from the Stripe webhook** |
+| `GET /orders` | Order history |
+| `GET /sim_info` | eSIM status and data remaining |
+| `GET /balance` | Partner float — see the balance guard |
+| `POST /set_notification_url` | Yesim pushes eSIM status changes to us |
 
 **Pricing — use `retail_price`, never `price`.** `price` is the partner rate we are
-billed; `retail_price` is what the customer pays. They are identical across all 1520
-plans today, so charging `price` would look correct right up until the day it isn't.
-`planPrice()` in `lib/api/mappers.ts` is the single place this is read, and the schema
-makes `retail_price` required so a missing one fails loudly instead of undercharging.
+billed. `planPrice()` in `lib/api/mappers.ts` is the only place a customer-facing price
+is built.
 
-**Settled:** payments via Stripe. Fulfillment calls `/new_esim` after payment; Yesim
-emails the customer the QR code.
+`Plan.id` is the API's 32-char hex id and is **the value `/new_esim` needs**. It must
+survive into the order.
 
-`Plan.id` is the API's 32-char hex id, carried verbatim — **this is the value the eSIM
-activation call needs.** It must survive into the order.
-
-### To confirm before Phase 4
+### Answer before starting payments
 
 - [ ] `/new_esim` vs `/issue_esim` — which provisions, and what does each return?
-- [ ] Does Yesim email the QR itself, or must we? Decides whether we need a
-      transactional email provider for fulfillment as well as for OTP.
-- [ ] Does `POST /new_user` return the existing `user_id` for a known email, or error?
-      Sign-in and sign-up both go through it.
+- [ ] Does Yesim email the QR itself, or must we?
 - [ ] Is `/balance` a prepaid float that can run dry, or post-paid invoicing?
 
 ---
 
-## Phase 2 leftovers
+## 1. Blocks launch
 
-- [ ] **Stale-on-error.** A failure after the cache expires currently renders
-      `error.tsx`. Decide whether to serve the last good copy instead.
-- [ ] **Upstream naming is inconsistent** — `MIDDLE EAST` is uppercase, `LATAM` / `SEA` /
-      `CIS` are abbreviations. They render as Yesim writes them. Add an override map?
-- [ ] **`LATAM` and `Latin America` are separate destinations** with overlapping
-      coverage. Confirm that is intentional.
-
----
-
-## Phase 3 — Auth: email OTP, Google, Apple
-
-Yesim has no login. `POST /new_user` takes an email and returns a `user_id` — that is an
-**identifier, not a credential**. Proving the person owns the email is entirely our job,
-and it is the same job for all three buttons:
-
-```
-prove the user owns an email  →  POST /new_user  →  user_id in our session cookie
-```
-
-> **The rule that keeps this safe:** only accept an email a provider says is *verified*.
-> Reject a Google ID token with `email_verified !== true`, or someone signs in with an
-> unverified account carrying your customer's address and receives their eSIMs.
-
-### Step 1 — Infrastructure (unblocks the rest)
-
-- [ ] **Transactional email** — Resend, Postmark or SES. Yesim doesn't send OTP codes.
-      Verify the sending domain (SPF/DKIM) or codes land in spam.
-- [ ] **Key-value store** — Upstash Redis. OTP codes, attempt counters, rate limits, and
-      Stripe webhook dedup in Phase 4. The only infrastructure this project adds.
-
-### Step 2 — Session
-
-- [ ] Cookie: `httpOnly`, `Secure`, `SameSite=Lax`, `__Host-` prefix, encrypted with
-      `jose` (JWE). `SESSION_SECRET` from env — `openssl rand -base64 32`.
-- [ ] Payload: `{ email, yesimUserId, provider, issuedAt }`.
-- [ ] `lib/auth/session.ts` — encrypt/decrypt + cookie set/clear, `server-only`.
-- [ ] `lib/auth/dal.ts` — `verifySession()` wrapped in React `cache()`; `getAccount()`
-      returns a DTO (`name`, `email`, `provider`) — **never** `yesimUserId` to the client.
-- [ ] Absolute expiry 30 days, idle expiry 7 days. New session id on every sign-in.
-- [ ] Delete `lib/session.ts` — the `localStorage` account goes away entirely.
-
-### Step 3 — Email OTP
-
-- [ ] Server actions in `app/actions/auth.ts`: `requestOtp`, `verifyOtp`, `signOut`.
-- [ ] Redis `otp:<emailHash>` → `{ codeHash, attempts, expiresAt }`, TTL 5 min.
-      **Store a hash of the code, not the code.**
-- [ ] 6 digits from `crypto.randomInt`. Single use. Max 5 attempts, then invalidate.
-- [ ] Compare with `crypto.timingSafeEqual`.
-- [ ] Resend cooldown 60s. Rate limit per email and per IP.
-- [ ] **Identical response whether or not the email is known.** Never reveal which
-      addresses have accounts.
-- [ ] On success only: `POST /new_user` → session.
-
-### Step 4 — Google and Apple
-
-- [ ] `app/api/auth/google/route.ts` + `callback/route.ts` — OIDC with PKCE, `state` and
-      `nonce` in short-lived httpOnly cookies.
-- [ ] `app/api/auth/apple/callback/route.ts` — Apple posts back, so this is a **POST**
-      handler. Apple's client secret is a JWT you sign yourself and must regenerate
-      (6 month max lifetime) — automate it or set a reminder.
-- [ ] Verify `iss`, `aud`, `exp`, `nonce` against the provider's JWKS on every ID token.
-      Exact redirect-URI allowlist.
-- [ ] **Reject any token whose email is not verified.**
-- [ ] Apple's "Hide My Email" gives a `@privaterelay.appleid.com` address. It is real and
-      deliverable — treat it as the account email and send the eSIM there.
-- [ ] Apple returns the user's name **only on the first authorization**. Persist it then
-      or it is gone permanently.
-
-### Step 5 — Wiring
-
-- [ ] `proxy.ts` at the project root for optimistic cookie-presence redirects only.
-      (Next 16 renamed Middleware to Proxy.) It is **not** the authorization check — the
-      real check is `verifySession()` inside each data function.
-- [ ] Replace `useAccount()` with a context provider seeded from the server render, so
-      `CheckoutFlow` and `AccountStep` keep working.
-- [ ] Account page reads `GET /user` and `GET /orders`.
-
-**Done when:** all three routes reach a signed-in state, `user_id` never appears in the
-browser, six wrong OTPs locks out, and sign-out clears the session.
+- [ ] **Disable the Pay button until Stripe is wired.** `PaymentStep.tsx` renders a
+      button with no handler. Signed out it is correctly disabled; signed in it goes
+      live, says "Pay €X", and silently does nothing when clicked.
+- [ ] **Compress `public/videos/hero.mp4`.** It is 35 MB — 90% of all static assets —
+      autoplays with `preload="auto"` and has no poster frame. Target under 3 MB and add
+      a poster.
+- [ ] **Terms of Service, Privacy Policy, cardholder-credential page** written, hosted
+      and linked. Currently `href="#"` in `lib/auth/providers.ts`.
+- [ ] **Refund and support policy published.** The FAQ already promises "if a plan never
+      connects, we refund it" against a policy that does not exist.
+- [ ] **Resolve every remaining `href="#"`** — all 12 footer links and 3 social links.
 
 ---
 
-## Phase 4 — Payments and fulfillment (Stripe)
+## 2. Payments and fulfillment (Stripe)
 
 ```
 pick plan → createOrder (server re-prices) → PaymentIntent
@@ -141,10 +64,10 @@ the price up again.
 ### Taking the payment
 
 - [ ] Server action `createOrder({ planId, quantity })` — `verifySession()`, re-read the
-      plan from the catalog, compute the total server-side, clamp quantity to `MAX_ESIMS`.
-      The re-read price is `retail_price`, same as everywhere else.
-- [ ] PaymentIntent with an **idempotency key** so a double-click can't charge twice. Put
-      `planId`, `quantity` and `yesimUserId` in the metadata — the webhook fulfills from it.
+      plan from the catalog, compute the total server-side, clamp to `MAX_ESIMS`. Call
+      `refreshSession()` here directly rather than through the `touchSession` action.
+- [ ] PaymentIntent with an **idempotency key** so a double-click cannot charge twice.
+      Put `planId`, `quantity` and `yesimUserId` in the metadata.
 - [ ] Return only the `client_secret` to the browser.
 - [ ] Mount Stripe's Payment Element so card data never touches our DOM (PCI SAQ-A).
 - [ ] Rewrite `/checkout` to take an order id, not a query-string bill of goods.
@@ -160,18 +83,17 @@ the price up again.
       once per purchased quantity.
 - [ ] Success page polls order status, showing pending until the webhook lands.
 
-### The failure mode that will actually bite you
+### The failure mode that will actually bite
 
 Stripe can succeed while `/new_esim` fails — bad partner balance, Yesim downtime, a plan
 withdrawn between browsing and paying. The customer has been charged and has nothing.
 
-- [ ] **Check `GET /balance` before creating the PaymentIntent.** If the float can't
-      cover the order, don't take the money.
-- [ ] Alert when the balance drops below a threshold. A drained float fails every order
-      silently until someone notices.
+- [ ] **Check `GET /balance` before creating the PaymentIntent.** If the float cannot
+      cover the order, do not take the money.
+- [ ] Alert when the balance drops below a threshold.
 - [ ] Retry `/new_esim` with backoff. If it still fails: refund automatically, email the
       customer, alert yourselves.
-- [ ] Log every order's state transitions so a support question has an answer.
+- [ ] Log every order's state transitions.
 - [ ] `POST /set_notification_url` so Yesim reports eSIM state changes.
 
 **Done when:** a test card completes end to end and the eSIM arrives; a replayed webhook
@@ -180,65 +102,100 @@ failure refunds instead of swallowing the money.
 
 ---
 
-## Phase 5 — Security hardening
+## 3. Auth — remaining
+
+- [ ] **Verify the Resend sending domain (SPF/DKIM)** or codes land in spam.
+- [ ] **Google sign-in.** `app/api/auth/google/route.ts` + `callback/route.ts` — OIDC
+      with PKCE, `state` and `nonce` in short-lived httpOnly cookies. Verify `iss`,
+      `aud`, `exp`, `nonce` against Google's JWKS. Exact redirect-URI allowlist.
+      **Reject any token whose email is not verified**, or someone signs in with an
+      unverified account carrying a customer's address and receives their eSIMs.
+      Flip `ready: true` in `lib/auth/providers.ts` and drop the "on the way" copy.
+- [ ] `proxy.ts` at the project root for optimistic cookie-presence redirects only.
+      (Next 16 renamed Middleware to Proxy.) **Not** the authorization check — that
+      stays `verifySession()` inside each data function.
+- [ ] Account page reading `GET /user` and `GET /orders`.
+- [ ] Add a per-IP verify limit. Attempts are capped per code (5) and per address via the
+      send limit, which works out at 25 guesses an hour.
+
+---
+
+## 4. Security hardening
 
 - [ ] CSP with a per-request nonce, set in `proxy.ts`.
 - [ ] Headers: `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`,
       `Permissions-Policy`.
-- [ ] zod validation on every server action input.
 - [ ] `serverActions.allowedOrigins` set for production.
-- [ ] Rate limiting on OTP request, order creation, and webhook endpoints.
+- [ ] Rate limiting on order creation and the webhook endpoint.
 - [ ] Structured logs with no PII and no tokens. Audit that `redactToken` covers every
       path that can log a Yesim URL, including uncaught error handlers.
 - [ ] **Rotate `YESIM_API_TOKEN` before launch** — the dev one has been in terminals,
-      shell history, and `.next/cache`.
+      shell history and `.next/cache`.
 - [ ] `experimental.taint: true`, taint the account object.
+- [ ] Resolve `npm audit`: 4 high in `sharp`/libvips. The fix wants next 16.3.0, outside
+      the pinned range — needs a deliberate decision.
 - [ ] Document secret rotation. Confirm no secret is committed (`git log -p` scan).
-- [ ] `npm audit` clean, Dependabot on.
 
 ---
 
-## Phase 6 — Quality gates
+## 5. Content and correctness
+
+- [ ] **Pick one rating and use it everywhere.** Three contradict each other on a single
+      visit: Trustpilot 4.8 (`TrustBar.tsx`), App Store 4.9 (`About.tsx`), 4.7 with
+      97,400 reviews (`PlanPicker.tsx`). Plus an unsourced "1,657,382,391 GB delivered".
+      Unsubstantiated review claims are an advertising-law problem in the EU.
+- [ ] **Fix the FAQ.** It says compatibility is checked at checkout; the device dialog is
+      on the destination page.
+- [ ] **Replace `heroPlaceholder`** — every destination shows the same Los Angeles photo
+      (`lib/assets.ts`). The API carries no hero image.
+- [ ] Delete or use `components/sections/home/Benefits.tsx` and `EveryMoment.tsx`. Both
+      are complete section components that nothing imports.
+- [ ] Rewrite `README.md` — still create-next-app boilerplate referencing Geist and
+      `app/page.tsx`.
+- [ ] Decide the upstream naming overrides: `MIDDLE EAST` is uppercase, `LATAM` / `SEA` /
+      `CIS` are abbreviations, and they render as Yesim writes them.
+- [ ] Confirm `LATAM` and `Latin America` being separate destinations is intentional.
+- [ ] **Stale-on-error.** A catalog failure after the cache expires renders `error.tsx`.
+      Decide whether to serve the last good copy instead.
+
+---
+
+## 6. SEO
+
+- [ ] `sitemap.ts` and `robots.ts` — none exist, across 176 prerendered pages.
+- [ ] `metadataBase`, canonical URLs, Open Graph images. Link previews are blank today.
+
+---
+
+## 7. Quality gates
 
 - [ ] CI runs `typecheck`, `lint`, `build` on every PR.
 - [ ] Vitest for `lib/`: money formatting, session encrypt/decrypt, and the mappers
-      against `lib/api/__fixtures__/plans.json` — 1520 real plans, no network.
-      Cover the traps that fixture already exposed: `data: "Unlimited"`, `old_id: null`,
-      the `UNLIM_UAE_7D` / `St. Kitts` grouping, and the `japan` / `japan-region` collision.
+      against `lib/api/__fixtures__/plans.json` — 1520 real plans, no network. Cover the
+      traps that fixture exposed: `data: "Unlimited"`, `old_id: null`, the
+      `UNLIM_UAE_7D` / `St. Kitts` grouping, and the `japan` / `japan-region` collision.
 - [ ] Playwright for the two flows that matter: browse → pick plan → checkout, and
       sign-in → pay.
 - [ ] Error monitoring (Sentry or equivalent) for server and client.
 
 ---
 
-## Phase 7 — Pre-launch
+## 8. Deployment
 
-### Content and legal
-
-- [ ] Terms of Service, Privacy Policy, cardholder-credential page written and linked
-      (currently `href="#"` in `lib/auth.ts`).
-- [ ] Refund and support policy published.
-- [ ] **Replace `heroPlaceholder`** — every destination still shows the same Los Angeles
-      photo (`lib/assets.ts`). The API carries no hero image.
-- [ ] All remaining `href="#"` resolved or removed.
-
-### SEO
-
-- [ ] Per-page `metadata` with real titles and descriptions.
-- [ ] `sitemap.ts` and `robots.ts`.
-- [ ] Open Graph images. Canonical URLs.
-
-### Infrastructure
-
+- [ ] **Un-ignore `.env.example`** — the `.env*` rule in `.gitignore` swallows it, so the
+      template `lib/env.ts` tells people to copy is not in the repo. Add `!.env.example`.
+      It is also missing `YESIM_API_BASE` and `REVALIDATE_SECRET`.
 - [ ] Production domain + TLS.
 - [ ] Env vars set in the host, separate values per environment.
 - [ ] Staging environment mirroring production.
+- [ ] Stripe live keys, webhook endpoint registered, signing secret set.
 - [ ] Analytics. Uptime monitoring on the site and on the Yesim API.
 - [ ] **Balance alerting live before the first real order.**
-- [ ] Stripe live keys, webhook endpoint registered, signing secret set.
 - [ ] Backup and rollback plan.
 
-### Final pass
+---
+
+## 9. Final pass
 
 - [ ] Lighthouse: performance, accessibility, SEO, best practices.
 - [ ] Keyboard and screen reader pass on the dialogs and checkout.
@@ -249,12 +206,14 @@ failure refunds instead of swallowing the money.
 
 ## Order of work
 
-| Phase | Work | Est. | Blocked by |
-|---|---|---|---|
-| 3 | Auth (+ email provider, Redis) | 5–6 days | — |
-| 4 | Payments and fulfillment | 5–6 days | Phase 3 |
-| 5 | Security hardening | 2 days | Phase 4 |
-| 6 | Quality gates | 1 day | — |
-| 7 | Pre-launch | 2–3 days | Phase 5 |
+| Work | Est. | Blocked by |
+|---|---|---|
+| Blocks launch (§1) | 1 day | — |
+| Payments and fulfillment (§2) | 5–6 days | — |
+| Auth remainder (§3) | 2–3 days | — |
+| Security hardening (§4) | 2 days | §2 |
+| Content, SEO (§5, §6) | 1–2 days | — |
+| Quality gates (§7) | 1 day | — |
+| Deployment, final pass (§8, §9) | 2–3 days | §4 |
 
-Phase 6 needs nothing from anyone and can start immediately.
+§1, §5, §6 and §7 are blocked by nothing and can start immediately.

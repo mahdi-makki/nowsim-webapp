@@ -1,10 +1,5 @@
 import type { DestinationKind } from "@/lib/types";
 
-/**
- * The client-safe half of checkout. Kept apart from `lib/order.ts` because that
- * one reaches the catalog, which reaches the API token — importing it from a
- * client component would drag the token-reading module into the browser bundle.
- */
 export const MAX_ESIMS = 10;
 
 export function checkoutHref(

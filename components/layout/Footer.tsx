@@ -100,11 +100,6 @@ const storeBadges = [
 const bottomPadding =
   "pb-[max(3.5rem,calc(env(safe-area-inset-bottom)+2.5rem))]";
 
-/**
- * Under `cacheComponents`, reading the clock during a prerender is an error
- * unless it happens inside a cache boundary. A copyright year only changes once
- * a year, so caching it for a day is free.
- */
 async function currentYear(): Promise<number> {
   "use cache";
 

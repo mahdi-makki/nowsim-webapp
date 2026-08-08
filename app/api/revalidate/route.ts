@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
@@ -10,10 +11,6 @@ const tags: Record<string, string> = {
   [DEVICES_TAG]: DEVICES_TAG,
 };
 
-/**
- * Lets a price change be pushed without a redeploy. Guarded by a shared secret
- * compared in constant time so a wrong guess leaks nothing through timing.
- */
 export async function POST(request: Request): Promise<NextResponse> {
   const secret = env.REVALIDATE_SECRET;
 
@@ -37,21 +34,14 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "Unknown tag" }, { status: 400 });
   }
 
-  // `{ expire: 0 }` — an external caller pushing a price change needs the old
-  // copy gone now, not at the end of its cache profile.
   revalidateTag(tag, { expire: 0 });
 
   return NextResponse.json({ revalidated: tag });
 }
 
 function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
+  const left = createHash("sha256").update(a).digest();
+  const right = createHash("sha256").update(b).digest();
 
-  let mismatch = 0;
-
-  for (let index = 0; index < a.length; index += 1) {
-    mismatch |= a.charCodeAt(index) ^ b.charCodeAt(index);
-  }
-
-  return mismatch === 0;
+  return timingSafeEqual(left, right);
 }

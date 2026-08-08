@@ -81,11 +81,6 @@ export function AllDestinations({
             )}
           />
 
-          {/*
-            A halo rather than a ring on the input itself: it sits behind, so it
-            can grow past the border without nudging the field or the tabs it
-            shares a row with.
-          */}
           <span
             aria-hidden
             className={cn(

@@ -5,12 +5,7 @@ export type Money = {
   currency: Currency;
 };
 
-export const DEFAULT_CURRENCY: Currency = "USD";
-
-export function money(
-  amount: number,
-  currency: Currency = DEFAULT_CURRENCY,
-): Money {
+export function money(amount: number, currency: Currency): Money {
   return { amount: Math.round(amount), currency };
 }
 

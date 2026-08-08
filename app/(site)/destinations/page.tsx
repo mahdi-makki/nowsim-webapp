@@ -44,8 +44,8 @@ export default async function AllDestinationsPage({
         </h1>
 
         <p className="mt-5 max-w-[52ch] text-lg text-muted md:text-xl">
-          Find the best data plan in over 200 destinations — one account,
-          instant activation, and no roaming bill wherever you go.
+          Find the best data plan in over 200 destinations. One account, instant
+          activation, and no roaming bill wherever you go.
         </p>
 
         <AllDestinations

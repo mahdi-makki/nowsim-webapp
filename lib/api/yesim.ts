@@ -8,11 +8,6 @@ import { env } from "@/lib/env";
 const TIMEOUT_MS = 10_000;
 const ATTEMPTS = 2;
 
-/**
- * The token travels in the query string, so it can reach a log line, an error
- * message or a stack trace by accident. Everything that might be printed goes
- * through here first.
- */
 export function redactToken(value: string): string {
   return value.replace(/((?:token|api_key)=)[^&\s"']+/gi, "$1[redacted]");
 }
@@ -29,13 +24,19 @@ function urlFor(path: string, params?: Record<string, string>): URL {
   return url;
 }
 
-async function request(url: URL, path: string): Promise<Response> {
+async function request(
+  url: URL,
+  path: string,
+  method: "GET" | "POST" = "GET",
+): Promise<Response> {
   let last = "no attempt was made";
 
   for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
     try {
       const response = await fetch(url, {
+        method,
         headers: { accept: "application/json" },
+        ...(method === "POST" ? { cache: "no-store" as const } : {}),
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });
 
@@ -50,13 +51,11 @@ async function request(url: URL, path: string): Promise<Response> {
   throw new Error(`Yesim ${path} failed after ${ATTEMPTS} attempts: ${last}`);
 }
 
-export async function fetchYesim<T>(
+async function parse<T>(
+  response: Response,
   path: string,
   schema: z.ZodType<T>,
-  params?: Record<string, string>,
 ): Promise<T> {
-  const response = await request(urlFor(path, params), path);
-
   if (!response.ok) {
     throw new Error(`Yesim ${path} returned ${response.status}`);
   }
@@ -80,4 +79,20 @@ export async function fetchYesim<T>(
   }
 
   return parsed.data;
+}
+
+export async function fetchYesim<T>(
+  path: string,
+  schema: z.ZodType<T>,
+  params?: Record<string, string>,
+): Promise<T> {
+  return parse(await request(urlFor(path, params), path), path, schema);
+}
+
+export async function postYesim<T>(
+  path: string,
+  schema: z.ZodType<T>,
+  params?: Record<string, string>,
+): Promise<T> {
+  return parse(await request(urlFor(path, params), path, "POST"), path, schema);
 }

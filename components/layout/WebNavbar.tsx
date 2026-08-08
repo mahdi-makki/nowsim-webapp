@@ -1,22 +1,20 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useId, useState } from "react";
+import { Suspense, useCallback, useEffect, useId, useState } from "react";
 
 import { NowsimLogo } from "@/components/ui/NowsimLogo";
 import { Pressable } from "@/components/ui/Pressable";
-import { SignInDialog } from "@/components/layout/SignInDialog";
+import {
+  AccountAction,
+  AccountActionFallback,
+} from "@/components/layout/AccountAction";
 import { cn } from "@/lib/cn";
 
 import { MenuPanel, MenuToggle } from "@/components/layout/MobileMenu";
 
 const HOME = "/";
 
-/**
- * Every link points at a route that exists. `/destinations` carries the filter
- * in the query string, which is where `/destinations/<kind>` redirects to
- * anyway — linking straight to the query form skips that hop.
- */
 const navLinks = [
   { label: "Countries", href: "/destinations?kind=country" },
   { label: "Regions", href: "/destinations?kind=region" },
@@ -63,12 +61,10 @@ export function WebNavbar() {
   const pathname = usePathname();
   const scrolled = useScrolled(pathname);
   const [open, setOpen] = useState(false);
-  const [signIn, setSignIn] = useState(false);
   const panelId = useId();
   const [seenPath, setSeenPath] = useState(pathname);
 
   const close = useCallback(() => setOpen(false), []);
-  const closeSignIn = useCallback(() => setSignIn(false), []);
 
   useEffect(() => {
     if (!open) return;
@@ -100,60 +96,53 @@ export function WebNavbar() {
             )}
           />
 
-          <div className="relative mx-auto flex h-(--header-height) max-w-7xl items-center justify-between px-5 md:px-8">
-            <Pressable
-              href="/"
-              hit
-              aria-label="nowsim home"
-              className="-m-2 shrink-0 rounded-full p-2"
-            >
-              <NowsimLogo
-                id="nowsim-logo-header"
-                className="h-6 w-auto md:h-7"
-              />
-            </Pressable>
-
-            <nav
-              aria-label="Main"
-              className="absolute left-1/2 hidden -translate-x-1/2 md:block"
-            >
-              <ul className="flex items-center gap-1">
-                {navLinks.map((link) => (
-                  <li key={link.label}>
-                    <Pressable
-                      href={link.href}
-                      hit
-                      className={cn(
-                        "rounded-full px-4 py-2.5 text-base font-medium",
-                        "hover:bg-ink/5 active:bg-ink/10",
-                      )}
-                    >
-                      {link.label}
-                    </Pressable>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            <div className="flex items-center gap-3 md:gap-4">
+          <div className="px-6 md:px-12">
+            <div className="relative mx-auto flex h-(--header-height) max-w-7xl items-center justify-between">
               <Pressable
+                href="/"
                 hit
-                aria-haspopup="dialog"
-                aria-expanded={signIn}
-                onClick={() => setSignIn(true)}
-                className={cn(
-                  "rounded-full bg-volt px-4 py-2.5 text-base font-medium text-ink md:px-5",
-                  "hover:bg-ink-deep hover:text-volt active:bg-ink-deep active:text-volt",
-                )}
+                aria-label="nowsim home"
+                className="-m-2 shrink-0 rounded-full p-2"
               >
-                Sign in
+                <NowsimLogo
+                  id="nowsim-logo-header"
+                  className="h-6 w-auto md:h-7"
+                />
               </Pressable>
 
-              <MenuToggle
-                open={open}
-                onToggle={() => setOpen((value) => !value)}
-                panelId={panelId}
-              />
+              <nav
+                aria-label="Main"
+                className="absolute left-1/2 hidden -translate-x-1/2 md:block"
+              >
+                <ul className="flex items-center gap-1">
+                  {navLinks.map((link) => (
+                    <li key={link.label}>
+                      <Pressable
+                        href={link.href}
+                        hit
+                        className={cn(
+                          "rounded-full px-4 py-2.5 text-base font-medium",
+                          "hover:bg-ink/5 active:bg-ink/10",
+                        )}
+                      >
+                        {link.label}
+                      </Pressable>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+
+              <div className="flex items-center gap-3 md:gap-4">
+                <Suspense fallback={<AccountActionFallback />}>
+                  <AccountAction />
+                </Suspense>
+
+                <MenuToggle
+                  open={open}
+                  onToggle={() => setOpen((value) => !value)}
+                  panelId={panelId}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -165,8 +154,6 @@ export function WebNavbar() {
         onClose={close}
         panelId={panelId}
       />
-
-      <SignInDialog open={signIn} onClose={closeSignIn} />
     </>
   );
 }

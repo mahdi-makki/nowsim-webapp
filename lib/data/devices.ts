@@ -14,7 +14,6 @@ export const DEVICES_TAG = "devices";
 
 const collator = new Intl.Collator("en");
 
-/** The six types the API returns today, spelled the way the dialog shows them. */
 const typeLabels: Record<string, string> = {
   PHONE: "Phones",
   TABLET: "Tablets",
@@ -24,7 +23,6 @@ const typeLabels: Record<string, string> = {
   "WI-FI ROUTERS": "Wi-Fi Routers",
 };
 
-/** Falls back to Title Case + a spelling-aware plural for an unseen type. */
 function typeLabel(type: string): string {
   const known = typeLabels[type.toUpperCase()];
 
@@ -43,10 +41,6 @@ function typeLabel(type: string): string {
   return /(ch|sh|x|z)$/i.test(titled) ? `${titled}es` : `${titled}s`;
 }
 
-/**
- * The API nests type → brand → model. The dialog only lists models, grouped by
- * type, so the brand level is flattened away.
- */
 function toGroups(types: ApiDeviceType[]): DeviceGroup[] {
   const byType = new Map<string, { label: string; devices: Set<string> }>();
 

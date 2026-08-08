@@ -16,6 +16,7 @@
   --color-muted-invert: color-mix(in srgb, #ffffff 72%, transparent);
 
   --color-success: #12b76a;
+  --color-danger: #f97066;
   --color-trustpilot: #00b67a;
 
   --font-sans:
@@ -114,7 +115,7 @@
   html {
     overscroll-behavior-y: none;
     -webkit-text-size-adjust: 100%;
-    /* The header is fixed, so a hash target would otherwise land underneath it. */
+
     scroll-padding-top: calc(var(--header-height) + env(safe-area-inset-top));
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--color-ink) 22%, transparent)

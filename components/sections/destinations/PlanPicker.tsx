@@ -112,7 +112,7 @@ export function PlanPicker({
                   aria-hidden
                   className={cn(
                     "mt-2 w-fit rounded-full border border-hairline px-2.5 py-0.5",
-                    "text-xs font-medium text-muted",
+                    "text-[0.8125rem]/[1.125rem] font-medium text-muted",
                   )}
                 >
                   {plan.days} days
