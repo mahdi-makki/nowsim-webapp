@@ -49,21 +49,36 @@ function planPrice(plan: ApiPlan): Money {
   return money(Math.round(plan.retail_price * 100), plan.currency);
 }
 
+const UNLIMITED = "Unlimited";
+
 function dataLabel(plan: ApiPlan): string {
   const raw = plan.data.trim();
 
-  if (!raw || /^unlimited$/i.test(raw)) return "Unlimited";
+  if (!raw || /^unlimited$/i.test(raw)) return UNLIMITED;
 
   return `${raw} ${plan.data_unit}`.trim();
 }
 
 function toPlan(plan: ApiPlan): Plan {
+  const data = dataLabel(plan);
+
   return {
     id: plan.id,
-    data: dataLabel(plan),
+    data,
+    unlimited: data === UNLIMITED,
     days: plan.days,
     price: planPrice(plan),
   };
+}
+
+// Two ascending price runs, not one: every fixed-data plan first, then the
+// unlimited ones, so a cheap unlimited plan cannot break up the GB ladder.
+function byGroupThenPrice(a: Plan, b: Plan): number {
+  return (
+    Number(a.unlimited) - Number(b.unlimited) ||
+    a.price.amount - b.price.amount ||
+    a.days - b.days
+  );
 }
 
 function cheapest(plans: Plan[]): Money {
@@ -73,21 +88,35 @@ function cheapest(plans: Plan[]): Money {
   );
 }
 
-function flagsByCountry(apiPlans: ApiPlan[]): Map<string, string> {
-  const flags = new Map<string, string>();
+type CountryFacts = { art?: string; codes?: string[] };
+
+// Single-country plans are the only place the API pairs a country name with its
+// flag and ISO codes, so they seed what the regional and global plans display.
+function factsByCountry(apiPlans: ApiPlan[]): Map<string, CountryFacts> {
+  const facts = new Map<string, CountryFacts>();
 
   for (const plan of apiPlans) {
-    if (plan.countries_included.length !== 1 || !plan.image) continue;
+    if (plan.countries_included.length !== 1) continue;
 
-    flags.set(plan.countries_included[0].toLowerCase(), plan.image);
+    const key = plan.countries_included[0].toLowerCase();
+    const codes = [...plan.countryIso2, ...plan.iso3]
+      .filter(Boolean)
+      .map((code) => code.toLowerCase());
+
+    const existing = facts.get(key) ?? {};
+
+    facts.set(key, {
+      art: plan.image || existing.art,
+      codes: codes.length ? codes : existing.codes,
+    });
   }
 
-  return flags;
+  return facts;
 }
 
 function coverageOf(
   apiPlans: ApiPlan[],
-  flags: Map<string, string>,
+  facts: Map<string, CountryFacts>,
 ): CoveredCountry[] {
   const names = new Set<string>();
 
@@ -95,28 +124,39 @@ function coverageOf(
     for (const country of plan.countries_included) names.add(country);
   }
 
-  return [...names]
-    .sort(collator.compare)
-    .map(
-      (name) =>
-        ({ name, art: flags.get(name.toLowerCase()) }) satisfies CoveredCountry,
-    );
+  return [...names].sort(collator.compare).map((name) => {
+    const known = facts.get(name.toLowerCase());
+
+    return { name, art: known?.art, codes: known?.codes } satisfies CoveredCountry;
+  });
+}
+
+// ISO codes are what make "USA", "KSA" and "KR" searchable — they cost nothing
+// because Yesim already sends them on every plan.
+function codesOf(apiPlans: ApiPlan[]): string[] {
+  const codes = new Set<string>();
+
+  for (const plan of apiPlans) {
+    for (const code of [...plan.countryIso2, ...plan.iso3]) {
+      if (code) codes.add(code.toLowerCase());
+    }
+  }
+
+  return [...codes];
 }
 
 function build(
   kind: DestinationKind,
   apiPlans: ApiPlan[],
-  flags: Map<string, string>,
+  facts: Map<string, CountryFacts>,
 ): Destination {
   const first = apiPlans[0];
   const name = displayName(first, kind);
   const slug = slugify(name);
 
-  const plans = apiPlans
-    .map(toPlan)
-    .sort((a, b) => a.price.amount - b.price.amount || a.days - b.days);
+  const plans = apiPlans.map(toPlan).sort(byGroupThenPrice);
 
-  const coversList = coverageOf(apiPlans, flags);
+  const coversList = coverageOf(apiPlans, facts);
   const covers = kind === "country" ? undefined : coversList.length;
 
   return {
@@ -126,6 +166,9 @@ function build(
     art: first.image,
     from: cheapest(plans),
     covers,
+    codes: kind === "country" ? codesOf(apiPlans) : undefined,
+    coverage:
+      kind === "country" ? undefined : coversList.map((entry) => entry.name),
     hero: heroFor(kind, slug),
     blurb: blurbFor({ name, kind, covers }),
     coversList: kind === "country" ? undefined : coversList,
@@ -135,7 +178,7 @@ function build(
 }
 
 export function toDestinations(apiPlans: ApiPlan[]): Destination[] {
-  const flags = flagsByCountry(apiPlans);
+  const facts = factsByCountry(apiPlans);
 
   const groups = new Map<string, { kind: DestinationKind; plans: ApiPlan[] }>();
 
@@ -150,6 +193,6 @@ export function toDestinations(apiPlans: ApiPlan[]): Destination[] {
   }
 
   return [...groups.values()]
-    .map(({ kind, plans }) => build(kind, plans, flags))
+    .map(({ kind, plans }) => build(kind, plans, facts))
     .sort((a, b) => collator.compare(a.name, b.name));
 }

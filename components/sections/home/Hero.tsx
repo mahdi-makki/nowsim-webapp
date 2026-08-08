@@ -1,8 +1,9 @@
 import { DestinationSearch } from "@/components/sections/home/DestinationSearch";
 import { TrustBar } from "@/components/common/TrustBar";
+import type { DestinationSummary } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
-export function Hero() {
+export function Hero({ destinations }: { destinations: DestinationSummary[] }) {
   return (
     <section
       className={cn(
@@ -21,7 +22,7 @@ export function Hero() {
           playsInline
           preload="auto"
           className="absolute inset-0 h-full w-full rounded-screen object-cover md:rounded-screen-lg"
-          src="/videos/hero.mp4"
+          src="/videos/hero.webm"
         />
 
         <div aria-hidden className="absolute inset-0 bg-ink/70" />
@@ -40,7 +41,7 @@ export function Hero() {
             One connection. Every destination.
           </p>
 
-          <DestinationSearch className="mt-8" />
+          <DestinationSearch destinations={destinations} className="mt-8" />
 
           <TrustBar className="mt-14" />
         </div>

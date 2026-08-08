@@ -11,14 +11,14 @@ is live from Yesim, and email OTP sign-in works end to end. **It cannot take mon
 
 **Base:** `https://partners-api.yesim.biz/<endpoint>?token=<YESIM_API_TOKEN>`
 
-| Endpoint | Use |
-|---|---|
-| `GET /user` | Account page |
-| `GET /new_esim` | Issue the eSIM. **Only from the Stripe webhook** |
-| `GET /orders` | Order history |
-| `GET /sim_info` | eSIM status and data remaining |
-| `GET /balance` | Partner float — see the balance guard |
-| `POST /set_notification_url` | Yesim pushes eSIM status changes to us |
+| Endpoint                     | Use                                             |
+| ---------------------------- | ----------------------------------------------- |
+| `GET /user`                  | Account page                                    |
+| `GET /new_esim`              | Issue the eSIM.**Only from the Stripe webhook** |
+| `GET /orders`                | Order history                                   |
+| `GET /sim_info`              | eSIM status and data remaining                  |
+| `GET /balance`               | Partner float — see the balance guard           |
+| `POST /set_notification_url` | Yesim pushes eSIM status changes to us          |
 
 **Pricing — use `retail_price`, never `price`.** `price` is the partner rate we are
 billed. `planPrice()` in `lib/api/mappers.ts` is the only place a customer-facing price
@@ -40,14 +40,15 @@ survive into the order.
 - [ ] **Disable the Pay button until Stripe is wired.** `PaymentStep.tsx` renders a
       button with no handler. Signed out it is correctly disabled; signed in it goes
       live, says "Pay €X", and silently does nothing when clicked.
-- [ ] **Compress `public/videos/hero.mp4`.** It is 35 MB — 90% of all static assets —
+- [x] **Compress `public/videos/hero.mp4`.** It is 35 MB — 90% of all static assets —
       autoplays with `preload="auto"` and has no poster frame. Target under 3 MB and add
       a poster.
 - [ ] **Terms of Service, Privacy Policy, cardholder-credential page** written, hosted
       and linked. Currently `href="#"` in `lib/auth/providers.ts`.
 - [ ] **Refund and support policy published.** The FAQ already promises "if a plan never
       connects, we refund it" against a policy that does not exist.
-- [ ] **Resolve every remaining `href="#"`** — all 12 footer links and 3 social links.
+- [ ] **Resolve the last `href="#"`** — the FAQ's "How it works" CTA (`Faq.tsx:81`). The
+      footer and social links now all point somewhere.
 
 ---
 
@@ -110,7 +111,12 @@ failure refunds instead of swallowing the money.
       `aud`, `exp`, `nonce` against Google's JWKS. Exact redirect-URI allowlist.
       **Reject any token whose email is not verified**, or someone signs in with an
       unverified account carrying a customer's address and receives their eSIMs.
-      Flip `ready: true` in `lib/auth/providers.ts` and drop the "on the way" copy.
+      Flip `ready: true` in `lib/auth/providers.ts`.
+- [ ] **Decide what "Delete account" does.** The button in `AccountAction.tsx` is a
+      placeholder with no handler. Yesim exposes no user-deletion endpoint, so closing an
+      account can only clear the session and our Redis keys — the upstream user survives
+      and a later sign-in with the same address reuses it. GDPR erasure needs an answer
+      from Yesim.
 - [ ] `proxy.ts` at the project root for optimistic cookie-presence redirects only.
       (Next 16 renamed Middleware to Proxy.) **Not** the authorization check — that
       stays `verifySession()` inside each data function.
@@ -146,15 +152,23 @@ failure refunds instead of swallowing the money.
       Unsubstantiated review claims are an advertising-law problem in the EU.
 - [ ] **Fix the FAQ.** It says compatibility is checked at checkout; the device dialog is
       on the destination page.
-- [ ] **Replace `heroPlaceholder`** — every destination shows the same Los Angeles photo
-      (`lib/assets.ts`). The API carries no hero image.
+- [ ] **Shoot or license the destination photos.** The plumbing is in: `lib/heroes.ts`
+      resolves `public/images/{countries,regions,global}/<slug>.<ext>` and falls back to
+      `fallback.jpg`. The folders are still empty, so every page shows the fallback.
+      Expected file names are listed in each folder's `.txt` (148 countries, 11 regions,
+      2 global); regenerate with `node --env-file=.env.local scripts/hero-names.mjs`.
+      Those `.txt` files sit under `public/` and are publicly served — move them if that
+      matters.
 - [ ] Delete or use `components/sections/home/Benefits.tsx` and `EveryMoment.tsx`. Both
       are complete section components that nothing imports.
 - [ ] Rewrite `README.md` — still create-next-app boilerplate referencing Geist and
       `app/page.tsx`.
 - [ ] Decide the upstream naming overrides: `MIDDLE EAST` is uppercase, `LATAM` / `SEA` /
       `CIS` are abbreviations, and they render as Yesim writes them.
-- [ ] Confirm `LATAM` and `Latin America` being separate destinations is intentional.
+- [ ] Confirm the duplicate destinations are intentional. Grouping the live catalog by
+      kind produces `LATAM` alongside `Latin America`, `Asia` alongside `Asia Pacific` and
+      `SEA`, and `Japan` as both a country and a region — each gets its own page, its own
+      hero photo and its own SEO surface.
 - [ ] **Stale-on-error.** A catalog failure after the cache expires renders `error.tsx`.
       Decide whether to serve the last good copy instead.
 
@@ -186,7 +200,8 @@ failure refunds instead of swallowing the money.
       template `lib/env.ts` tells people to copy is not in the repo. Add `!.env.example`.
       It is also missing `YESIM_API_BASE` and `REVALIDATE_SECRET`.
 - [ ] Production domain + TLS.
-- [ ] Env vars set in the host, separate values per environment.
+- [ ] Separate env var values per environment. They are set on Vercel today, but preview
+      and production share the one Yesim token and session secret.
 - [ ] Staging environment mirroring production.
 - [ ] Stripe live keys, webhook endpoint registered, signing secret set.
 - [ ] Analytics. Uptime monitoring on the site and on the Yesim API.
@@ -206,14 +221,14 @@ failure refunds instead of swallowing the money.
 
 ## Order of work
 
-| Work | Est. | Blocked by |
-|---|---|---|
-| Blocks launch (§1) | 1 day | — |
-| Payments and fulfillment (§2) | 5–6 days | — |
-| Auth remainder (§3) | 2–3 days | — |
-| Security hardening (§4) | 2 days | §2 |
-| Content, SEO (§5, §6) | 1–2 days | — |
-| Quality gates (§7) | 1 day | — |
-| Deployment, final pass (§8, §9) | 2–3 days | §4 |
+| Work                            | Est.     | Blocked by |
+| ------------------------------- | -------- | ---------- |
+| Blocks launch (§1)              | 1 day    | —          |
+| Payments and fulfillment (§2)   | 5–6 days | —          |
+| Auth remainder (§3)             | 2–3 days | —          |
+| Security hardening (§4)         | 2 days   | §2         |
+| Content, SEO (§5, §6)           | 1–2 days | —          |
+| Quality gates (§7)              | 1 day    | —          |
+| Deployment, final pass (§8, §9) | 2–3 days | §4         |
 
 §1, §5, §6 and §7 are blocked by nothing and can start immediately.

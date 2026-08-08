@@ -111,6 +111,42 @@
   }
 }
 
+/* Scrolls, shows nothing. The content itself has to hint that there is more. */
+@utility scroll-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* `scroll-subtle` for light-on-dark panels, this for dark-on-light ones. */
+@utility scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-ink) 22%, transparent)
+    transparent;
+
+  @supports not (scrollbar-color: auto) {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+      border: 0;
+      border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: color-mix(in srgb, var(--color-ink) 36%, transparent);
+    }
+  }
+}
+
 @layer base {
   html {
     overscroll-behavior-y: none;

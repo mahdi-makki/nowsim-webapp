@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { MdSearch } from "react-icons/md";
 
 import { Dialog } from "@/components/ui/Dialog";
+import { filterCountries } from "@/lib/search/match";
 import type { CoveredCountry } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
@@ -21,15 +22,9 @@ export function CoverageDialog({
 }) {
   const [query, setQuery] = useState("");
 
-  const search = query.trim().toLowerCase();
   const results = useMemo(
-    () =>
-      search
-        ? countries.filter((country) =>
-            country.name.toLowerCase().includes(search),
-          )
-        : countries,
-    [countries, search],
+    () => filterCountries(countries, query),
+    [countries, query],
   );
 
   return (
@@ -81,8 +76,7 @@ export function CoverageDialog({
 
         {results.length === 0 ? (
           <p className="py-6 text-sm text-white/60">
-            {query.trim()} isn&rsquo;t on this plan. Try another spelling, or
-            look for a country plan instead.
+            {`${query.trim()} isn’t on this plan. Try another spelling, or look for a country plan instead.`}
           </p>
         ) : (
           <ul className="flex flex-col">

@@ -1,11 +1,17 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { MdSearch } from "react-icons/md";
 
 import { DestinationCard } from "@/components/common/DestinationCard";
 import { Pressable } from "@/components/ui/Pressable";
-import type { DestinationFilter, DestinationSummary } from "@/lib/types";
+import { createSearchIndex, search } from "@/lib/search/match";
+import {
+  isDestinationFilter,
+  type DestinationFilter,
+  type DestinationSummary,
+} from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const tabs: { id: DestinationFilter; label: string; badge?: string }[] = [
@@ -14,6 +20,15 @@ const tabs: { id: DestinationFilter; label: string; badge?: string }[] = [
   { id: "region", label: "Regions" },
   { id: "global", label: "Global", badge: "New" },
 ];
+
+// One country reads at a glance in a pill; the rest become a count.
+function coverageNote(hits: string[]): string | undefined {
+  if (!hits.length) return undefined;
+
+  return hits.length > 1
+    ? `Includes ${hits[0]} +${hits.length - 1}`
+    : `Includes ${hits[0]}`;
+}
 
 export function AllDestinations({
   destinations,
@@ -24,26 +39,63 @@ export function AllDestinations({
   initialQuery?: string;
   initialKind?: DestinationFilter;
 }) {
-  const [active, setActive] = useState<DestinationFilter>(initialKind);
-  const [query, setQuery] = useState(initialQuery);
-  const [seed, setSeed] = useState({ query: initialQuery, kind: initialKind });
+  const router = useRouter();
+  const params = useSearchParams();
   const tablistRef = useRef<HTMLDivElement>(null);
 
-  if (initialQuery !== seed.query || initialKind !== seed.kind) {
-    setSeed({ query: initialQuery, kind: initialKind });
-    setQuery(initialQuery);
-    setActive(initialKind);
+  // The URL is the source of truth, not a prop. `/destinations?kind=region` and
+  // `?kind=global` share a pathname, so the router reuses the cached payload it
+  // already has and the server props arrive stale — the tab would not move.
+  const kindParam = params.get("kind") ?? undefined;
+  const active: DestinationFilter = isDestinationFilter(kindParam)
+    ? kindParam
+    : initialKind;
+
+  const queryParam = params.get("q") ?? initialQuery;
+
+  const [query, setQuery] = useState(queryParam);
+  const [seed, setSeed] = useState(queryParam);
+
+  if (queryParam !== seed) {
+    setSeed(queryParam);
+    setQuery(queryParam);
   }
 
-  const results = useMemo(() => {
-    const needle = query.trim().toLowerCase();
+  function select(kind: DestinationFilter) {
+    const next = new URLSearchParams(params);
 
-    return destinations.filter((destination) => {
-      if (active !== "all" && destination.kind !== active) return false;
+    if (kind === "all") next.delete("kind");
+    else next.set("kind", kind);
 
-      return !needle || destination.name.toLowerCase().includes(needle);
+    const search = next.toString();
+
+    router.replace(search ? `/destinations?${search}` : "/destinations", {
+      scroll: false,
     });
-  }, [active, destinations, query]);
+  }
+
+  const index = useMemo(() => createSearchIndex(destinations), [destinations]);
+
+  const results = useMemo(() => {
+    const byKind = (kind: DestinationFilter) =>
+      active === "all" || kind === active;
+
+    if (!query.trim()) {
+      return destinations
+        .filter((destination) => byKind(destination.kind))
+        .map((destination) => ({ destination, coverageHits: [] as string[] }));
+    }
+
+    return search(index, query).filter(({ destination }) =>
+      byKind(destination.kind),
+    );
+  }, [active, destinations, index, query]);
+
+  // A plan that merely covers the searched country is a different answer to a
+  // plan that is it, so the two do not belong in one run of cards.
+  const direct = results.filter(({ coverageHits }) => !coverageHits.length);
+  const covering = results.filter(({ coverageHits }) => coverageHits.length);
+
 
   const onTablistKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
@@ -61,7 +113,7 @@ export function AllDestinations({
             ? (index - 1 + tabs.length) % tabs.length
             : (index + 1) % tabs.length;
 
-    setActive(tabs[next].id);
+    select(tabs[next].id);
     tablistRef.current
       ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
       [next]?.focus();
@@ -128,7 +180,7 @@ export function AllDestinations({
                 aria-selected={selected}
                 aria-controls="all-destinations-panel"
                 tabIndex={selected ? 0 : -1}
-                onClick={() => setActive(tab.id)}
+                onClick={() => select(tab.id)}
                 className={cn(
                   "gap-2 rounded-full px-5 py-2.5 text-sm font-medium md:px-6 md:py-3 md:text-base",
                   selected ? "bg-ink text-white" : "text-ink/60 hover:text-ink",
@@ -163,13 +215,36 @@ export function AllDestinations({
         </p>
 
         {results.length ? (
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
-            {results.map((destination) => (
-              <li key={`${destination.kind}/${destination.slug}`}>
-                <DestinationCard destination={destination} />
-              </li>
-            ))}
-          </ul>
+          <>
+            {direct.length ? (
+              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+                {direct.map(({ destination }) => (
+                  <li key={`${destination.kind}/${destination.slug}`}>
+                    <DestinationCard destination={destination} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            {covering.length ? (
+              <section className={direct.length ? "mt-10" : undefined}>
+                <h2 className="text-sm font-bold uppercase tracking-[0.08em] text-muted">
+                  Other plans
+                </h2>
+
+                <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+                  {covering.map(({ destination, coverageHits }) => (
+                    <li key={`${destination.kind}/${destination.slug}`}>
+                      <DestinationCard
+                        destination={destination}
+                        note={coverageNote(coverageHits)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </>
         ) : (
           <p className="rounded-card bg-surface-soft px-6 py-12 text-center text-lg text-muted">
             Nothing matches &ldquo;{query.trim()}&rdquo; yet. Try a country,
