@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { MdCheck, MdContentCopy, MdPerson } from "react-icons/md";
+import {
+  MdCheck,
+  MdContentCopy,
+  MdLogout,
+  MdPerson,
+  MdSimCard,
+} from "react-icons/md";
 
 import { signOut } from "@/app/actions/auth";
 import { SignInDialog } from "@/components/layout/SignInDialog";
@@ -26,6 +32,36 @@ export function AccountActionFallback() {
 }
 
 const row = "w-full rounded-control bg-white/10 px-4 py-3.5 text-base";
+
+// `cn` only joins and Tailwind emits conflicting utilities in alphabetical
+// order, so the base holds nothing a row wants to override — background and
+// font weight are stated per row instead.
+const menuBase = cn(
+  "w-full justify-between gap-3 rounded-control px-4 py-3.5",
+  "text-left text-base",
+);
+
+const menuItem = cn(
+  menuBase,
+  "font-semibold",
+  "bg-white/10 enabled:hover:bg-white/20 enabled:active:bg-white/20",
+);
+
+const menuWhite = cn(
+  menuBase,
+  "font-semibold",
+  "bg-white text-ink",
+  "enabled:hover:bg-white/85 enabled:active:bg-white/85",
+);
+
+const menuLeave = cn(
+  menuBase,
+  "font-bold",
+  "bg-danger/20 text-danger",
+  "enabled:hover:bg-danger/30 enabled:active:bg-danger/30",
+);
+
+const menuLabel = "flex min-w-0 items-center gap-3";
 
 function CopyId({ userId }: { userId: string }) {
   const [copied, setCopied] = useState(false);
@@ -76,10 +112,12 @@ export function AccountAction() {
   const setAccount = useSetAccount();
   const router = useRouter();
 
-  const [open, setOpen] = useState(false);
+  // "menu" is the short list behind the avatar; "details" is the account sheet
+  // it opens onto.
+  const [view, setView] = useState<"menu" | "details" | null>(null);
   const [leaving, startLeaving] = useTransition();
 
-  const close = useCallback(() => setOpen(false), []);
+  const close = useCallback(() => setView(null), []);
 
   function leave() {
     startLeaving(async () => {
@@ -97,14 +135,14 @@ export function AccountAction() {
         <Pressable
           hit
           aria-haspopup="dialog"
-          aria-expanded={open}
-          onClick={() => setOpen(true)}
+          aria-expanded={view !== null}
+          onClick={() => setView("menu")}
           className={trigger}
         >
           Sign in
         </Pressable>
 
-        <SignInDialog open={open} onClose={close} />
+        <SignInDialog open={view !== null} onClose={close} />
       </>
     );
   }
@@ -114,8 +152,8 @@ export function AccountAction() {
       <Pressable
         hit
         aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={() => setOpen(true)}
+        aria-expanded={view !== null}
+        onClick={() => setView("menu")}
         className={cn(
           "h-10 w-10 rounded-full bg-volt text-ink",
           "hover:bg-ink-deep hover:text-volt active:bg-ink-deep active:text-volt",
@@ -125,43 +163,75 @@ export function AccountAction() {
         <span className="sr-only">Your account</span>
       </Pressable>
 
-      <Dialog open={open} onClose={close} title="Your account">
+      <Dialog open={view === "menu"} onClose={close} title="Your account">
+        <ul className="mt-6 flex flex-col gap-3">
+          <li>
+            {/* A link, not a button: `enabled:` never matches an anchor, so
+                the hover state is restated without the variant. */}
+            <Pressable
+              href="/esims"
+              onClick={close}
+              className={cn(menuWhite, "hover:bg-white/85 active:bg-white/85")}
+            >
+              <span className={menuLabel}>
+                <MdSimCard aria-hidden className="h-5 w-5 shrink-0" />
+                My eSIMs
+              </span>
+            </Pressable>
+          </li>
+
+          <li>
+            <Pressable
+              aria-haspopup="dialog"
+              onClick={() => setView("details")}
+              className={menuItem}
+            >
+              <span className={menuLabel}>
+                <MdPerson aria-hidden className="h-5 w-5 shrink-0" />
+                Account
+              </span>
+            </Pressable>
+          </li>
+
+          <li>
+            <Pressable onClick={leave} disabled={leaving} className={menuLeave}>
+              <span className={menuLabel}>
+                <MdLogout aria-hidden className="h-5 w-5 shrink-0" />
+                {leaving ? "Logging out…" : "Log out"}
+              </span>
+            </Pressable>
+          </li>
+        </ul>
+      </Dialog>
+
+      <Dialog
+        open={view === "details"}
+        onClose={close}
+        onBack={() => setView("menu")}
+        title="Account"
+      >
         <div className={cn(row, "mt-6 flex items-center gap-3")}>
           <MdPerson aria-hidden className="h-5 w-5 shrink-0 text-white/55" />
           <p className="min-w-0 flex-1 truncate">{account.email}</p>
         </div>
 
         <p className="mt-2 text-sm text-white/55">
-          Signed in via {providerNames[account.provider]}. Your eSIM, QR code and
-          receipt go to this address.
+          Signed in via {providerNames[account.provider]}. Your eSIM, QR code
+          and receipt go to this address.
         </p>
 
         <div className="mt-4">
           <CopyId userId={account.userId} />
         </div>
 
-        <div className="mt-6 flex gap-3">
-          <Pressable
-            onClick={leave}
-            disabled={leaving}
-            className={cn(
-              "flex-1 rounded-control px-5 py-3.5 text-base font-bold",
-              "bg-white text-ink hover:bg-white/85 active:bg-white/85",
-            )}
-          >
-            {leaving ? "Signing out…" : "Sign out"}
-          </Pressable>
-
-          <Pressable
-            disabled={leaving}
-            className={cn(
-              "flex-1 rounded-control px-5 py-3.5 text-base font-bold",
-              "bg-danger/20 text-danger hover:bg-danger/30 active:bg-danger/30",
-            )}
-          >
-            Delete account
-          </Pressable>
-        </div>
+        <Pressable
+          className={cn(
+            "mt-6 w-full rounded-control px-5 py-3.5 text-base font-bold",
+            "bg-danger/20 text-danger hover:bg-danger/30 active:bg-danger/30",
+          )}
+        >
+          Delete account
+        </Pressable>
       </Dialog>
     </>
   );

@@ -120,7 +120,9 @@ failure refunds instead of swallowing the money.
 - [ ] `proxy.ts` at the project root for optimistic cookie-presence redirects only.
       (Next 16 renamed Middleware to Proxy.) **Not** the authorization check — that
       stays `verifySession()` inside each data function.
-- [ ] Account page reading `GET /user` and `GET /orders`.
+- [ ] Order history reading `GET /orders`. `GET /user` is done — `/esims` renders it
+      (`lib/data/esims.ts`). Plan names there depend on `active_plan_id` matching a
+      catalog `id` or `old_id`; older eSIMs report neither and render without a name.
 - [ ] Add a per-IP verify limit. Attempts are capped per code (5) and per address via the
       send limit, which works out at 25 guesses an hour.
 

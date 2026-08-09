@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import { SessionProvider } from "@/components/layout/SessionProvider";
+import { getAccount } from "@/lib/auth/dal";
+
 import "./globals.css";
 
 const satoshi = localFont({
@@ -33,7 +36,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${satoshi.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* One provider for every route group: the site pages and checkout
+            share a single instance, so a sign-in or sign-out on either side
+            survives the client-side navigation between them. */}
+        <SessionProvider account={getAccount()}>{children}</SessionProvider>
+      </body>
     </html>
   );
 }
