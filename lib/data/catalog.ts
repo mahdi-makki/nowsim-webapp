@@ -10,8 +10,9 @@ import type {
   Destination,
   DestinationKind,
   DestinationSummary,
+  PlanRef,
 } from "@/lib/types";
-import { toSummary } from "@/lib/types";
+import { destinationHref, toSummary } from "@/lib/types";
 
 export const CATALOG_TAG = "catalog";
 
@@ -64,6 +65,34 @@ export async function getFeaturedSummaries(
     .filter((entry): entry is DestinationSummary => entry !== undefined);
 
   return picked.length ? picked : available.slice(0, fallbackCount[kind]);
+}
+
+/**
+ * Plan id → what to call it, for the eSIMs page. Yesim reports an eSIM's plan
+ * by id only, and older eSIMs report the pre-migration numeric id, so both are
+ * keys into the same entry.
+ */
+export async function getPlanIndex(): Promise<Map<string, PlanRef>> {
+  const destinations = await getDestinations();
+
+  const index = new Map<string, PlanRef>();
+
+  for (const destination of destinations) {
+    for (const plan of destination.plans) {
+      const ref: PlanRef = {
+        destination: destination.name,
+        href: destinationHref(destination.kind, destination.slug),
+        data: plan.data,
+        days: plan.days,
+      };
+
+      index.set(plan.id, ref);
+
+      if (plan.legacyId) index.set(plan.legacyId, ref);
+    }
+  }
+
+  return index;
 }
 
 export async function getDestinationParams(): Promise<

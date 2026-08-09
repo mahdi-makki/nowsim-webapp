@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentProps, ComponentPropsWithoutRef } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -24,8 +24,10 @@ type PressableOwnProps = {
   press?: boolean;
 };
 
+// ComponentProps, not ...WithoutRef: React 19 passes ref straight through as a
+// prop, and the plan-type tablist needs one to move focus between tabs.
 type PressableButtonProps = PressableOwnProps &
-  ComponentPropsWithoutRef<"button"> & { href?: undefined };
+  ComponentProps<"button"> & { href?: undefined };
 
 type PressableLinkProps = PressableOwnProps &
   ComponentPropsWithoutRef<typeof Link> & { href: string };

@@ -60,6 +60,46 @@ export const newUserResponseSchema = z.object({
   alreadyExist: numeric.optional(),
 });
 
+// Yesim sends ids as strings today and as numbers on a couple of endpoints.
+const id = z.union([z.string(), z.number()]).transform(String);
+
+// `/user` omits whole fields on eSIMs that never carried a plan, so every field
+// past the identity is optional: one odd eSIM must not blank the whole page.
+export const esimSchema = z.object({
+  id,
+  iccid: z.string().default(""),
+  created_at: z.string().nullish(),
+  active_plan_id: id.nullish(),
+  plan_activated_at: z.string().nullish(),
+  plan_expired_at: z.string().nullish(),
+  qrcode: z.string().nullish(),
+  status_qr: z.string().nullish(),
+  is_deleted: z.union([z.string(), z.number()]).nullish(),
+  img: z.string().nullish(),
+  data_left_mb: numeric.nullish(),
+  data_package_mb: numeric.nullish(),
+  data_used_mb: numeric.nullish(),
+  ios_tap_link: z.string().nullish(),
+  networkinfo: z
+    .object({
+      time: z.string().nullish(),
+      lastRat: z.string().nullish(),
+    })
+    .nullish(),
+});
+
+export type ApiEsim = z.infer<typeof esimSchema>;
+
+export const userResponseSchema = z.object({
+  id,
+  email: z.string().default(""),
+  created_at: z.string().nullish(),
+  esim_change_count: numeric.nullish(),
+  esims: z.array(esimSchema).default([]),
+});
+
+export type ApiUser = z.infer<typeof userResponseSchema>;
+
 export const supportedDevicesResponseSchema = z.union([
   z.array(deviceTypeSchema),
   z

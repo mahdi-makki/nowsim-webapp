@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useId, useState } from "react";
+import type { KeyboardEvent } from "react";
+import { useCallback, useId, useRef, useState } from "react";
 import { MdStar, MdVerifiedUser } from "react-icons/md";
 
 import { ActivationNote } from "@/components/sections/destinations/ActivationNote";
@@ -35,6 +36,22 @@ const cardIdle = cn(
 
 const cardPicked = "border-brand bg-brand/5";
 
+const tab = cn(
+  "rounded-full px-5 py-2 text-sm font-medium",
+  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+);
+
+const tabActive = cn(tab, "bg-ink text-white");
+
+const tabIdle = cn(tab, "text-muted hover:bg-surface-soft hover:text-ink");
+
+const tabs = [
+  { id: "fixed", label: "Prepaid plans" },
+  { id: "unlimited", label: "Unlimited plans" },
+] as const;
+
+type TabId = (typeof tabs)[number]["id"];
+
 export function PlanPicker({
   plans,
   destinationName,
@@ -50,26 +67,101 @@ export function PlanPicker({
 }) {
   const groupId = useId();
 
-  const [selectedId, setSelectedId] = useState(() => plans[0].id);
+  const groups: Record<TabId, Plan[]> = {
+    fixed: plans.filter((plan) => !plan.unlimited),
+    unlimited: plans.filter((plan) => plan.unlimited),
+  };
+
+  // Only worth a tablist when both kinds are on offer for this destination.
+  const tabbed = groups.fixed.length > 0 && groups.unlimited.length > 0;
+
+  const [activeTab, setActiveTab] = useState<TabId>(() =>
+    groups.fixed.length > 0 ? "fixed" : "unlimited",
+  );
+
+  const shownPlans = tabbed ? groups[activeTab] : plans;
+
+  const [selectedId, setSelectedId] = useState(() => shownPlans[0].id);
 
   const [quantity, setQuantity] = useState(1);
 
   const [deviceOpen, setDeviceOpen] = useState(false);
   const closeDevices = useCallback(() => setDeviceOpen(false), []);
 
-  const selectedPlan = plans.find((plan) => plan.id === selectedId) ?? plans[0];
+  const tabRefs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({});
+
+  // Switching tabs moves the selection with it, so checkout can never point at
+  // a plan the grid is hiding.
+  const pickTab = (id: TabId) => {
+    setActiveTab(id);
+    setSelectedId(groups[id][0].id);
+  };
+
+  const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const step =
+      event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+
+    if (step === 0) return;
+
+    event.preventDefault();
+
+    const current = tabs.findIndex(({ id }) => id === activeTab);
+    const next = tabs[(current + step + tabs.length) % tabs.length];
+
+    pickTab(next.id);
+    tabRefs.current[next.id]?.focus();
+  };
+
+  const selectedPlan =
+    shownPlans.find((plan) => plan.id === selectedId) ?? shownPlans[0];
 
   const total = formatMoney(scaleMoney(selectedPlan.price, quantity));
 
   return (
     <>
-      <fieldset className="mt-6">
+      {tabbed && (
+        <div
+          role="tablist"
+          aria-label={`Plan type for ${destinationName}`}
+          className="mt-6 inline-flex items-center gap-1 rounded-full border border-hairline p-1"
+        >
+          {tabs.map(({ id, label }) => {
+            const active = id === activeTab;
+
+            return (
+              <Pressable
+                key={id}
+                ref={(node) => {
+                  tabRefs.current[id] = node;
+                }}
+                id={`${groupId}-tab-${id}`}
+                role="tab"
+                aria-selected={active}
+                aria-controls={`${groupId}-panel`}
+                tabIndex={active ? 0 : -1}
+                onClick={() => pickTab(id)}
+                onKeyDown={onTabKeyDown}
+                className={active ? tabActive : tabIdle}
+              >
+                {label}
+              </Pressable>
+            );
+          })}
+        </div>
+      )}
+
+      <fieldset
+        id={tabbed ? `${groupId}-panel` : undefined}
+        role={tabbed ? "tabpanel" : undefined}
+        aria-labelledby={tabbed ? `${groupId}-tab-${activeTab}` : undefined}
+        className={tabbed ? "mt-4" : "mt-6"}
+      >
         <legend className="sr-only">
           Choose a data plan for {destinationName}
         </legend>
 
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {plans.map((plan) => {
+          {shownPlans.map((plan) => {
             const inputId = `${groupId}-${plan.id}`;
             const picked = plan.id === selectedId;
 

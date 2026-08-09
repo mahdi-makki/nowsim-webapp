@@ -47,6 +47,9 @@ export type Plan = {
   unlimited: boolean;
   days: number;
   price: Money;
+  /** Yesim's pre-migration numeric id. Older eSIMs still report it as their
+   *  `active_plan_id`, so it is what names the plan on the eSIMs page. */
+  legacyId?: string;
 };
 
 export type CoveredCountry = {
@@ -75,6 +78,8 @@ export type Destination = DestinationSummary & {
   coversList?: CoveredCountry[];
   plans: Plan[];
   apn?: string;
+  /** Carrier names the eSIM roams onto, pooled from every plan and sorted. */
+  operators: string[];
 };
 
 export function toSummary(destination: Destination): DestinationSummary {
@@ -88,3 +93,57 @@ export type DeviceGroup = {
   label: string;
   devices: string[];
 };
+
+/**
+ * `active` — a plan is running on it.
+ * `ready` — installed or installable, but no plan is running.
+ * `expired` — its last plan has run out.
+ * `removed` — deleted from the device or from the account upstream.
+ */
+export type EsimState = "active" | "ready" | "expired" | "removed";
+
+export type EsimUsage = {
+  usedMb: number;
+  totalMb: number;
+  leftMb: number;
+};
+
+/** What the catalog knows about the plan an eSIM is running. */
+export type PlanRef = {
+  destination: string;
+  href: string;
+  data: string;
+  days: number;
+};
+
+export type Esim = {
+  id: string;
+  iccid: string;
+  state: EsimState;
+  /** Absent when the running plan's id is no longer in the catalog. */
+  plan?: PlanRef;
+  activatedAt?: string;
+  expiresAt?: string;
+  /** Whole days until `expiresAt`, floored at 0. Computed server-side so the
+   *  browser cannot render a different number than the HTML it hydrates. */
+  daysLeft?: number;
+  usage?: EsimUsage;
+  /** The `LPA:1$...` string a phone needs to install the eSIM by hand. */
+  activationCode?: string;
+  /** Data-URI PNG of the same code, straight from Yesim. */
+  qrImage?: string;
+  iosTapLink?: string;
+  /** Last radio Yesim saw it on, e.g. "4G - LTE". */
+  network?: string;
+};
+
+export const esimStateLabels: Record<EsimState, string> = {
+  active: "Active",
+  ready: "Ready to use",
+  expired: "Expired",
+  removed: "Removed",
+};
+
+export function isArchivedEsim(esim: Esim): boolean {
+  return esim.state === "expired" || esim.state === "removed";
+}

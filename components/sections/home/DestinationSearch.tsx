@@ -11,7 +11,7 @@ import { createSearchIndex, search } from "@/lib/search/match";
 import { destinationHref, type DestinationSummary } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
-const SUGGESTIONS = 6;
+const SUGGESTIONS = 3;
 
 const kindNames = { country: "Country", region: "Region", global: "Global" };
 

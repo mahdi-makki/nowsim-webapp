@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { CoverageBlurb } from "@/components/sections/destinations/CoverageBlurb";
+import { NetworkFacts } from "@/components/sections/destinations/NetworkFacts";
 import { PlanPicker } from "@/components/sections/destinations/PlanPicker";
 import { Faq } from "@/components/common/Faq";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -49,7 +50,8 @@ export default async function DestinationPage({ params }: PageProps) {
 
   const deviceGroups = await getDeviceGroups();
 
-  const { name, art, hero, blurb, kind, coversList, plans } = destination;
+  const { name, art, hero, blurb, kind, coversList, plans, operators } =
+    destination;
 
   return (
     <>
@@ -69,7 +71,7 @@ export default async function DestinationPage({ params }: PageProps) {
                 ]}
               />
 
-              <div className="relative aspect-square overflow-hidden rounded-sheet bg-surface-soft">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-sheet bg-surface-soft">
                 <Image
                   src={hero}
                   alt=""
@@ -80,6 +82,12 @@ export default async function DestinationPage({ params }: PageProps) {
                   className="object-cover"
                 />
               </div>
+
+              <NetworkFacts
+                kind={kind}
+                operators={operators}
+                className="mt-8"
+              />
             </div>
 
             <div className="lg:pt-[4.5rem]">

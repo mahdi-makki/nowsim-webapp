@@ -1,4 +1,4 @@
-import type { ApiPlan } from "@/lib/api/schemas";
+import type { ApiEsim, ApiPlan } from "@/lib/api/schemas";
 import { blurbFor } from "@/lib/copy";
 import { heroFor } from "@/lib/heroes";
 import { money, type Money } from "@/lib/money";
@@ -7,7 +7,11 @@ import type {
   CoveredCountry,
   Destination,
   DestinationKind,
+  Esim,
+  EsimState,
+  EsimUsage,
   Plan,
+  PlanRef,
 } from "@/lib/types";
 
 const collator = new Intl.Collator("en");
@@ -68,6 +72,7 @@ function toPlan(plan: ApiPlan): Plan {
     unlimited: data === UNLIMITED,
     days: plan.days,
     price: planPrice(plan),
+    legacyId: plan.old_id ?? undefined,
   };
 }
 
@@ -127,7 +132,11 @@ function coverageOf(
   return [...names].sort(collator.compare).map((name) => {
     const known = facts.get(name.toLowerCase());
 
-    return { name, art: known?.art, codes: known?.codes } satisfies CoveredCountry;
+    return {
+      name,
+      art: known?.art,
+      codes: known?.codes,
+    } satisfies CoveredCountry;
   });
 }
 
@@ -143,6 +152,18 @@ function codesOf(apiPlans: ApiPlan[]): string[] {
   }
 
   return [...codes];
+}
+
+// A handful of destinations list different carriers on different plans, so the
+// page shows the union rather than whatever the first plan happened to carry.
+function operatorsOf(apiPlans: ApiPlan[]): string[] {
+  const names = new Set<string>();
+
+  for (const plan of apiPlans) {
+    for (const operator of plan.operators) names.add(operator);
+  }
+
+  return [...names].sort(collator.compare);
 }
 
 function build(
@@ -174,7 +195,110 @@ function build(
     coversList: kind === "country" ? undefined : coversList,
     plans,
     apn: first.apn,
+    operators: operatorsOf(apiPlans),
   };
+}
+
+const DAY_MS = 86_400_000;
+
+const YESIM_STAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+
+// Yesim stamps read "2025-05-08 10:09:30" — no zone, and they are UTC.
+function toIso(value: string | null | undefined): string | undefined {
+  const raw = value?.trim();
+
+  if (!raw) return undefined;
+
+  const parsed = Date.parse(
+    YESIM_STAMP.test(raw) ? `${raw.replace(" ", "T")}Z` : raw,
+  );
+
+  return Number.isNaN(parsed) ? undefined : new Date(parsed).toISOString();
+}
+
+function clamp(value: number, max: number): number {
+  return Math.min(Math.max(value, 0), max);
+}
+
+// `data_left_mb` and `data_used_mb` are both absent on eSIMs that never carried
+// a plan, and either one can stand in for the other when only one arrives.
+function toUsage(esim: ApiEsim): EsimUsage | undefined {
+  const totalMb = esim.data_package_mb ?? 0;
+
+  if (totalMb <= 0) return undefined;
+
+  const leftMb = clamp(
+    esim.data_left_mb ?? totalMb - (esim.data_used_mb ?? 0),
+    totalMb,
+  );
+
+  const usedMb = clamp(esim.data_used_mb ?? totalMb - leftMb, totalMb);
+
+  return { usedMb, totalMb, leftMb };
+}
+
+function toState(
+  esim: ApiEsim,
+  expiresAt: string | undefined,
+  now: number,
+): EsimState {
+  if (String(esim.is_deleted ?? "0") === "1") return "removed";
+
+  if ((esim.status_qr ?? "").toLowerCase() === "deleted") return "removed";
+
+  if (expiresAt) return Date.parse(expiresAt) > now ? "active" : "expired";
+
+  return esim.active_plan_id ? "active" : "ready";
+}
+
+const stateRank: Record<EsimState, number> = {
+  active: 0,
+  ready: 1,
+  expired: 2,
+  removed: 3,
+};
+
+// Soonest to run out leads the active list; most recently used leads the rest.
+function byUrgency(a: Esim, b: Esim): number {
+  const rank = stateRank[a.state] - stateRank[b.state];
+
+  if (rank !== 0) return rank;
+
+  const left = Date.parse(a.expiresAt ?? a.activatedAt ?? "") || 0;
+  const right = Date.parse(b.expiresAt ?? b.activatedAt ?? "") || 0;
+
+  return a.state === "active" ? left - right : right - left;
+}
+
+export function toEsims(
+  apiEsims: ApiEsim[],
+  plans: Map<string, PlanRef>,
+  now: number = Date.now(),
+): Esim[] {
+  return apiEsims
+    .map((esim) => {
+      const expiresAt = toIso(esim.plan_expired_at);
+      const state = toState(esim, expiresAt, now);
+
+      return {
+        id: esim.id,
+        iccid: esim.iccid,
+        state,
+        plan: esim.active_plan_id ? plans.get(esim.active_plan_id) : undefined,
+        activatedAt: toIso(esim.plan_activated_at),
+        expiresAt,
+        daysLeft:
+          state === "active" && expiresAt
+            ? Math.max(Math.ceil((Date.parse(expiresAt) - now) / DAY_MS), 0)
+            : undefined,
+        usage: toUsage(esim),
+        activationCode: esim.qrcode ?? undefined,
+        qrImage: esim.img ?? undefined,
+        iosTapLink: esim.ios_tap_link ?? undefined,
+        network: esim.networkinfo?.lastRat ?? undefined,
+      } satisfies Esim;
+    })
+    .sort(byUrgency);
 }
 
 export function toDestinations(apiPlans: ApiPlan[]): Destination[] {

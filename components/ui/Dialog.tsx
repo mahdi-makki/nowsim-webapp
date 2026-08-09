@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
-import { MdClose } from "react-icons/md";
+import { MdArrowBack, MdClose } from "react-icons/md";
 
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
@@ -19,12 +25,15 @@ const onServer = () => false;
 export function Dialog({
   open,
   onClose,
+  onBack,
   title,
   className,
   children,
 }: {
   open: boolean;
   onClose: () => void;
+  /** Turns the corner button into a back arrow. Escape still closes outright. */
+  onBack?: () => void;
   title: ReactNode;
   className?: string;
   children: ReactNode;
@@ -57,7 +66,10 @@ export function Dialog({
       const last = items[items.length - 1];
       const active = document.activeElement;
 
-      if (event.shiftKey && (active === first || !panelRef.current?.contains(active))) {
+      if (
+        event.shiftKey &&
+        (active === first || !panelRef.current?.contains(active))
+      ) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && active === last) {
@@ -109,7 +121,9 @@ export function Dialog({
         className={cn(
           "relative w-full max-w-[27rem]",
           "transition-[transform,opacity] duration-300",
-          open ? "scale-100 opacity-100 ease-pop" : "scale-95 opacity-0 ease-ios",
+          open
+            ? "scale-100 opacity-100 ease-pop"
+            : "scale-95 opacity-0 ease-ios",
           "motion-reduce:scale-100 motion-reduce:transition-none",
           className,
         )}
@@ -121,7 +135,7 @@ export function Dialog({
           )}
         >
           <Pressable
-            onClick={onClose}
+            onClick={onBack ?? onClose}
             className={cn(
               "absolute right-4 top-4 h-9 w-9 rounded-full",
               "after:absolute after:left-1/2 after:top-1/2 after:content-['']",
@@ -130,8 +144,12 @@ export function Dialog({
               "hover:bg-white/20 hover:text-white active:bg-white/20",
             )}
           >
-            <MdClose aria-hidden className="h-5 w-5" />
-            <span className="sr-only">Close</span>
+            {onBack ? (
+              <MdArrowBack aria-hidden className="h-5 w-5" />
+            ) : (
+              <MdClose aria-hidden className="h-5 w-5" />
+            )}
+            <span className="sr-only">{onBack ? "Back" : "Close"}</span>
           </Pressable>
 
           <h2 id={titleId} className="pr-12 text-h3 font-bold">
