@@ -1,7 +1,6 @@
 import { MdCheckCircle } from "react-icons/md";
 
 import { NetworkLink } from "@/components/sections/destinations/NetworkLink";
-import type { DestinationKind } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
 const heading = "text-base font-bold tracking-[-0.02em]";
@@ -15,12 +14,14 @@ const fact = "text-sm text-muted";
 
 const value = "font-bold text-ink";
 
+// Past this many carriers the pills wrap into a wall of text, so the list moves
+// into a searchable dialog instead.
+const pillLimit = 10;
+
 export function NetworkFacts({
-  kind,
   operators,
   className,
 }: {
-  kind: DestinationKind;
   operators: string[];
   className?: string;
 }) {
@@ -30,9 +31,7 @@ export function NetworkFacts({
         <div>
           <h2 className={heading}>Available networks</h2>
 
-          {/* A region or global plan roams on hundreds of carriers — too many
-              to lay out as pills, so they move into a searchable dialog. */}
-          {kind === "country" ? (
+          {operators.length <= pillLimit ? (
             <ul className="mt-2 flex flex-wrap gap-2">
               {operators.map((operator) => (
                 <li key={operator} className={pill}>

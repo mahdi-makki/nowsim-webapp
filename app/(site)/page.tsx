@@ -1,7 +1,7 @@
-import { Hero } from "@/components/sections/home/Hero";
-import { Destinations } from "@/components/sections/home/Destinations";
-import { About } from "@/components/sections/home/About";
-import { HowItWorks } from "@/components/sections/home/HowItWorks";
+import { Hero } from "@/components/sections/main/Hero";
+import { Destinations } from "@/components/sections/main/Destinations";
+import { About } from "@/components/sections/main/About";
+import { HowItWorks } from "@/components/sections/main/HowItWorks";
 import { Faq } from "@/components/common/Faq";
 import {
   getDestinationSummaries,

@@ -112,6 +112,8 @@ export type EsimUsage = {
 export type PlanRef = {
   destination: string;
   href: string;
+  /** The destination's artwork, so an eSIM can show where it works. */
+  art: string;
   data: string;
   days: number;
 };
@@ -133,6 +135,9 @@ export type Esim = {
   /** Data-URI PNG of the same code, straight from Yesim. */
   qrImage?: string;
   iosTapLink?: string;
+  /** This eSIM has install credentials, but they were withheld because the
+   *  session has not proved identity recently. Ask for a code, then re-read. */
+  installLocked?: boolean;
   /** Last radio Yesim saw it on, e.g. "4G - LTE". */
   network?: string;
 };

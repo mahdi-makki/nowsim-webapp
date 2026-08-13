@@ -275,7 +275,7 @@ function CodeStep({
             disabled={resending || remaining > 0}
             className={cn(
               button,
-              remaining > 0 || resending ? tone.inert : tone.secondary,
+              remaining > 0 || resending ? tone.inert : tone.primary,
             )}
           >
             {remaining > 0 ? `Resend: ${clock(remaining)}` : "Resend"}

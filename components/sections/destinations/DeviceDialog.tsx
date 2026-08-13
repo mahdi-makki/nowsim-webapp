@@ -5,23 +5,9 @@ import { MdCheck, MdExpandMore, MdSearch } from "react-icons/md";
 
 import { Dialog } from "@/components/ui/Dialog";
 import { Pressable } from "@/components/ui/Pressable";
+import { deviceQuery, filterDeviceGroups } from "@/lib/devices";
 import type { DeviceGroup } from "@/lib/types";
 import { cn } from "@/lib/cn";
-
-function matches(device: string, query: string) {
-  return device.toLowerCase().includes(query);
-}
-
-function filterGroups(groups: DeviceGroup[], query: string): DeviceGroup[] {
-  if (!query) return groups;
-
-  return groups
-    .map((group) => ({
-      ...group,
-      devices: group.devices.filter((device) => matches(device, query)),
-    }))
-    .filter((group) => group.devices.length > 0);
-}
 
 export function DeviceDialog({
   open,
@@ -36,10 +22,10 @@ export function DeviceDialog({
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const search = query.trim().toLowerCase();
+  const search = deviceQuery(query);
 
   const groups = useMemo(
-    () => filterGroups(deviceGroups, search),
+    () => filterDeviceGroups(deviceGroups, search),
     [deviceGroups, search],
   );
 

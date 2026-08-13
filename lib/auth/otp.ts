@@ -1,9 +1,8 @@
 import "server-only";
 
-import { Redis } from "@upstash/redis";
-import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
+import { randomInt, timingSafeEqual } from "node:crypto";
 
-import { authEnv } from "@/lib/auth/env";
+import { digest, redis } from "@/lib/auth/redis";
 
 const TTL_SECONDS = 5 * 60;
 
@@ -15,23 +14,6 @@ const LIMITS = {
   email: { max: 5, window: 60 * 60 },
   ip: { max: 20, window: 60 * 60 },
 } as const;
-
-let client: Redis | null = null;
-
-function redis(): Redis {
-  const env = authEnv();
-
-  client ??= new Redis({
-    url: env.UPSTASH_REDIS_REST_URL,
-    token: env.UPSTASH_REDIS_REST_TOKEN,
-  });
-
-  return client;
-}
-
-function digest(value: string): string {
-  return createHmac("sha256", authEnv().SESSION_SECRET).update(value).digest("hex");
-}
 
 function codeKey(email: string): string {
   return `otp:${digest(email)}`;

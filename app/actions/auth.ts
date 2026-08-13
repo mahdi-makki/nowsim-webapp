@@ -6,10 +6,11 @@ import { z } from "zod";
 import type { Account } from "@/lib/auth/account";
 import { requestCode, verifyCode } from "@/lib/auth/otp";
 import { sendOtpEmail } from "@/lib/auth/mailer";
+import { verifySession } from "@/lib/auth/dal";
 import {
   createSession,
   destroySession,
-  refreshSession,
+  markReauthenticated,
 } from "@/lib/auth/session";
 import { yesimUserId } from "@/lib/auth/user";
 
@@ -159,6 +160,82 @@ export async function signOut(): Promise<void> {
   await destroySession();
 }
 
-export async function touchSession(): Promise<void> {
-  await refreshSession();
+export type ReauthState = {
+  ok: boolean;
+  sent?: boolean;
+  error?: string;
+};
+
+/**
+ * Step-up, first half: mail a code to whoever the session already says this is.
+ * The address comes from the cookie, never from the client, so this cannot be
+ * pointed at another mailbox.
+ */
+export async function requestReauth(): Promise<ReauthState> {
+  const session = await verifySession();
+
+  if (!session) return { ok: false, error: "Sign in again to continue." };
+
+  try {
+    const result = await requestCode(session.email, await callerIp());
+
+    if (result.status === "rate-limited") {
+      return { ok: false, error: "Too many codes requested. Try again in an hour." };
+    }
+
+    if (result.status === "cooldown") return { ok: true, sent: true };
+
+    await sendOtpEmail(session.email, result.code, result.expiresIn);
+
+    return { ok: true, sent: true };
+  } catch (cause) {
+    console.error("requestReauth failed:", cause);
+
+    return { ok: false, error: "We could not send the code. Try again in a moment." };
+  }
+}
+
+/** Step-up, second half: a correct code re-stamps the session as freshly proved. */
+export async function confirmReauth(
+  _previous: ReauthState,
+  formData: FormData,
+): Promise<ReauthState> {
+  const session = await verifySession();
+
+  if (!session) return { ok: false, error: "Sign in again to continue." };
+
+  const code = codeSchema.safeParse(formData.get("code"));
+
+  if (!code.success) {
+    return {
+      ok: false,
+      sent: true,
+      error: "Invalid authentication code, please check and try again",
+    };
+  }
+
+  try {
+    const result = await verifyCode(session.email, code.data);
+
+    if (result !== "ok") {
+      return {
+        ok: false,
+        sent: true,
+        error:
+          result === "invalid"
+            ? "Invalid authentication code, please check and try again"
+            : result === "locked"
+              ? "Too many wrong codes. Request a new one."
+              : "That code has expired. Request a new one.",
+      };
+    }
+
+    await markReauthenticated();
+
+    return { ok: true };
+  } catch (cause) {
+    console.error("confirmReauth failed:", cause);
+
+    return { ok: false, sent: true, error: "Something went wrong. Try again in a moment." };
+  }
 }

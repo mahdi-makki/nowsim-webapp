@@ -2,16 +2,13 @@
 
 import {
   createContext,
-  Suspense,
   use,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 
-import { touchSession } from "@/app/actions/auth";
 import type { Account } from "@/lib/auth/account";
 
 type SessionValue = {
@@ -21,16 +18,6 @@ type SessionValue = {
 };
 
 const SessionContext = createContext<SessionValue | null>(null);
-
-function SessionRefresh() {
-  const account = useAccount();
-
-  useEffect(() => {
-    if (account) void touchSession();
-  }, [account]);
-
-  return null;
-}
 
 export function SessionProvider({
   account,
@@ -46,15 +33,7 @@ export function SessionProvider({
     [account, local],
   );
 
-  return (
-    <SessionContext value={value}>
-      <Suspense fallback={null}>
-        <SessionRefresh />
-      </Suspense>
-
-      {children}
-    </SessionContext>
-  );
+  return <SessionContext value={value}>{children}</SessionContext>;
 }
 
 function useSession(): SessionValue {

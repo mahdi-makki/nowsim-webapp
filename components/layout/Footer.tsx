@@ -18,6 +18,7 @@ import {
 import { NowsimLogo } from "@/components/ui/NowsimLogo";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
+import { destinationHref } from "@/lib/types";
 
 type LinkGroup = {
   title: string;
@@ -26,30 +27,37 @@ type LinkGroup = {
 
 const groups: LinkGroup[] = [
   {
-    title: "Plans",
+    title: "Popular",
     links: [
-      { label: "Countries", href: "#" },
-      { label: "Regions", href: "#" },
-      { label: "Global", href: "#" },
-      { label: "Top up", href: "#" },
+      { label: "Thailand eSIM", href: destinationHref("country", "thailand") },
+      {
+        label: "UAE eSIM",
+        href: destinationHref("country", "united-arab-emirates"),
+      },
+      { label: "China eSIM", href: destinationHref("country", "china") },
+      {
+        label: "USA eSIM",
+        href: destinationHref("country", "united-states"),
+      },
+      { label: "Japan eSIM", href: destinationHref("country", "japan") },
     ],
   },
   {
-    title: "Company",
+    title: "Plans",
     links: [
-      { label: "About", href: "#" },
-      { label: "Business", href: "#" },
-      { label: "Use cases", href: "#" },
-      { label: "Careers", href: "#" },
+      { label: "Countries", href: "/destinations?kind=country" },
+      { label: "Regions", href: "/destinations?kind=region" },
+      { label: "Global", href: "/destinations?kind=global" },
     ],
   },
   {
     title: "Support",
     links: [
-      { label: "Help centre", href: "#" },
-      { label: "Device compatibility", href: "#" },
-      { label: "Install guide", href: "#" },
-      { label: "Contact us", href: "#" },
+      { label: "eSIM compatible devices", href: "/esim-compatible-devices" },
+      { label: "How to install", href: "#" },
+      { label: "Refund Policy", href: "/refund-policy" },
+      { label: "Privacy policy", href: "/privacy-policy" },
+      { label: "Terms of Service", href: "/terms-of-service" },
     ],
   },
 ];

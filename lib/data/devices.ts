@@ -23,6 +23,16 @@ const typeLabels: Record<string, string> = {
   "WI-FI ROUTERS": "Wi-Fi Routers",
 };
 
+// What a traveller is most likely to be holding, first. Anything the API adds
+// later falls through to the alphabetical tail.
+const typeOrder = ["phone", "smartwatch", "tablet"];
+
+function typeRank(id: string): number {
+  const rank = typeOrder.indexOf(id);
+
+  return rank === -1 ? typeOrder.length : rank;
+}
+
 function typeLabel(type: string): string {
   const known = typeLabels[type.toUpperCase()];
 
@@ -64,7 +74,10 @@ function toGroups(types: ApiDeviceType[]): DeviceGroup[] {
       label,
       devices: [...devices].sort(collator.compare),
     }))
-    .sort((a, b) => collator.compare(a.label, b.label));
+    .sort(
+      (a, b) =>
+        typeRank(a.id) - typeRank(b.id) || collator.compare(a.label, b.label),
+    );
 }
 
 export async function getDeviceGroups(): Promise<DeviceGroup[]> {

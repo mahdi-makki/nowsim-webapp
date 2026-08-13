@@ -82,6 +82,7 @@ export async function getPlanIndex(): Promise<Map<string, PlanRef>> {
       const ref: PlanRef = {
         destination: destination.name,
         href: destinationHref(destination.kind, destination.slug),
+        art: destination.art,
         data: plan.data,
         days: plan.days,
       };

@@ -1,20 +1,6 @@
 import "server-only";
 
-import { Resend } from "resend";
-
-import { authEnv } from "@/lib/auth/env";
-
-let client: Resend | null = null;
-
-const FONT = "font-family:Arial,Helvetica,sans-serif";
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+import { deliver, escapeHtml, FONT } from "@/lib/mail/send";
 
 // Mail clients strip <style> blocks and ignore flexbox, so the layout is tables
 // with inline styles only. Keep it that way.
@@ -109,38 +95,25 @@ export async function sendOtpEmail(
   code: string,
   expiresIn: number,
 ): Promise<void> {
-  const env = authEnv();
   const minutes = Math.round(expiresIn / 60);
-
-  if (!env.RESEND_API_KEY) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error(
-        "RESEND_API_KEY is missing — refusing to sign anyone in without delivering the code.",
-      );
-    }
-
-    console.info(
-      `\n  nowsim OTP for ${email}: ${code}  (expires in ${minutes}m)\n`,
-    );
-
-    return;
-  }
-
-  client ??= new Resend(env.RESEND_API_KEY);
-
   const { text, html } = body(email, code, minutes);
 
-  const { error } = await client.emails.send({
-    from: env.AUTH_EMAIL_FROM,
+  const sent = await deliver({
     to: email,
     subject: `${code} is your nowsim confirmation code`,
     text,
     html,
   });
 
-  if (error) {
+  if (sent) return;
+
+  if (process.env.NODE_ENV === "production") {
     throw new Error(
-      `Resend refused the message: ${error.name} — ${error.message}`,
+      "RESEND_API_KEY is missing — refusing to sign anyone in without delivering the code.",
     );
   }
+
+  console.info(
+    `\n  nowsim OTP for ${email}: ${code}  (expires in ${minutes}m)\n`,
+  );
 }

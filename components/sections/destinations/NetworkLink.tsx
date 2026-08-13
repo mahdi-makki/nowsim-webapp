@@ -19,7 +19,6 @@ export function NetworkLink({ operators }: { operators: string[] }) {
         className={cn(
           "gap-2 rounded-full border border-hairline px-5 py-2.5",
           "text-sm font-semibold text-ink",
-          "transition-colors duration-300 ease-hover motion-reduce:transition-none",
           "hover:border-ink/25 hover:bg-surface-soft active:bg-surface-soft",
         )}
       >

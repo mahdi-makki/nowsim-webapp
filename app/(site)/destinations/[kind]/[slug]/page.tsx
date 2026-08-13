@@ -83,11 +83,7 @@ export default async function DestinationPage({ params }: PageProps) {
                 />
               </div>
 
-              <NetworkFacts
-                kind={kind}
-                operators={operators}
-                className="mt-8"
-              />
+              <NetworkFacts operators={operators} className="mt-8" />
             </div>
 
             <div className="lg:pt-[4.5rem]">

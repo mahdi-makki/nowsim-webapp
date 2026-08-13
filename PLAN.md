@@ -161,7 +161,7 @@ failure refunds instead of swallowing the money.
       2 global); regenerate with `node --env-file=.env.local scripts/hero-names.mjs`.
       Those `.txt` files sit under `public/` and are publicly served — move them if that
       matters.
-- [ ] Delete or use `components/sections/home/Benefits.tsx` and `EveryMoment.tsx`. Both
+- [ ] Delete or use `components/sections/main/Benefits.tsx` and `EveryMoment.tsx`. Both
       are complete section components that nothing imports.
 - [ ] Rewrite `README.md` — still create-next-app boilerplate referencing Geist and
       `app/page.tsx`.

@@ -12,10 +12,8 @@ import { MAX_ESIMS, checkoutHref } from "@/lib/checkout";
 import type { DestinationKind, DeviceGroup, Plan } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
-const stepper = cn(
-  "h-10 w-10 rounded-full border border-hairline text-xl leading-none",
-  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-);
+const stepper =
+  "h-10 w-10 rounded-full border border-hairline text-xl leading-none";
 
 const stepperAdd = cn(
   stepper,
@@ -36,10 +34,7 @@ const cardIdle = cn(
 
 const cardPicked = "border-brand bg-brand/5";
 
-const tab = cn(
-  "rounded-full px-5 py-2 text-sm font-medium",
-  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-);
+const tab = "rounded-full px-5 py-2 text-sm font-medium";
 
 const tabActive = cn(tab, "bg-ink text-white");
 

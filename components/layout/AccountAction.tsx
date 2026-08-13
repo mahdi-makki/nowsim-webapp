@@ -124,8 +124,15 @@ export function AccountAction() {
       await signOut();
 
       setAccount(null);
-      router.refresh();
       close();
+
+      // Home, not a refresh in place: logging out on an account screen would
+      // otherwise leave the signed-out visitor sitting on it. Refresh first —
+      // it drops the *current* route from the client cache, so the screen
+      // being left cannot be replayed from it — then `replace`, which also
+      // keeps that screen off the history stack so Back cannot walk into it.
+      router.refresh();
+      router.replace("/");
     });
   }
 

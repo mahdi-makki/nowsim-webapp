@@ -9,10 +9,7 @@ import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
 import { isArchivedEsim, type Esim } from "@/lib/types";
 
-const tab = cn(
-  "rounded-full px-5 py-2 text-sm font-medium",
-  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-);
+const tab = "rounded-full px-5 py-2 text-sm font-medium";
 
 const tabActive = cn(tab, "bg-ink text-white");
 

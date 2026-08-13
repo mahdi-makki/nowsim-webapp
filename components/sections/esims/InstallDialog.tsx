@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { MdCheck, MdContentCopy, MdOpenInNew } from "react-icons/md";
 
+import { ConfirmIdentity } from "@/components/sections/esims/ConfirmIdentity";
 import { Dialog } from "@/components/ui/Dialog";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
@@ -66,6 +67,14 @@ export function InstallDialog({
 }) {
   const title = esim.plan ? `${esim.plan.destination} eSIM` : "Your eSIM";
 
+  if (esim.installLocked) {
+    return (
+      <Dialog open={open} onClose={onClose} title={title}>
+        <ConfirmIdentity />
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={open} onClose={onClose} title={title}>
       <div className="mt-6 flex flex-col gap-4 overflow-y-auto scroll-subtle">
@@ -83,7 +92,7 @@ export function InstallDialog({
             </div>
 
             <p className="text-center text-sm text-white/70">
-              Scan this from the phone that will use the eSIM — it can only be
+              Scan this from the phone that will use the eSIM. It can only be
               installed once.
             </p>
           </div>

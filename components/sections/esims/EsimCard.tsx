@@ -1,8 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { MdQrCode2, MdSimCard } from "react-icons/md";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import {
+  MdAddCircleOutline,
+  MdCheck,
+  MdMailOutline,
+  MdQrCode2,
+  MdSimCard,
+} from "react-icons/md";
 
+import { emailEsim, type MailState } from "@/app/actions/esims";
 import { InstallDialog } from "@/components/sections/esims/InstallDialog";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
@@ -14,6 +22,14 @@ const pill = cn(
   "text-[0.8125rem]/[1.125rem] font-bold",
 );
 
+// Same footprint as the state pill, quieter: the plan's shape is context, not
+// the headline the state badge is.
+const spec = cn(
+  "shrink-0 rounded-full px-2.5 py-0.5",
+  "text-[0.8125rem]/[1.125rem] font-medium text-muted",
+  "border border-hairline bg-surface-soft",
+);
+
 const pillTone: Record<EsimState, string> = {
   active: "bg-success/12 text-success",
   ready: "bg-brand/10 text-brand",
@@ -21,11 +37,23 @@ const pillTone: Record<EsimState, string> = {
   removed: "bg-ink/8 text-muted",
 };
 
-const action = cn(
-  "rounded-full px-5 py-2.5 text-sm font-bold",
+const action = cn("rounded-full px-5 py-2.5 text-sm font-bold");
+
+// Install is the one thing a fresh eSIM is for, so it carries the card's only
+// filled button; everything beside it stays outlined.
+const primary = cn(
+  action,
+  "gap-2 border border-ink bg-ink text-white",
+  "hover:bg-ink-deep active:bg-ink-deep",
+);
+
+const secondary = cn(
+  action,
   "border border-hairline text-ink",
   "hover:border-ink/25 hover:bg-surface-soft active:bg-surface-soft",
 );
+
+const quiet = cn(action, "border border-hairline text-muted");
 
 const factLabel = "text-[0.8125rem]/[1.125rem] text-muted";
 
@@ -42,6 +70,8 @@ function Fact({ label, value }: { label: string; value: string }) {
 
 export function EsimCard({ esim }: { esim: Esim }) {
   const [installing, setInstalling] = useState(false);
+  const [mailing, setMailing] = useState(false);
+  const [mail, setMail] = useState<MailState | null>(null);
 
   const { plan, usage, state } = esim;
 
@@ -49,21 +79,75 @@ export function EsimCard({ esim }: { esim: Esim }) {
 
   const live = state === "active" || state === "ready";
 
+  const installable = Boolean(
+    esim.qrImage || esim.activationCode || esim.installLocked,
+  );
+
+  // "Sent" is a receipt, not a resting state — hand the button back so a mail
+  // that never arrived can be asked for again.
+  useEffect(() => {
+    if (!mail?.ok) return;
+
+    const timer = setTimeout(() => setMail(null), 6000);
+
+    return () => clearTimeout(timer);
+  }, [mail]);
+
+  // The recipient is the session's address, so there is nothing to ask for here.
+  // A locked session cannot be mailed a code either — send it to the dialog,
+  // which already knows how to step up.
+  async function sendEmail() {
+    setMailing(true);
+    setMail(null);
+
+    const result = await emailEsim(esim.id);
+
+    setMailing(false);
+
+    if (result.locked) {
+      setInstalling(true);
+
+      return;
+    }
+
+    setMail(result);
+  }
+
   return (
     <li className="rounded-sheet border border-hairline bg-surface p-5 md:p-6">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="flex items-center gap-2.5 text-h3">
-            <MdSimCard aria-hidden className="h-5 w-5 shrink-0 text-brand" />
-            <span className="truncate">
-              {plan ? `${plan.destination} eSIM` : "eSIM"}
+        <div className="flex min-w-0 items-center gap-3.5">
+          {plan?.art ? (
+            <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-hairline bg-ink/8">
+              <Image
+                src={plan.art}
+                alt=""
+                fill
+                sizes="44px"
+                unoptimized={plan.art.endsWith(".svg")}
+                className="object-cover"
+              />
             </span>
-          </h3>
+          ) : (
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10">
+              <MdSimCard aria-hidden className="h-5 w-5 text-brand" />
+            </span>
+          )}
 
-          <p className="mt-1.5 text-sm text-muted">
-            {plan ? `${plan.data} · ${plan.days} days · ` : ""}
-            ICCID {esim.iccid}
-          </p>
+          <div className="min-w-0">
+            <h3 className="truncate text-h3">
+              {plan ? `${plan.destination} eSIM` : "eSIM"}
+            </h3>
+
+            {plan && (
+              <p className="mt-2 flex flex-wrap items-center gap-2">
+                <span className={spec}>{plan.data}</span>
+                <span className={spec}>
+                  {plan.days} day{plan.days === 1 ? "" : "s"}
+                </span>
+              </p>
+            )}
+          </div>
         </div>
 
         <span className={cn(pill, pillTone[state])}>
@@ -124,24 +208,57 @@ export function EsimCard({ esim }: { esim: Esim }) {
       )}
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        {esim.qrImage || esim.activationCode ? (
-          <Pressable
-            aria-haspopup="dialog"
-            aria-expanded={installing}
-            onClick={() => setInstalling(true)}
-            className={cn(action, "gap-2")}
-          >
-            <MdQrCode2 aria-hidden className="h-4 w-4" />
-            Install details
-          </Pressable>
-        ) : null}
+        {installable && (
+          <>
+            <Pressable
+              aria-haspopup="dialog"
+              aria-expanded={installing}
+              onClick={() => setInstalling(true)}
+              className={primary}
+            >
+              <MdQrCode2 aria-hidden className="h-4 w-4" />
+              Install details
+            </Pressable>
+
+            <Pressable
+              onClick={sendEmail}
+              disabled={mailing || mail?.ok}
+              className={cn(mailing || mail?.ok ? quiet : secondary, "gap-2")}
+            >
+              {mail?.ok ? (
+                <MdCheck aria-hidden className="h-4 w-4" />
+              ) : (
+                <MdMailOutline aria-hidden className="h-4 w-4" />
+              )}
+              {mail?.ok ? "Sent" : mailing ? "Sending…" : "Send email"}
+            </Pressable>
+          </>
+        )}
 
         {plan && (
-          <Pressable href={plan.href} className={action}>
+          <Pressable
+            href={plan.href}
+            className={cn(secondary, "gap-2 sm:ml-auto")}
+          >
+            <MdAddCircleOutline aria-hidden className="h-4 w-4" />
             Top up {plan.destination}
           </Pressable>
         )}
       </div>
+
+      {mail?.ok && mail.email ? (
+        <p className="mt-3 text-sm text-muted">
+          {mail.throttled
+            ? `Already sent to ${mail.email} — check your inbox`
+            : `Install details sent to ${mail.email}`}
+        </p>
+      ) : null}
+
+      {mail?.error ? (
+        <p role="alert" className="mt-3 text-sm font-medium text-danger">
+          {mail.error}
+        </p>
+      ) : null}
 
       <InstallDialog
         esim={esim}
