@@ -1,10 +1,3 @@
-// Lists the hero image file name every destination expects, so the photos in
-// public/images/{countries,regions,global} can be named to match.
-//
-//   node --env-file=.env.local scripts/hero-names.mjs
-//
-// Grouping, naming and slugs mirror lib/api/mappers.ts and lib/slugify.ts — keep
-// the two in step or the generated names stop matching what the site looks for.
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -116,7 +109,7 @@ for (const [kind, rows] of Object.entries(byKind)) {
   const width = Math.max(...rows.map((row) => row.slug.length), 0);
 
   const lines = [
-    `# ${rows.length} ${kind} destinations — generated ${stamp}`,
+    `# ${rows.length} ${kind} destinations. Generated ${stamp}`,
     `# Drop the photo in public/images/${folders[kind]}/ named after the first`,
     `# column: <slug>.jpg (.jpeg .png .webp .avif also work). Anything without a`,
     `# file falls back to the placeholder. Restart the dev server after adding.`,
@@ -129,5 +122,5 @@ for (const [kind, rows] of Object.entries(byKind)) {
 
   await fs.writeFile(file, lines.join("\n"), "utf8");
 
-  console.log(`${path.relative(process.cwd(), file)} — ${rows.length}`);
+  console.log(`${path.relative(process.cwd(), file)}. ${rows.length}`);
 }

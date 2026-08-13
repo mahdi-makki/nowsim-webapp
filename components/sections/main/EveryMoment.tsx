@@ -14,7 +14,7 @@ export function EveryMoment() {
           id="every-moment-heading"
           className={cn(
             "mx-auto max-w-[14ch] text-center uppercase",
-            "text-h1 font-extrabold tracking-[-0.045em]",
+            "font-display text-h1 font-extrabold tracking-[-0.045em]",
           )}
         >
           Built for every moment

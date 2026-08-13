@@ -1,12 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import {
   MdCheck,
   MdContentCopy,
   MdLogout,
   MdPerson,
+  MdReceiptLong,
   MdSimCard,
 } from "react-icons/md";
 
@@ -33,9 +34,6 @@ export function AccountActionFallback() {
 
 const row = "w-full rounded-control bg-white/10 px-4 py-3.5 text-base";
 
-// `cn` only joins and Tailwind emits conflicting utilities in alphabetical
-// order, so the base holds nothing a row wants to override — background and
-// font weight are stated per row instead.
 const menuBase = cn(
   "w-full justify-between gap-3 rounded-control px-4 py-3.5",
   "text-left text-base",
@@ -111,13 +109,19 @@ export function AccountAction() {
   const account = useAccount();
   const setAccount = useSetAccount();
   const router = useRouter();
+  const pathname = usePathname();
 
-  // "menu" is the short list behind the avatar; "details" is the account sheet
-  // it opens onto.
   const [view, setView] = useState<"menu" | "details" | null>(null);
   const [leaving, startLeaving] = useTransition();
 
   const close = useCallback(() => setView(null), []);
+
+  const [seen, setSeen] = useState({ account, pathname });
+
+  if (seen.account !== account || seen.pathname !== pathname) {
+    setSeen({ account, pathname });
+    setView(null);
+  }
 
   function leave() {
     startLeaving(async () => {
@@ -126,11 +130,6 @@ export function AccountAction() {
       setAccount(null);
       close();
 
-      // Home, not a refresh in place: logging out on an account screen would
-      // otherwise leave the signed-out visitor sitting on it. Refresh first —
-      // it drops the *current* route from the client cache, so the screen
-      // being left cannot be replayed from it — then `replace`, which also
-      // keeps that screen off the history stack so Back cannot walk into it.
       router.refresh();
       router.replace("/");
     });
@@ -173,8 +172,7 @@ export function AccountAction() {
       <Dialog open={view === "menu"} onClose={close} title="Your account">
         <ul className="mt-6 flex flex-col gap-3">
           <li>
-            {/* A link, not a button: `enabled:` never matches an anchor, so
-                the hover state is restated without the variant. */}
+            {}
             <Pressable
               href="/esims"
               onClick={close}
@@ -196,6 +194,20 @@ export function AccountAction() {
               <span className={menuLabel}>
                 <MdPerson aria-hidden className="h-5 w-5 shrink-0" />
                 Account
+              </span>
+            </Pressable>
+          </li>
+
+          <li>
+            {}
+            <Pressable
+              href="/purchases"
+              onClick={close}
+              className={cn(menuItem, "hover:bg-white/20 active:bg-white/20")}
+            >
+              <span className={menuLabel}>
+                <MdReceiptLong aria-hidden className="h-5 w-5 shrink-0" />
+                Purchase History
               </span>
             </Pressable>
           </li>

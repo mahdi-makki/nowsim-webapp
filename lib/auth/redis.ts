@@ -18,7 +18,6 @@ export function redis(): Redis {
   return client;
 }
 
-/** Keys are hashed so an emailed address never sits in Redis in the clear. */
 export function digest(value: string): string {
   return createHmac("sha256", authEnv().SESSION_SECRET).update(value).digest("hex");
 }

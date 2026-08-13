@@ -18,7 +18,7 @@ export default function DestinationsError({
       className="pt-40 md:pt-48"
       eyebrow="Something broke"
       title="We couldn't load the destinations"
-      body="The catalog didn't come back this time. Try again — your plans are still there."
+      body="The catalog didn't come back this time. Try again. Your plans are still there."
     >
       <Pressable onClick={() => unstable_retry()} className={routeMessageAction}>
         Try again

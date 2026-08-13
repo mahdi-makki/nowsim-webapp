@@ -18,7 +18,7 @@ export default function GlobalError({
         </h1>
 
         <p className="max-w-[46ch] text-base text-muted">
-          Something went wrong before the page could load. Try again — if it
+          Something went wrong before the page could load. Try again. If it
           keeps happening, come back in a moment.
         </p>
 

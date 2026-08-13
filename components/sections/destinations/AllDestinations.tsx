@@ -21,7 +21,6 @@ const tabs: { id: DestinationFilter; label: string; badge?: string }[] = [
   { id: "global", label: "Global", badge: "New" },
 ];
 
-// One country reads at a glance in a pill; the rest become a count.
 function coverageNote(hits: string[]): string | undefined {
   if (!hits.length) return undefined;
 
@@ -43,9 +42,6 @@ export function AllDestinations({
   const params = useSearchParams();
   const tablistRef = useRef<HTMLDivElement>(null);
 
-  // The URL is the source of truth, not a prop. `/destinations?kind=region` and
-  // `?kind=global` share a pathname, so the router reuses the cached payload it
-  // already has and the server props arrive stale — the tab would not move.
   const kindParam = params.get("kind") ?? undefined;
   const active: DestinationFilter = isDestinationFilter(kindParam)
     ? kindParam
@@ -91,11 +87,8 @@ export function AllDestinations({
     );
   }, [active, destinations, index, query]);
 
-  // A plan that merely covers the searched country is a different answer to a
-  // plan that is it, so the two do not belong in one run of cards.
   const direct = results.filter(({ coverageHits }) => !coverageHits.length);
   const covering = results.filter(({ coverageHits }) => coverageHits.length);
-
 
   const onTablistKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];

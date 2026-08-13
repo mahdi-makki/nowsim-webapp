@@ -55,7 +55,10 @@ export function Destinations({
           <div>
             <h2
               id="destinations-heading"
-              className="max-w-[15ch] text-h1 font-extrabold uppercase tracking-[-0.03em] md:text-display"
+              className={cn(
+                "max-w-[15ch] font-display font-extrabold uppercase tracking-[-0.03em]",
+                "text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.02]",
+              )}
             >
               Every network worth using
             </h2>

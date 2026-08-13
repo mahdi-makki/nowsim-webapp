@@ -18,7 +18,7 @@ export default function SiteError({
       className="pt-40 md:pt-48"
       eyebrow="Something broke"
       title="We lost the signal"
-      body="An unexpected error stopped this page from loading. Try again — if it keeps happening, come back in a moment."
+      body="An unexpected error stopped this page from loading. Try again. If it keeps happening, come back in a moment."
     >
       <Pressable onClick={() => unstable_retry()} className={routeMessageAction}>
         Try again

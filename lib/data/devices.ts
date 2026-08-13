@@ -23,8 +23,6 @@ const typeLabels: Record<string, string> = {
   "WI-FI ROUTERS": "Wi-Fi Routers",
 };
 
-// What a traveller is most likely to be holding, first. Anything the API adds
-// later falls through to the alphabetical tail.
 const typeOrder = ["phone", "smartwatch", "tablet"];
 
 function typeRank(id: string): number {

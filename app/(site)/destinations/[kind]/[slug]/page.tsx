@@ -76,9 +76,9 @@ export default async function DestinationPage({ params }: PageProps) {
                   src={hero}
                   alt=""
                   fill
-                  sizes="(min-width: 1024px) 40vw, 100vw"
+                  sizes="(min-width: 1024px) 45vw, 100vw"
                   quality={90}
-                  priority
+                  preload
                   className="object-cover"
                 />
               </div>
@@ -98,6 +98,7 @@ export default async function DestinationPage({ params }: PageProps) {
                     src={art}
                     alt=""
                     fill
+                    quality={90}
                     sizes="48px"
                     unoptimized={art.endsWith(".svg")}
                     className="object-cover"

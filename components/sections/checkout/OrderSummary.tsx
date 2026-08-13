@@ -21,6 +21,7 @@ export function OrderSummary({ order }: { order: Order }) {
             src={destination.art}
             alt=""
             fill
+            quality={90}
             sizes="48px"
             unoptimized={destination.art.endsWith(".svg")}
             className="object-cover"

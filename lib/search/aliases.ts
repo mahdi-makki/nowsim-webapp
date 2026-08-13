@@ -1,19 +1,10 @@
-// What people type when they do not type the catalog's name. ISO codes are not
-// listed here — those arrive from the API on every plan and are matched
-// directly. This table only covers what codes cannot: nicknames, former names,
-// constituent countries and the abbreviations travellers actually use.
-//
-// Every value must be a destination name as Yesim spells it, or the alias
-// resolves to nothing. `docs/hero-names/countries.txt` is the current list.
 export const aliases: Record<string, string> = {
-  // United States
   usa: "United States",
   "u s a": "United States",
   america: "United States",
   "united states of america": "United States",
   states: "United States",
 
-  // United Kingdom
   uk: "United Kingdom",
   "u k": "United Kingdom",
   britain: "United Kingdom",
@@ -24,7 +15,6 @@ export const aliases: Record<string, string> = {
   wales: "United Kingdom",
   "northern ireland": "United Kingdom",
 
-  // Gulf
   ksa: "Saudi Arabia",
   "saudi arabia ksa": "Saudi Arabia",
   saudi: "Saudi Arabia",
@@ -33,7 +23,6 @@ export const aliases: Record<string, string> = {
   dubai: "United Arab Emirates",
   "abu dhabi": "United Arab Emirates",
 
-  // Commonly shortened or renamed
   korea: "South Korea",
   "republic of korea": "South Korea",
   seoul: "South Korea",

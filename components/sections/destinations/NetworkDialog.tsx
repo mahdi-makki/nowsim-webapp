@@ -18,8 +18,6 @@ export function NetworkDialog({
 }) {
   const [query, setQuery] = useState("");
 
-  // `filterCountries` is the coverage matcher: operator names carry the country
-  // they serve, so its aliases make "uk" find "EE UK" and "Three UK".
   const entries = useMemo(
     () => operators.map((name) => ({ name })),
     [operators],

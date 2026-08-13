@@ -6,16 +6,12 @@ import { extname, join } from "node:path";
 import { heroPlaceholder } from "@/lib/assets";
 import type { DestinationKind } from "@/lib/types";
 
-// A destination's photo is `public/images/<folder>/<slug>.<ext>`, so dropping
-// `greece.jpg` into `countries/` is all it takes to give Greece its own hero.
 const folders: Record<DestinationKind, string> = {
   country: "countries",
   region: "regions",
   global: "global",
 };
 
-// Escape hatch for the cases the file name cannot cover: a destination whose
-// slug does not match the photo, or several destinations sharing one image.
 const overrides: Partial<Record<`${DestinationKind}:${string}`, string>> = {};
 
 const extensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
@@ -44,8 +40,6 @@ function scan(folder: string): Map<string, string> {
   return heroes;
 }
 
-// Read once per server start — the catalog is built at request time and the
-// folders only change on deploy.
 const index = new Map<DestinationKind, Map<string, string>>(
   Object.entries(folders).map(([kind, folder]) => [
     kind as DestinationKind,

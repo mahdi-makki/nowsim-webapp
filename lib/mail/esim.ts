@@ -5,7 +5,6 @@ import type { Esim } from "@/lib/types";
 
 const DATA_URI = /^data:image\/(png|jpeg|gif);base64,(.+)$/i;
 
-// Mail clients block `data:` images, so the QR travels as a real attachment.
 function qrAttachment(qrImage: string | undefined): Attachment | undefined {
   const match = qrImage?.match(DATA_URI);
 
@@ -36,7 +35,6 @@ function row(label: string, value: string): string {
             </tr>`;
 }
 
-// Tables and inline styles only — see the OTP mail for why.
 function body(esim: Esim, hasQr: boolean) {
   const year = new Date().getUTCFullYear();
   const name = esim.plan ? `${esim.plan.destination} eSIM` : "Your eSIM";
@@ -51,7 +49,7 @@ function body(esim: Esim, hasQr: boolean) {
     `ICCID: ${esim.iccid}`,
     esim.iosTapLink ? `Install on iPhone: ${esim.iosTapLink}` : "",
     hasQr
-      ? "The QR code is attached — scan it from the phone that will use the eSIM. It can only be installed once."
+      ? "The QR code is attached. Scan it from the phone that will use the eSIM. It can only be installed once."
       : "",
     "Keep this email to yourself: anyone holding the activation code can install this eSIM.",
     `Copyright © ${year} nowsim. All rights reserved.`,
@@ -119,7 +117,7 @@ function body(esim: Esim, hasQr: boolean) {
 
             <tr>
               <td style="${FONT};padding:20px 40px 0;font-size:13px;line-height:1.6;color:#8a97a0">
-                Keep this email to yourself — anyone holding the activation code
+                Keep this email to yourself. Anyone holding the activation code
                 can install this eSIM, and it only installs once.
               </td>
             </tr>
@@ -139,11 +137,6 @@ function body(esim: Esim, hasQr: boolean) {
   return { text, html };
 }
 
-/**
- * Mails one eSIM's install details to `email`. The caller owns the checks: the
- * address must come from the session, and the session must be freshly proved —
- * this posts a working credential into a mailbox.
- */
 export async function sendEsimEmail(email: string, esim: Esim): Promise<void> {
   const attachment = qrAttachment(esim.qrImage);
   const { text, html } = body(esim, Boolean(attachment));
@@ -162,7 +155,7 @@ export async function sendEsimEmail(email: string, esim: Esim): Promise<void> {
 
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "RESEND_API_KEY is missing — cannot mail the eSIM install details.",
+      "RESEND_API_KEY is missing. Cannot mail the eSIM install details.",
     );
   }
 

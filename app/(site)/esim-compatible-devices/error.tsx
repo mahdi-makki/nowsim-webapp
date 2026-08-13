@@ -18,7 +18,7 @@ export default function CompatibleDevicesError({
       className="pt-40 md:pt-48"
       eyebrow="Something broke"
       title="We couldn't load the device list"
-      body="The list didn't come back this time. Try again — most phones made since 2018 support eSIM."
+      body="The list didn't come back this time. Try again. Most phones made since 2018 support eSIM."
     >
       <Pressable
         onClick={() => unstable_retry()}

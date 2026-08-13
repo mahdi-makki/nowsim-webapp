@@ -13,8 +13,6 @@ export const metadata: Metadata = {
 export default async function EsimsPage() {
   const esims = await getEsims();
 
-  // Signed out, the page has nothing to show and no sign-in route to send
-  // anyone to — the dialog lives in the navbar.
   if (!esims) redirect("/");
 
   return (

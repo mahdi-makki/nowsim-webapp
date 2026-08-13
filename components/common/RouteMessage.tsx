@@ -20,7 +20,7 @@ export function RouteMessage({
       <div className="mx-auto flex max-w-xl flex-col items-center text-center">
         <p className="text-eyebrow uppercase text-muted">{eyebrow}</p>
 
-        <h1 className="mt-4 text-h2 font-extrabold tracking-[-0.03em]">
+        <h1 className="mt-4 font-display text-h2 font-extrabold tracking-[-0.03em]">
           {title}
         </h1>
 

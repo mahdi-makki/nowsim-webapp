@@ -99,7 +99,7 @@ export async function verifyOtp(
   const code = codeSchema.safeParse(formData.get("code"));
 
   if (!email.success) {
-    return { ok: false, error: "Start again — that email is not valid." };
+    return { ok: false, error: "Start again. That email is not valid." };
   }
 
   if (!code.success) {
@@ -166,11 +166,6 @@ export type ReauthState = {
   error?: string;
 };
 
-/**
- * Step-up, first half: mail a code to whoever the session already says this is.
- * The address comes from the cookie, never from the client, so this cannot be
- * pointed at another mailbox.
- */
 export async function requestReauth(): Promise<ReauthState> {
   const session = await verifySession();
 
@@ -195,7 +190,6 @@ export async function requestReauth(): Promise<ReauthState> {
   }
 }
 
-/** Step-up, second half: a correct code re-stamps the session as freshly proved. */
 export async function confirmReauth(
   _previous: ReauthState,
   formData: FormData,

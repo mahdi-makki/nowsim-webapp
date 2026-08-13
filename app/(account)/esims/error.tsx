@@ -18,7 +18,7 @@ export default function EsimsError({
       className="pt-40 md:pt-48"
       eyebrow="Something broke"
       title="We couldn't load your eSIMs"
-      body="Your eSIMs and their data are safe — this page just failed to fetch them. Try again."
+      body="Your eSIMs and their data are safe. This page just failed to fetch them. Try again."
     >
       <Pressable onClick={() => unstable_retry()} className={routeMessageAction}>
         Try again

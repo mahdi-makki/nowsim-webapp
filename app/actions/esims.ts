@@ -7,24 +7,14 @@ import { sendEsimEmail } from "@/lib/mail/esim";
 
 export type MailState = {
   ok: boolean;
-  /** Where it went, so the button can say so. Only ever the session's address. */
   email?: string;
   error?: string;
-  /** The session is no longer freshly proved — the UI should step up first. */
   locked?: boolean;
-  /** Inside the cooldown: nothing new went out, the earlier mail still stands. */
   throttled?: boolean;
 };
 
 const COOLDOWN_SECONDS = 60;
 
-/**
- * Mails the install details of one eSIM to the signed-in address.
- *
- * The activation code *is* the eSIM, so this needs the same freshly-proved
- * session that showing it on screen does, and the recipient comes from the
- * session cookie — the client only picks which of its own eSIMs to send.
- */
 export async function emailEsim(esimId: string): Promise<MailState> {
   const session = await verifyFreshSession();
 
@@ -46,8 +36,6 @@ export async function emailEsim(esimId: string): Promise<MailState> {
       return { ok: false, error: "This eSIM has no installation code left." };
     }
 
-    // One mail a minute per eSIM: a resend is cheap for the user and the retry
-    // path for a mistyped inbox is signing in again, not spamming this button.
     const claimed = await redis().set(
       `mail:esim:${digest(`${session.email}:${esim.id}`)}`,
       1,

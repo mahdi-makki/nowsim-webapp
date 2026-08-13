@@ -17,7 +17,7 @@ const steps: Step[] = [
   {
     label: "Pick a destination",
     title: "200+ countries, one account",
-    body: "Search where you're going and choose a country, a region, or a global plan. Prices are the same wherever you activate — no local surcharge, no dynamic pricing.",
+    body: "Search where you're going and choose a country, a region, or a global plan. Prices are the same wherever you activate. No local surcharge, no dynamic pricing.",
     image: {
       src: "/images/main/phone-1.png",
       alt: "App dialler showing a Dutch number with the per-minute rate and remaining balance",
@@ -32,7 +32,7 @@ const steps: Step[] = [
   {
     label: "Install in seconds",
     title: "No SIM tray, no kiosk",
-    body: "The eSIM installs straight from the app. Scan once, and the plan sits alongside your normal SIM — your own number keeps ringing while data moves to the local network.",
+    body: "The eSIM installs straight from the app. Scan once, and the plan sits alongside your normal SIM. Your own number keeps ringing while data moves to the local network.",
     image: {
       src: "/images/main/phone-2.png",
       alt: "App plan screen with a 20 GB worldwide plan ready to activate",
@@ -46,7 +46,7 @@ const steps: Step[] = [
   {
     label: "Land connected",
     title: "Highest speed, no commitment",
-    body: "We connect to the top networks in each country, so you land on the fastest connection on offer. Run out? Top up in seconds — no new eSIM, no reinstall, no contract.",
+    body: "We connect to the top networks in each country, so you land on the fastest connection on offer. Run out? Top up in seconds. No new eSIM, no reinstall, no contract.",
     image: {
       src: "/images/main/phone-3.png",
       alt: "Free, Classic and Unlimited plan tiers stacked as a choice",
@@ -79,7 +79,7 @@ export function HowItWorks() {
           id="how-it-works-heading"
           className={cn(
             "mx-auto max-w-[16ch] text-center uppercase",
-            "text-h1 font-extrabold tracking-[-0.045em]",
+            "font-display text-h1 font-extrabold tracking-[-0.045em]",
           )}
         >
           How nowsim works
@@ -126,7 +126,7 @@ export function HowItWorks() {
                   <div>
                     <h3
                       className={cn(
-                        "max-w-[16ch] text-h2 font-extrabold uppercase",
+                        "max-w-[16ch] font-display text-h2 font-extrabold uppercase",
                         step.heading,
                       )}
                     >
@@ -149,7 +149,7 @@ export function HowItWorks() {
                       alt={step.image.alt}
                       width={step.image.width}
                       height={step.image.height}
-                      quality={90}
+                      quality={100}
                       sizes="(min-width: 1024px) 368px, (min-width: 768px) 34vw, 80vw"
                       className="h-auto w-full max-w-[23rem] rounded-t-screen-lg"
                     />

@@ -39,7 +39,7 @@ export default async function AllDestinationsPage({
           ]}
         />
 
-        <h1 className="max-w-[14ch] text-h1 font-extrabold uppercase tracking-[-0.045em]">
+        <h1 className="max-w-[14ch] font-display text-h1 font-extrabold uppercase tracking-[-0.045em]">
           All destinations
         </h1>
 

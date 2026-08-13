@@ -24,8 +24,6 @@ type PressableOwnProps = {
   press?: boolean;
 };
 
-// ComponentProps, not ...WithoutRef: React 19 passes ref straight through as a
-// prop, and the plan-type tablist needs one to move focus between tabs.
 type PressableButtonProps = PressableOwnProps &
   ComponentProps<"button"> & { href?: undefined };
 

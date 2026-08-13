@@ -14,8 +14,6 @@ const fact = "text-sm text-muted";
 
 const value = "font-bold text-ink";
 
-// Past this many carriers the pills wrap into a wall of text, so the list moves
-// into a searchable dialog instead.
 const pillLimit = 10;
 
 export function NetworkFacts({

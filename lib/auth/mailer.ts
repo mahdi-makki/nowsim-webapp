@@ -2,8 +2,6 @@ import "server-only";
 
 import { deliver, escapeHtml, FONT } from "@/lib/mail/send";
 
-// Mail clients strip <style> blocks and ignore flexbox, so the layout is tables
-// with inline styles only. Keep it that way.
 function body(email: string, code: string, minutes: number) {
   const year = new Date().getUTCFullYear();
 
@@ -11,7 +9,7 @@ function body(email: string, code: string, minutes: number) {
     "Verify your email address",
     `Your nowsim confirmation code is: ${code}`,
     `Use this temporary code to finish signing in. It expires in ${minutes} minutes and can be used once.`,
-    "If you received this email in error, you can safely ignore it — nobody can sign in without the code.",
+    "If you received this email in error, you can safely ignore it. Nobody can sign in without the code.",
     `Account email: ${email}`,
     `Copyright © ${year} nowsim. All rights reserved.`,
   ].join("\n\n");
@@ -109,7 +107,7 @@ export async function sendOtpEmail(
 
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "RESEND_API_KEY is missing — refusing to sign anyone in without delivering the code.",
+      "RESEND_API_KEY is missing. Refusing to sign anyone in without delivering the code.",
     );
   }
 

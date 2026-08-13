@@ -133,7 +133,7 @@ function SignedOut() {
     <>
       <p className="mt-4 max-w-[46ch] text-base text-muted">
         Your eSIM and receipts live in your nowsim account. Sign in, or create
-        one as you go — either takes a tap.
+        one as you go. Either takes a tap.
       </p>
 
       <ul className="mt-6 flex flex-col gap-3">

@@ -15,12 +15,6 @@ import {
 
 export type { Session };
 
-/**
- * The authoritative read. Everything that reaches real data goes through the DAL
- * and lands here, so this is where a revoked session actually dies. `proxy.ts`
- * deliberately skips the revocation lookup: it runs ahead of every route and a
- * Redis round trip there would tax navigation for a check this already covers.
- */
 export async function readSession(): Promise<Session | null> {
   const decoded = await decryptSession((await cookies()).get(COOKIE)?.value);
 
@@ -39,12 +33,6 @@ export async function createSession(
   await write({ ...session, issuedAt, authAt: issuedAt, sid: randomUUID() });
 }
 
-/**
- * Step-up: the user has just proved identity again on a session that was already
- * signed in. Only the freshness stamp moves — reusing the id and `issuedAt`
- * keeps the absolute ceiling anchored to the original sign-in, so re-auth can
- * never be chained into an endless session.
- */
 export async function markReauthenticated(): Promise<Session | null> {
   const session = await readSession();
 
@@ -64,10 +52,6 @@ async function write(payload: Session): Promise<void> {
   });
 }
 
-/**
- * Clearing the cookie only disarms the browser doing the signing out. Revoking
- * the id is what makes a copied token useless everywhere else.
- */
 export async function destroySession(): Promise<void> {
   const store = await cookies();
   const decoded = await decryptSession(store.get(COOKIE)?.value);

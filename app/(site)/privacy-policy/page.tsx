@@ -435,7 +435,7 @@ const sections: LegalSection[] = [
   {
     title: "5. Why may we use your data (legal grounds for processing)?",
     summary:
-      "We only use your personal data when the law allows it — here are the reasons why and when.",
+      "We only use your personal data when the law allows it. Here are the reasons why and when.",
     blocks: [
       {
         kind: "text",

@@ -93,7 +93,7 @@ export function Benefits() {
           id="benefits-heading"
           className={cn(
             "mx-auto mt-24 max-w-[16ch] text-center uppercase md:mt-32",
-            "text-h1 font-extrabold tracking-[-0.045em]",
+            "font-display text-h1 font-extrabold tracking-[-0.045em]",
           )}
         >
           What you get

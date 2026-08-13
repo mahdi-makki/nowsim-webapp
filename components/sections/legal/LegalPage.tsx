@@ -1,17 +1,11 @@
 import { cn } from "@/lib/cn";
 
-/**
- * The shapes every policy page here is built from: prose, a plain bullet run,
- * labelled points ("30-Day Window: …"), and the who/why/where tables the
- * privacy policy uses to describe each kind of processing.
- */
 export type LegalBlock =
   | { kind: "text"; body: React.ReactNode }
   | { kind: "list"; items: React.ReactNode[] }
   | { kind: "terms"; items: { term: string; body: React.ReactNode }[] }
   | { kind: "table"; columns: { heading: string; items: string[] }[] };
 
-/** A numbered sub-part of a section, with its own heading. */
 export type LegalPart = {
   title?: string;
   summary?: string;
@@ -19,9 +13,7 @@ export type LegalPart = {
 };
 
 export type LegalSection = {
-  /** Omitted for a preamble that runs before the first numbered section. */
   title?: string;
-  /** The "Summary: …" line that opens most sections. */
   summary?: string;
   blocks?: LegalBlock[];
   parts?: LegalPart[];
@@ -29,7 +21,6 @@ export type LegalSection = {
 
 const prose = "text-base text-muted md:text-lg";
 
-/** Inline links inside policy prose — mail, external URLs. */
 export const legalLink = cn(
   "font-medium text-ink underline underline-offset-4 hover:text-brand",
   "transition-colors duration-300 ease-hover",
@@ -117,14 +108,13 @@ export function LegalPage({
 }: {
   title: string;
   lede: string;
-  /** Effective date, controller details — whatever sits above the sections. */
   meta?: React.ReactNode;
   sections: LegalSection[];
 }) {
   return (
     <section className="px-3 pb-20 pt-28 md:px-4 md:py-28">
       <div className="mx-auto max-w-7xl">
-        <h1 className="max-w-[18ch] text-h1 font-extrabold uppercase tracking-[-0.045em]">
+        <h1 className="max-w-[18ch] font-display text-h1 font-extrabold uppercase tracking-[-0.045em]">
           {title}
         </h1>
 

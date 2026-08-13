@@ -26,10 +26,6 @@ export type Message = {
   attachments?: Attachment[];
 };
 
-/**
- * One way out to Resend. Returns `false` when no API key is configured, which
- * only happens in development — the caller decides whether that is fatal.
- */
 export async function deliver(message: Message): Promise<boolean> {
   const env = authEnv();
 
@@ -48,7 +44,7 @@ export async function deliver(message: Message): Promise<boolean> {
 
   if (error) {
     throw new Error(
-      `Resend refused the message: ${error.name} — ${error.message}`,
+      `Resend refused the message: ${error.name}. ${error.message}`,
     );
   }
 

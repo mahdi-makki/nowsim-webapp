@@ -17,7 +17,7 @@ export default function DestinationNotFound() {
       className="pt-40 md:pt-48"
       eyebrow="404"
       title="We don't cover that one yet"
-      body="This destination isn't in the catalog. Browse everywhere we do cover — there are over 200 to choose from."
+      body="This destination isn't in the catalog. Browse everywhere we do cover. There are over 200 to choose from."
     >
       <Pressable href="/destinations" className={routeMessageAction}>
         All destinations

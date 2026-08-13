@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 
 import { darkTone, EmailSignIn } from "@/components/auth/EmailSignIn";
 import { Dialog } from "@/components/ui/Dialog";
@@ -48,6 +49,7 @@ export function SignInDialog({
   open: boolean;
   onClose: () => void;
 }) {
+  const router = useRouter();
   const [email, setEmail] = useState(false);
   const [seenOpen, setSeenOpen] = useState(open);
 
@@ -55,6 +57,11 @@ export function SignInDialog({
     setSeenOpen(open);
     if (open) setEmail(false);
   }
+
+  const done = useCallback(() => {
+    onClose();
+    router.push("/esims");
+  }, [onClose, router]);
 
   return (
     <Dialog
@@ -67,7 +74,7 @@ export function SignInDialog({
           <EmailSignIn
             tone={darkTone}
             onCancel={onClose}
-            onSignedIn={onClose}
+            onSignedIn={done}
           />
 
           <Legal />

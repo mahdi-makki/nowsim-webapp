@@ -2,9 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
-  // `lib/heroes.ts` reads these folders with `fs` at runtime. The paths are
-  // built at runtime, so the tracer cannot infer them and the files would
-  // otherwise be missing from the server bundle.
   outputFileTracingIncludes: {
     "/*": [
       "public/images/countries/**/*",
@@ -13,7 +10,8 @@ const nextConfig: NextConfig = {
     ],
   },
   images: {
-    qualities: [75, 90],
+    qualities: [75, 90, 100],
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [{ protocol: "https", hostname: "cdn.yesim.app" }],
   },
 };

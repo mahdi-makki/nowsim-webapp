@@ -82,7 +82,7 @@ function report(plans) {
         .map((plan) => plan.name),
     ),
   ];
-  console.log(`\nregion plan names (${regionNames.length}) — the grouping key:`);
+  console.log(`\nregion plan names (${regionNames.length}). The grouping key:`);
   for (const name of regionNames.slice(0, 40)) console.log("  ", name);
 
   const globals = regionNames.filter((name) => /global/i.test(name));

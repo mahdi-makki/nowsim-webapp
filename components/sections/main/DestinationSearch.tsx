@@ -82,8 +82,6 @@ export function DestinationSearch({
 
       setHighlight(next);
 
-      // The list scrolls, so keep the active row in view — otherwise arrowing
-      // past the fold moves an option nobody can see.
       document
         .getElementById(`${listId}-option-${next}`)
         ?.scrollIntoView({ block: "nearest" });
@@ -105,8 +103,7 @@ export function DestinationSearch({
           "relative flex items-center gap-2 rounded-full bg-white p-1.5 pl-6",
           "shadow-xl shadow-ink/20",
           "ring-0 ring-white/40 group-focus-within:ring-4",
-          "transition-[transform,box-shadow] duration-[120ms] ease-ios active:scale-[0.985]",
-          "motion-reduce:transition-none motion-reduce:active:scale-100",
+          "transition-[box-shadow] duration-[120ms] ease-ios motion-reduce:transition-none",
         )}
       >
         <input
@@ -129,8 +126,6 @@ export function DestinationSearch({
           }}
           onFocus={() => setOpen(true)}
           onBlur={() => {
-            // A click on a suggestion blurs the input before it lands, so let
-            // the pointer event win the race.
             blurTimer.current = setTimeout(() => setOpen(false), 120);
           }}
           onKeyDown={onKeyDown}
@@ -163,8 +158,6 @@ export function DestinationSearch({
         hidden={!expanded}
         className={cn(
           "absolute inset-x-0 top-[calc(100%+0.5rem)] z-20",
-          // Roughly four rows, and never more than the space left below the
-          // input on a short viewport.
           "scroll-none max-h-[min(15rem,45vh)] overflow-y-auto overscroll-contain",
           "rounded-card bg-white p-1.5 text-left shadow-xl shadow-ink/20",
         )}
@@ -193,6 +186,7 @@ export function DestinationSearch({
                     src={destination.art}
                     alt=""
                     fill
+                    quality={90}
                     sizes="32px"
                     unoptimized={destination.art.endsWith(".svg")}
                     className="object-cover"

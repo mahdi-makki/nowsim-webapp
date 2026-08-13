@@ -5,7 +5,12 @@ import { cacheLife, cacheTag } from "next/cache";
 import { toDestinations } from "@/lib/api/mappers";
 import { plansResponseSchema } from "@/lib/api/schemas";
 import { fetchYesim } from "@/lib/api/yesim";
-import { fallbackCount, featuredSlugs } from "@/lib/featured";
+import {
+  fallbackCount,
+  featuredSlugs,
+  spotlightCount,
+  spotlightSlugs,
+} from "@/lib/featured";
 import type {
   Destination,
   DestinationKind,
@@ -67,11 +72,17 @@ export async function getFeaturedSummaries(
   return picked.length ? picked : available.slice(0, fallbackCount[kind]);
 }
 
-/**
- * Plan id → what to call it, for the eSIMs page. Yesim reports an eSIM's plan
- * by id only, and older eSIMs report the pre-migration numeric id, so both are
- * keys into the same entry.
- */
+export async function getSpotlightSummaries(): Promise<DestinationSummary[]> {
+  const available = await getSummariesByKind("country");
+  const bySlug = new Map(available.map((entry) => [entry.slug, entry]));
+
+  const picked = spotlightSlugs
+    .map((slug) => bySlug.get(slug))
+    .filter((entry): entry is DestinationSummary => entry !== undefined);
+
+  return picked.length ? picked : available.slice(0, spotlightCount);
+}
+
 export async function getPlanIndex(): Promise<Map<string, PlanRef>> {
   const destinations = await getDestinations();
 

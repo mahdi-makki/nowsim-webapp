@@ -10,10 +10,6 @@ export const verifySession = cache(async (): Promise<Session | null> => {
   return readSession();
 });
 
-/**
- * Signed in *and* proved it recently. Gate anything that hands back a credential
- * on this rather than on `verifySession` alone — see `getEsims`.
- */
 export const verifyFreshSession = cache(async (): Promise<Session | null> => {
   const session = await verifySession();
 

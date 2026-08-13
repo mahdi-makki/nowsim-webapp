@@ -15,12 +15,12 @@ const entries: Entry[] = [
   {
     question: "What is a nowsim eSIM?",
     answer:
-      "It's a data plan that lives on your phone instead of a plastic SIM. Pick a destination, pay once, and the plan installs itself — no tray, no kiosk, no swapping cards at the airport.",
+      "It's a data plan that lives on your phone instead of a plastic SIM. Pick a destination, pay once, and the plan installs itself. No tray, no kiosk, no swapping cards at the airport.",
   },
   {
     question: "Will my phone work with it?",
     answer:
-      "Almost every phone sold in the last few years is eSIM capable — iPhone XS and newer, recent Pixels, and most flagship Androids. We check compatibility at checkout, so you'll know before you pay.",
+      "Almost every phone sold in the last few years is eSIM capable. iPhone XS and newer, recent Pixels, and most flagship Androids. We check compatibility at checkout, so you'll know before you pay.",
   },
   {
     question: "When does my plan start?",
@@ -35,7 +35,7 @@ const entries: Entry[] = [
   {
     question: "What happens if I run out of data?",
     answer:
-      "Top up from the app in a few taps — no new eSIM, no reinstall. The extra data lands on the plan you're already using.",
+      "Top up from the app in a few taps. No new eSIM, no reinstall. The extra data lands on the plan you're already using.",
   },
   {
     question: "Can I use one plan across several countries?",
@@ -56,7 +56,7 @@ export function Faq() {
   return (
     <section
       aria-labelledby="faq-heading"
-      className="px-3 py-20 md:px-4 md:py-28"
+      className="mt-28 px-3 py-20 md:mt-40 md:px-4 md:py-28"
     >
       <div
         className={cn(
@@ -67,7 +67,7 @@ export function Faq() {
         <div className="md:pt-2">
           <h2
             id="faq-heading"
-            className="max-w-[18ch] text-h1 font-extrabold uppercase tracking-[-0.045em]"
+            className="max-w-[18ch] font-display text-h1 font-extrabold uppercase tracking-[-0.045em]"
           >
             Questions about the local plans?
           </h2>
@@ -76,18 +76,6 @@ export function Faq() {
             We know, it sounds too good to be true. But it&rsquo;s real.
             Here&rsquo;s how.
           </p>
-
-          <Pressable
-            href="#"
-            className={cn(
-              "mt-8 rounded-full border border-hairline px-6 py-3.5",
-              "text-base font-medium text-ink",
-              "hover:border-ink/25 hover:bg-surface-soft",
-              "active:border-ink/25 active:bg-surface-soft",
-            )}
-          >
-            Talk to our team
-          </Pressable>
         </div>
 
         <ul className="border-t border-hairline">
@@ -116,7 +104,7 @@ export function Faq() {
                   <MdExpandMore
                     aria-hidden
                     className={cn(
-                      "h-5 w-5 shrink-0 text-ink/40",
+                      "h-5 w-5 shrink-0",
                       "transition-transform duration-300 ease-ios",
                       expanded && "-rotate-180",
                       "motion-reduce:transition-none",

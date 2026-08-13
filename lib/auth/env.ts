@@ -5,10 +5,10 @@ import { z } from "zod";
 const schema = z.object({
   SESSION_SECRET: z
     .string()
-    .min(1, "SESSION_SECRET is required — generate one with `openssl rand -base64 32`")
+    .min(1, "SESSION_SECRET is required. Generate one with `openssl rand -base64 32`")
     .refine(
       (value) => Buffer.from(value, "base64").length === 32,
-      "SESSION_SECRET must decode to exactly 32 bytes (A256GCM) — use `openssl rand -base64 32`",
+      "SESSION_SECRET must decode to exactly 32 bytes (A256GCM). Use `openssl rand -base64 32`",
     ),
   UPSTASH_REDIS_REST_URL: z.url("UPSTASH_REDIS_REST_URL must be the REST URL, not the redis:// one"),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1),

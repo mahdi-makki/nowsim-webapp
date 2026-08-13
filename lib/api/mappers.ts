@@ -1,4 +1,4 @@
-import type { ApiEsim, ApiPlan } from "@/lib/api/schemas";
+import type { ApiEsim, ApiOrder, ApiPlan } from "@/lib/api/schemas";
 import { blurbFor } from "@/lib/copy";
 import { heroFor } from "@/lib/heroes";
 import { money, type Money } from "@/lib/money";
@@ -12,6 +12,7 @@ import type {
   EsimUsage,
   Plan,
   PlanRef,
+  Purchase,
 } from "@/lib/types";
 
 const collator = new Intl.Collator("en");
@@ -76,8 +77,6 @@ function toPlan(plan: ApiPlan): Plan {
   };
 }
 
-// Two ascending price runs, not one: every fixed-data plan first, then the
-// unlimited ones, so a cheap unlimited plan cannot break up the GB ladder.
 function byGroupThenPrice(a: Plan, b: Plan): number {
   return (
     Number(a.unlimited) - Number(b.unlimited) ||
@@ -95,8 +94,6 @@ function cheapest(plans: Plan[]): Money {
 
 type CountryFacts = { art?: string; codes?: string[] };
 
-// Single-country plans are the only place the API pairs a country name with its
-// flag and ISO codes, so they seed what the regional and global plans display.
 function factsByCountry(apiPlans: ApiPlan[]): Map<string, CountryFacts> {
   const facts = new Map<string, CountryFacts>();
 
@@ -140,8 +137,6 @@ function coverageOf(
   });
 }
 
-// ISO codes are what make "USA", "KSA" and "KR" searchable — they cost nothing
-// because Yesim already sends them on every plan.
 function codesOf(apiPlans: ApiPlan[]): string[] {
   const codes = new Set<string>();
 
@@ -154,8 +149,6 @@ function codesOf(apiPlans: ApiPlan[]): string[] {
   return [...codes];
 }
 
-// A handful of destinations list different carriers on different plans, so the
-// page shows the union rather than whatever the first plan happened to carry.
 function operatorsOf(apiPlans: ApiPlan[]): string[] {
   const names = new Set<string>();
 
@@ -203,7 +196,6 @@ const DAY_MS = 86_400_000;
 
 const YESIM_STAMP = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
 
-// Yesim stamps read "2025-05-08 10:09:30" — no zone, and they are UTC.
 function toIso(value: string | null | undefined): string | undefined {
   const raw = value?.trim();
 
@@ -220,8 +212,6 @@ function clamp(value: number, max: number): number {
   return Math.min(Math.max(value, 0), max);
 }
 
-// `data_left_mb` and `data_used_mb` are both absent on eSIMs that never carried
-// a plan, and either one can stand in for the other when only one arrives.
 function toUsage(esim: ApiEsim): EsimUsage | undefined {
   const totalMb = esim.data_package_mb ?? 0;
 
@@ -258,7 +248,6 @@ const stateRank: Record<EsimState, number> = {
   removed: 3,
 };
 
-// Soonest to run out leads the active list; most recently used leads the rest.
 function byUrgency(a: Esim, b: Esim): number {
   const rank = stateRank[a.state] - stateRank[b.state];
 
@@ -299,6 +288,39 @@ export function toEsims(
       } satisfies Esim;
     })
     .sort(byUrgency);
+}
+
+function stampOf(purchase: Purchase): number {
+  const parsed = Date.parse(purchase.boughtAt ?? "");
+
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function byNewest(a: Purchase, b: Purchase): number {
+  return stampOf(b) - stampOf(a);
+}
+
+export function toPurchases(
+  apiOrders: ApiOrder[],
+  plans: Map<string, PlanRef>,
+): Purchase[] {
+  return apiOrders
+    .map((order) => {
+      const cost = order.cost_eur;
+
+      return {
+        id: order.id,
+        iccid: order.iccid,
+        plan: order.plan_id ? plans.get(order.plan_id) : undefined,
+        price:
+          cost === null || cost === undefined
+            ? undefined
+            : money(Math.round(cost * 100), "EUR"),
+        boughtAt: toIso(order.created_at),
+        paymentId: order.payment_id ?? undefined,
+      } satisfies Purchase;
+    })
+    .sort(byNewest);
 }
 
 export function toDestinations(apiPlans: ApiPlan[]): Destination[] {

@@ -54,7 +54,6 @@ function Empty({ tabId }: { tabId: TabId }) {
   );
 }
 
-// The heading rides along so it can share a flex row with the tablist.
 export function EsimTabs({ esims, title }: { esims: Esim[]; title: string }) {
   const groupId = useId();
 
@@ -87,7 +86,9 @@ export function EsimTabs({ esims, title }: { esims: Esim[]; title: string }) {
   return (
     <>
       <div className="flex flex-wrap items-center gap-4">
-        <h1 className="text-h2 font-extrabold tracking-[-0.045em]">{title}</h1>
+        <h1 className="font-display text-h2 font-extrabold tracking-[-0.045em]">
+          {title}
+        </h1>
 
         <div
           role="tablist"

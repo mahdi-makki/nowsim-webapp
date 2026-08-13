@@ -23,6 +23,18 @@ const satoshi = localFont({
   display: "swap",
 });
 
+const figtree = localFont({
+  src: [
+    {
+      path: "../fonts/Figtree-Variable.woff2",
+      weight: "300 900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-figtree",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "nowsim: Stay connected, wherever's next",
   description:
@@ -35,11 +47,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${satoshi.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${satoshi.variable} ${figtree.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
-        {/* One provider for every route group: the site pages and checkout
-            share a single instance, so a sign-in or sign-out on either side
-            survives the client-side navigation between them. */}
+        {}
         <SessionProvider account={getAccount()}>{children}</SessionProvider>
       </body>
     </html>

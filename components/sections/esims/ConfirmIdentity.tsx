@@ -9,8 +9,6 @@ import { darkTone } from "@/components/auth/EmailSignIn";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
 
-// Same shell as the sign-in code field so the two code prompts read as one
-// control — including the reset that keeps the browser's focus ring off it.
 const field = cn(
   "w-full rounded-control border px-5 py-3.5",
   "text-base font-medium",
@@ -22,11 +20,6 @@ const button = cn(
   "w-full justify-center rounded-control px-5 py-3.5 text-base font-bold",
 );
 
-/**
- * Stands in for the install details until the session proves itself again. The
- * code goes to the address already on the session, so there is nothing here for
- * the user to redirect and nothing for a caller to tamper with.
- */
 export function ConfirmIdentity() {
   const router = useRouter();
   const [state, action, pending] = useActionState<ReauthState, FormData>(
@@ -37,8 +30,6 @@ export function ConfirmIdentity() {
   const [sent, setSent] = useState<ReauthState | null>(null);
   const [code, setCode] = useState("");
 
-  // A correct code moved the freshness stamp on the cookie. Re-render the server
-  // component so the listing comes back with the credentials filled in.
   useEffect(() => {
     if (state.ok) router.refresh();
   }, [state.ok, router]);

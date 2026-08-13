@@ -67,7 +67,6 @@ export function PlanPicker({
     unlimited: plans.filter((plan) => plan.unlimited),
   };
 
-  // Only worth a tablist when both kinds are on offer for this destination.
   const tabbed = groups.fixed.length > 0 && groups.unlimited.length > 0;
 
   const [activeTab, setActiveTab] = useState<TabId>(() =>
@@ -85,8 +84,6 @@ export function PlanPicker({
 
   const tabRefs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({});
 
-  // Switching tabs moves the selection with it, so checkout can never point at
-  // a plan the grid is hiding.
   const pickTab = (id: TabId) => {
     setActiveTab(id);
     setSelectedId(groups[id][0].id);

@@ -8,7 +8,7 @@ export function About() {
       <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-[minmax(0,4.5fr)_minmax(0,7.5fr)] md:gap-6">
         <div className="flex flex-col gap-6">
           <div>
-            <h2 className="text-h1 font-extrabold uppercase tracking-[-0.045em]">
+            <h2 className="font-display text-h1 font-extrabold uppercase tracking-[-0.045em]">
               The future of mobile data
             </h2>
 
@@ -49,7 +49,7 @@ export function About() {
                 alt="Portrait of a nowsim traveller framing their face with both hands"
                 fill
                 quality={90}
-                sizes="(min-width: 1200px) 210px, (min-width: 768px) 18vw, 100vw"
+                sizes="(min-width: 1200px) 315px, (min-width: 768px) 27vw, 100vw"
                 className="object-cover object-center"
               />
             </div>

@@ -22,8 +22,6 @@ const pill = cn(
   "text-[0.8125rem]/[1.125rem] font-bold",
 );
 
-// Same footprint as the state pill, quieter: the plan's shape is context, not
-// the headline the state badge is.
 const spec = cn(
   "shrink-0 rounded-full px-2.5 py-0.5",
   "text-[0.8125rem]/[1.125rem] font-medium text-muted",
@@ -39,8 +37,6 @@ const pillTone: Record<EsimState, string> = {
 
 const action = cn("rounded-full px-5 py-2.5 text-sm font-bold");
 
-// Install is the one thing a fresh eSIM is for, so it carries the card's only
-// filled button; everything beside it stays outlined.
 const primary = cn(
   action,
   "gap-2 border border-ink bg-ink text-white",
@@ -83,8 +79,6 @@ export function EsimCard({ esim }: { esim: Esim }) {
     esim.qrImage || esim.activationCode || esim.installLocked,
   );
 
-  // "Sent" is a receipt, not a resting state — hand the button back so a mail
-  // that never arrived can be asked for again.
   useEffect(() => {
     if (!mail?.ok) return;
 
@@ -93,9 +87,6 @@ export function EsimCard({ esim }: { esim: Esim }) {
     return () => clearTimeout(timer);
   }, [mail]);
 
-  // The recipient is the session's address, so there is nothing to ask for here.
-  // A locked session cannot be mailed a code either — send it to the dialog,
-  // which already knows how to step up.
   async function sendEmail() {
     setMailing(true);
     setMail(null);
@@ -123,6 +114,7 @@ export function EsimCard({ esim }: { esim: Esim }) {
                 src={plan.art}
                 alt=""
                 fill
+                quality={90}
                 sizes="44px"
                 unoptimized={plan.art.endsWith(".svg")}
                 className="object-cover"
@@ -230,7 +222,7 @@ export function EsimCard({ esim }: { esim: Esim }) {
               ) : (
                 <MdMailOutline aria-hidden className="h-4 w-4" />
               )}
-              {mail?.ok ? "Sent" : mailing ? "Sending…" : "Send email"}
+              {mail?.ok ? "Sent" : mailing ? "Sending…" : "Resend email"}
             </Pressable>
           </>
         )}
@@ -249,7 +241,7 @@ export function EsimCard({ esim }: { esim: Esim }) {
       {mail?.ok && mail.email ? (
         <p className="mt-3 text-sm text-muted">
           {mail.throttled
-            ? `Already sent to ${mail.email} — check your inbox`
+            ? `Already sent to ${mail.email}. Check your inbox`
             : `Install details sent to ${mail.email}`}
         </p>
       ) : null}

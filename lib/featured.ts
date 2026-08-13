@@ -25,6 +25,19 @@ export const featuredSlugs: Record<DestinationKind, string[]> = {
   global: ["global-package", "global-lite"],
 };
 
+export const spotlightSlugs: string[] = [
+  "united-states",
+  "mexico",
+  "japan",
+  "indonesia",
+  "germany",
+  "italy",
+  "netherlands",
+  "spain",
+];
+
+export const spotlightCount = 8;
+
 export const fallbackCount: Record<DestinationKind, number> = {
   country: 9,
   region: 6,

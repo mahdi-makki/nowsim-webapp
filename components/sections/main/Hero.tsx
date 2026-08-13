@@ -32,7 +32,7 @@ export function Hero({ destinations }: { destinations: DestinationSummary[] }) {
             "absolute inset-0 flex flex-col items-center justify-center px-6 text-center",
           )}
         >
-          <h1 className="max-w-4xl text-display font-black tracking-[-0.01em] text-white">
+          <h1 className="max-w-4xl font-display text-display font-black tracking-[-0.01em] text-white">
             STAY <span className="text-volt">CONNECTED</span>{" "}
             {"WHENEVER’S NEXT"}
           </h1>

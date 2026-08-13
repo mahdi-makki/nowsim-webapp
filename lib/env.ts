@@ -5,7 +5,7 @@ import { z } from "zod";
 const schema = z.object({
   YESIM_API_TOKEN: z
     .string()
-    .min(1, "YESIM_API_TOKEN is required — the catalog cannot load without it"),
+    .min(1, "YESIM_API_TOKEN is required. The catalog cannot load without it"),
   YESIM_API_BASE: z.url().default("https://partners-api.yesim.biz"),
   REVALIDATE_SECRET: z.string().min(16).optional(),
 });

@@ -26,7 +26,7 @@ export default async function CheckoutPage({
   return (
     <section className="px-3 py-12 md:px-4 md:py-16">
       <div className="mx-auto max-w-6xl">
-        <h1 className="sr-only">Checkout — {destination.name} eSIM</h1>
+        <h1 className="sr-only">Checkout.{destination.name} eSIM</h1>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start lg:gap-10">
           <div className="lg:col-start-2 lg:row-start-1 lg:sticky lg:top-[calc(var(--header-height)+env(safe-area-inset-top)+1.5rem)]">

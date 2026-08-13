@@ -1,4 +1,4 @@
-# nowsim — what's left to go live
+# nowsim. What's left to go live
 
 Everything in this file is outstanding. Done work is not listed.
 
@@ -17,10 +17,10 @@ is live from Yesim, and email OTP sign-in works end to end. **It cannot take mon
 | `GET /new_esim`              | Issue the eSIM.**Only from the Stripe webhook** |
 | `GET /orders`                | Order history                                   |
 | `GET /sim_info`              | eSIM status and data remaining                  |
-| `GET /balance`               | Partner float — see the balance guard           |
+| `GET /balance`               | Partner float. See the balance guard           |
 | `POST /set_notification_url` | Yesim pushes eSIM status changes to us          |
 
-**Pricing — use `retail_price`, never `price`.** `price` is the partner rate we are
+**Pricing. Use `retail_price`, never `price`.** `price` is the partner rate we are
 billed. `planPrice()` in `lib/api/mappers.ts` is the only place a customer-facing price
 is built.
 
@@ -29,7 +29,7 @@ survive into the order.
 
 ### Answer before starting payments
 
-- [ ] `/new_esim` vs `/issue_esim` — which provisions, and what does each return?
+- [ ] `/new_esim` vs `/issue_esim`. Which provisions, and what does each return?
 - [ ] Does Yesim email the QR itself, or must we?
 - [ ] Is `/balance` a prepaid float that can run dry, or post-paid invoicing?
 
@@ -40,14 +40,13 @@ survive into the order.
 - [ ] **Disable the Pay button until Stripe is wired.** `PaymentStep.tsx` renders a
       button with no handler. Signed out it is correctly disabled; signed in it goes
       live, says "Pay €X", and silently does nothing when clicked.
-- [x] **Compress `public/videos/hero.mp4`.** It is 35 MB — 90% of all static assets —
-      autoplays with `preload="auto"` and has no poster frame. Target under 3 MB and add
+- [x] **Compress `public/videos/hero.mp4`.** It is 35 MB. 90% of all static assets. Autoplays with `preload="auto"` and has no poster frame. Target under 3 MB and add
       a poster.
 - [ ] **Terms of Service, Privacy Policy, cardholder-credential page** written, hosted
       and linked. Currently `href="#"` in `lib/auth/providers.ts`.
 - [ ] **Refund and support policy published.** The FAQ already promises "if a plan never
       connects, we refund it" against a policy that does not exist.
-- [ ] **Resolve the last `href="#"`** — the FAQ's "How it works" CTA (`Faq.tsx:81`). The
+- [ ] **Resolve the last `href="#"`**. The FAQ's "How it works" CTA (`Faq.tsx:81`). The
       footer and social links now all point somewhere.
 
 ---
@@ -64,7 +63,7 @@ the price up again.
 
 ### Taking the payment
 
-- [ ] Server action `createOrder({ planId, quantity })` — `verifySession()`, re-read the
+- [ ] Server action `createOrder({ planId, quantity })`. `verifySession()`, re-read the
       plan from the catalog, compute the total server-side, clamp to `MAX_ESIMS`. Call
       `refreshSession()` here directly rather than through the `touchSession` action.
 - [ ] PaymentIntent with an **idempotency key** so a double-click cannot charge twice.
@@ -76,7 +75,7 @@ the price up again.
 
 ### Fulfilling the order
 
-- [ ] `app/api/webhooks/stripe/route.ts` — read the **raw** body, verify the signature
+- [ ] `app/api/webhooks/stripe/route.ts`. Read the **raw** body, verify the signature
       with `constructEvent`, store the event id in Redis to reject replays.
 - [ ] **Fulfill in the webhook, never on the browser redirect.** A customer who closes
       the tab after paying must still get their eSIM.
@@ -86,7 +85,7 @@ the price up again.
 
 ### The failure mode that will actually bite
 
-Stripe can succeed while `/new_esim` fails — bad partner balance, Yesim downtime, a plan
+Stripe can succeed while `/new_esim` fails. Bad partner balance, Yesim downtime, a plan
 withdrawn between browsing and paying. The customer has been charged and has nothing.
 
 - [ ] **Check `GET /balance` before creating the PaymentIntent.** If the float cannot
@@ -103,10 +102,10 @@ failure refunds instead of swallowing the money.
 
 ---
 
-## 3. Auth — remaining
+## 3. Auth. Remaining
 
 - [ ] **Verify the Resend sending domain (SPF/DKIM)** or codes land in spam.
-- [ ] **Google sign-in.** `app/api/auth/google/route.ts` + `callback/route.ts` — OIDC
+- [ ] **Google sign-in.** `app/api/auth/google/route.ts` + `callback/route.ts`. OIDC
       with PKCE, `state` and `nonce` in short-lived httpOnly cookies. Verify `iss`,
       `aud`, `exp`, `nonce` against Google's JWKS. Exact redirect-URI allowlist.
       **Reject any token whose email is not verified**, or someone signs in with an
@@ -114,13 +113,13 @@ failure refunds instead of swallowing the money.
       Flip `ready: true` in `lib/auth/providers.ts`.
 - [ ] **Decide what "Delete account" does.** The button in `AccountAction.tsx` is a
       placeholder with no handler. Yesim exposes no user-deletion endpoint, so closing an
-      account can only clear the session and our Redis keys — the upstream user survives
+      account can only clear the session and our Redis keys. The upstream user survives
       and a later sign-in with the same address reuses it. GDPR erasure needs an answer
       from Yesim.
 - [ ] `proxy.ts` at the project root for optimistic cookie-presence redirects only.
-      (Next 16 renamed Middleware to Proxy.) **Not** the authorization check — that
+      (Next 16 renamed Middleware to Proxy.) **Not** the authorization check. That
       stays `verifySession()` inside each data function.
-- [ ] Order history reading `GET /orders`. `GET /user` is done — `/esims` renders it
+- [ ] Order history reading `GET /orders`. `GET /user` is done. `/esims` renders it
       (`lib/data/esims.ts`). Plan names there depend on `active_plan_id` matching a
       catalog `id` or `old_id`; older eSIMs report neither and render without a name.
 - [ ] Add a per-IP verify limit. Attempts are capped per code (5) and per address via the
@@ -137,11 +136,11 @@ failure refunds instead of swallowing the money.
 - [ ] Rate limiting on order creation and the webhook endpoint.
 - [ ] Structured logs with no PII and no tokens. Audit that `redactToken` covers every
       path that can log a Yesim URL, including uncaught error handlers.
-- [ ] **Rotate `YESIM_API_TOKEN` before launch** — the dev one has been in terminals,
+- [ ] **Rotate `YESIM_API_TOKEN` before launch**. The dev one has been in terminals,
       shell history and `.next/cache`.
 - [ ] `experimental.taint: true`, taint the account object.
 - [ ] Resolve `npm audit`: 4 high in `sharp`/libvips. The fix wants next 16.3.0, outside
-      the pinned range — needs a deliberate decision.
+      the pinned range. Needs a deliberate decision.
 - [ ] Document secret rotation. Confirm no secret is committed (`git log -p` scan).
 
 ---
@@ -159,17 +158,17 @@ failure refunds instead of swallowing the money.
       `fallback.jpg`. The folders are still empty, so every page shows the fallback.
       Expected file names are listed in each folder's `.txt` (148 countries, 11 regions,
       2 global); regenerate with `node --env-file=.env.local scripts/hero-names.mjs`.
-      Those `.txt` files sit under `public/` and are publicly served — move them if that
+      Those `.txt` files sit under `public/` and are publicly served. Move them if that
       matters.
 - [ ] Delete or use `components/sections/main/Benefits.tsx` and `EveryMoment.tsx`. Both
       are complete section components that nothing imports.
-- [ ] Rewrite `README.md` — still create-next-app boilerplate referencing Geist and
+- [ ] Rewrite `README.md`. Still create-next-app boilerplate referencing Geist and
       `app/page.tsx`.
 - [ ] Decide the upstream naming overrides: `MIDDLE EAST` is uppercase, `LATAM` / `SEA` /
       `CIS` are abbreviations, and they render as Yesim writes them.
 - [ ] Confirm the duplicate destinations are intentional. Grouping the live catalog by
       kind produces `LATAM` alongside `Latin America`, `Asia` alongside `Asia Pacific` and
-      `SEA`, and `Japan` as both a country and a region — each gets its own page, its own
+      `SEA`, and `Japan` as both a country and a region. Each gets its own page, its own
       hero photo and its own SEO surface.
 - [ ] **Stale-on-error.** A catalog failure after the cache expires renders `error.tsx`.
       Decide whether to serve the last good copy instead.
@@ -178,7 +177,7 @@ failure refunds instead of swallowing the money.
 
 ## 6. SEO
 
-- [ ] `sitemap.ts` and `robots.ts` — none exist, across 176 prerendered pages.
+- [ ] `sitemap.ts` and `robots.ts`. None exist, across 176 prerendered pages.
 - [ ] `metadataBase`, canonical URLs, Open Graph images. Link previews are blank today.
 
 ---
@@ -187,7 +186,7 @@ failure refunds instead of swallowing the money.
 
 - [ ] CI runs `typecheck`, `lint`, `build` on every PR.
 - [ ] Vitest for `lib/`: money formatting, session encrypt/decrypt, and the mappers
-      against `lib/api/__fixtures__/plans.json` — 1520 real plans, no network. Cover the
+      against `lib/api/__fixtures__/plans.json`. 1520 real plans, no network. Cover the
       traps that fixture exposed: `data: "Unlimited"`, `old_id: null`, the
       `UNLIM_UAE_7D` / `St. Kitts` grouping, and the `japan` / `japan-region` collision.
 - [ ] Playwright for the two flows that matter: browse → pick plan → checkout, and
@@ -198,7 +197,7 @@ failure refunds instead of swallowing the money.
 
 ## 8. Deployment
 
-- [ ] **Un-ignore `.env.example`** — the `.env*` rule in `.gitignore` swallows it, so the
+- [ ] **Un-ignore `.env.example`**. The `.env*` rule in `.gitignore` swallows it, so the
       template `lib/env.ts` tells people to copy is not in the repo. Add `!.env.example`.
       It is also missing `YESIM_API_BASE` and `REVALIDATE_SECRET`.
 - [ ] Production domain + TLS.
@@ -225,12 +224,12 @@ failure refunds instead of swallowing the money.
 
 | Work                            | Est.     | Blocked by |
 | ------------------------------- | -------- | ---------- |
-| Blocks launch (§1)              | 1 day    | —          |
-| Payments and fulfillment (§2)   | 5–6 days | —          |
-| Auth remainder (§3)             | 2–3 days | —          |
+| Blocks launch (§1)              | 1 day    |            |
+| Payments and fulfillment (§2)   | 5–6 days |            |
+| Auth remainder (§3)             | 2–3 days |            |
 | Security hardening (§4)         | 2 days   | §2         |
-| Content, SEO (§5, §6)           | 1–2 days | —          |
-| Quality gates (§7)              | 1 day    | —          |
+| Content, SEO (§5, §6)           | 1–2 days |            |
+| Quality gates (§7)              | 1 day    |            |
 | Deployment, final pass (§8, §9) | 2–3 days | §4         |
 
 §1, §5, §6 and §7 are blocked by nothing and can start immediately.

@@ -101,6 +101,7 @@ export function CoverageDialog({
                         src={flag}
                         alt=""
                         fill
+                        quality={90}
                         sizes="32px"
                         unoptimized={flag.endsWith(".svg")}
                         className="object-cover"

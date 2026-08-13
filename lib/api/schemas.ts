@@ -60,11 +60,8 @@ export const newUserResponseSchema = z.object({
   alreadyExist: numeric.optional(),
 });
 
-// Yesim sends ids as strings today and as numbers on a couple of endpoints.
 const id = z.union([z.string(), z.number()]).transform(String);
 
-// `/user` omits whole fields on eSIMs that never carried a plan, so every field
-// past the identity is optional: one odd eSIM must not blank the whole page.
 export const esimSchema = z.object({
   id,
   iccid: z.string().default(""),
@@ -99,6 +96,24 @@ export const userResponseSchema = z.object({
 });
 
 export type ApiUser = z.infer<typeof userResponseSchema>;
+
+export const orderSchema = z.object({
+  id,
+  user_id: id.nullish(),
+  iccid: z.string().default(""),
+  plan_id: id.nullish(),
+  cost_eur: numeric.nullish(),
+  created_at: z.string().nullish(),
+  payment_id: id.nullish(),
+});
+
+export type ApiOrder = z.infer<typeof orderSchema>;
+
+export const ordersResponseSchema = z.union([
+  z.array(orderSchema),
+  z.object({ orders: z.array(orderSchema) }).transform((body) => body.orders),
+  z.object({ data: z.array(orderSchema) }).transform((body) => body.data),
+]);
 
 export const supportedDevicesResponseSchema = z.union([
   z.array(deviceTypeSchema),

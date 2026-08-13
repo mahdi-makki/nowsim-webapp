@@ -24,7 +24,7 @@ export default async function CompatibleDevicesPage() {
           ]}
         />
 
-        <h1 className="max-w-[18ch] text-h1 font-extrabold uppercase tracking-[-0.045em]">
+        <h1 className="max-w-[18ch] font-display text-h1 font-extrabold uppercase tracking-[-0.045em]">
           eSIM compatible devices
         </h1>
 

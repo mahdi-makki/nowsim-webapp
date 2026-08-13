@@ -12,7 +12,6 @@ export function DestinationCard({
   note,
 }: {
   destination: DestinationSummary;
-  /** Why this card is here, when the reason is not its name — "Includes Japan". */
   note?: string;
 }) {
   return (
@@ -20,8 +19,6 @@ export function DestinationCard({
       href={destinationHref(destination.kind, destination.slug)}
       className={cn(
         "group w-full justify-start gap-4 rounded-card px-5 text-left",
-        // The pill adds a third line, so these cards need less padding to sit
-        // at a comparable height to the ones without it.
         note ? "py-4 md:py-4" : "py-5 md:py-6",
         "bg-surface-soft hover:bg-ink/[0.07] active:bg-ink/[0.07]",
       )}
@@ -31,6 +28,7 @@ export function DestinationCard({
           src={destination.art}
           alt=""
           fill
+          quality={90}
           sizes="48px"
           unoptimized={destination.art.endsWith(".svg")}
           className="object-cover"

@@ -32,7 +32,6 @@ export function Dialog({
 }: {
   open: boolean;
   onClose: () => void;
-  /** Turns the corner button into a back arrow. Escape still closes outright. */
   onBack?: () => void;
   title: ReactNode;
   className?: string;
