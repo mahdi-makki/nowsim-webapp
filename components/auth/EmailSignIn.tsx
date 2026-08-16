@@ -41,7 +41,7 @@ export const darkTone: SignInTone = {
 export const lightTone: SignInTone = {
   fieldIdle: "border-hairline bg-surface text-ink placeholder:text-muted",
   fieldError: "border-danger bg-danger/5 text-ink placeholder:text-muted",
-  primary: "bg-ink text-white hover:bg-ink-soft active:bg-ink-soft",
+  primary: "bg-brand text-white hover:bg-brand-soft active:bg-brand-soft",
   secondary:
     "border border-hairline text-ink hover:border-ink/25 hover:bg-surface-soft active:bg-surface-soft",
   inert: "bg-surface-soft text-muted",

@@ -92,7 +92,7 @@ export function Destinations({
                   className={cn(
                     "gap-2 rounded-full px-5 py-2.5 text-sm font-medium md:px-6 md:py-3 md:text-base",
                     selected
-                      ? "bg-ink text-white"
+                      ? "bg-brand text-white"
                       : "text-ink/60 hover:text-ink",
                   )}
                 >
@@ -133,8 +133,8 @@ export function Destinations({
           <Pressable
             href="/destinations"
             className={cn(
-              "gap-2 rounded-full bg-ink px-6 py-3.5 text-base font-medium text-white",
-              "hover:bg-ink-soft active:bg-ink-soft",
+              "gap-2 rounded-full bg-brand px-6 py-3.5 text-base font-medium text-white",
+              "hover:bg-brand-soft active:bg-brand-soft",
             )}
           >
             Browse all destinations

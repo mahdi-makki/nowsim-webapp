@@ -53,7 +53,7 @@ export function NetworkFacts({
             <dt>Hotspot / Tethering:</dt>
             <dd className={cn(value, "flex items-center gap-1.5")}>
               Unlimited
-              <MdCheckCircle aria-hidden className="h-4 w-4 text-brand" />
+              <MdCheckCircle aria-hidden className="h-4 w-4 text-success" />
             </dd>
           </div>
 

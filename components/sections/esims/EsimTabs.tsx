@@ -11,7 +11,7 @@ import { isArchivedEsim, type Esim } from "@/lib/types";
 
 const tab = "rounded-full px-5 py-2 text-sm font-medium";
 
-const tabActive = cn(tab, "bg-ink text-white");
+const tabActive = cn(tab, "bg-brand text-white");
 
 const tabIdle = cn(tab, "text-muted hover:bg-surface-soft hover:text-ink");
 

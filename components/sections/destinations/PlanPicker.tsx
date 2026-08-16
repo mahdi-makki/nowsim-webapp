@@ -17,8 +17,8 @@ const stepper =
 
 const stepperAdd = cn(
   stepper,
-  "enabled:border-ink enabled:bg-ink enabled:text-white",
-  "enabled:hover:border-ink-soft enabled:hover:bg-ink-soft",
+  "enabled:border-brand enabled:bg-brand enabled:text-white",
+  "enabled:hover:border-brand-soft enabled:hover:bg-brand-soft",
 );
 
 const card = cn(
@@ -36,7 +36,7 @@ const cardPicked = "border-brand bg-brand/5";
 
 const tab = "rounded-full px-5 py-2 text-sm font-medium";
 
-const tabActive = cn(tab, "bg-ink text-white");
+const tabActive = cn(tab, "bg-brand text-white");
 
 const tabIdle = cn(tab, "text-muted hover:bg-surface-soft hover:text-ink");
 
@@ -268,9 +268,9 @@ export function PlanPicker({
         aria-expanded={deviceOpen}
         onClick={() => setDeviceOpen(true)}
         className={cn(
-          "mt-3 w-full rounded-full border border-ink px-8 py-4",
-          "text-base font-bold text-ink",
-          "hover:bg-surface-soft",
+          "mt-3 w-full rounded-full border border-brand px-8 py-4",
+          "text-base font-bold text-brand",
+          "hover:bg-brand/5",
         )}
       >
         Device compatibility

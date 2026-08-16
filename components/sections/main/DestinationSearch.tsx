@@ -141,9 +141,9 @@ export function DestinationSearch({
           type="submit"
           press={false}
           className={cn(
-            "h-12 w-12 shrink-0 rounded-full bg-ink text-volt",
+            "h-12 w-12 shrink-0 rounded-full bg-brand text-volt",
             "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-            "hover:bg-ink-soft active:bg-ink-soft",
+            "hover:bg-brand-soft active:bg-brand-soft",
           )}
         >
           <MdSearch aria-hidden className="h-5 w-5" />

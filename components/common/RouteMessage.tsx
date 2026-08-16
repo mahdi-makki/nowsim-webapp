@@ -37,8 +37,8 @@ export function RouteMessage({
 }
 
 export const routeMessageAction = cn(
-  "rounded-full bg-ink px-6 py-3.5 text-base font-medium text-white",
-  "hover:bg-ink-soft active:bg-ink-soft",
+  "rounded-full bg-brand px-6 py-3.5 text-base font-medium text-white",
+  "hover:bg-brand-soft active:bg-brand-soft",
 );
 
 export const routeMessageActionQuiet = cn(

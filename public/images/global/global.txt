@@ -1,7 +1,0 @@
-# 2 global destinations — generated 2026-08-08
-# Drop the photo in public/images/global/ named after the first
-# column: <slug>.jpg (.jpeg .png .webp .avif also work). Anything without a
-# file falls back to the placeholder. Restart the dev server after adding.
-
-global-lite     Global Lite
-global-package  Global Package

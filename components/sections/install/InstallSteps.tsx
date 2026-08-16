@@ -1,37 +1,129 @@
 "use client";
 
+import Image from "next/image";
 import type { KeyboardEvent } from "react";
 import { useId, useRef, useState } from "react";
-import { MdChevronRight, MdLightbulbOutline } from "react-icons/md";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
-import type { InstallMethod, InstallMethodId, InstallStep } from "@/lib/install";
+import type {
+  InstallMethod,
+  InstallMethodId,
+  InstallShots,
+  InstallStep,
+} from "@/lib/install";
+import { installShotName, SHOT_HEIGHT, SHOT_WIDTH } from "@/lib/install";
 
 const tab = cn(
-  "w-full rounded-full px-5 py-3.5 text-base font-bold",
+  "flex-1 rounded-card px-4 py-3 text-base font-bold",
   "transition-colors duration-300 ease-hover motion-reduce:transition-none",
 );
 
-const tabActive = cn(tab, "bg-ink text-white");
+const tabActive = cn(tab, "bg-brand text-white");
 
-const tabIdle = cn(tab, "text-muted hover:bg-ink/5 active:bg-ink/10");
+const tabIdle = cn(tab, "text-muted hover:text-ink");
 
-function PathChips({ path }: { path: string[] }) {
+const frame = "w-60 shrink-0 snap-start sm:w-72";
+
+const arrow = cn(
+  "absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 rounded-full",
+  "border border-hairline bg-surface text-ink shadow-sm",
+  "hover:bg-surface-soft md:flex",
+);
+
+function Placeholder({ name }: { name: string }) {
   return (
-    <p className="mt-5 flex flex-wrap items-center gap-1.5">
-      {path.map((crumb, index) => (
-        <span key={`${index}-${crumb}`} className="flex items-center gap-1.5">
-          {index > 0 && (
-            <MdChevronRight aria-hidden className="h-4 w-4 text-ink/30" />
-          )}
+    <div
+      className={cn(
+        "flex w-full items-center justify-center rounded-sheet",
+        "border border-dashed border-hairline bg-surface px-3 text-center",
+      )}
+      style={{ aspectRatio: `${SHOT_WIDTH} / ${SHOT_HEIGHT}` }}
+    >
+      <span className="break-all text-xs text-muted">{name}</span>
+    </div>
+  );
+}
 
-          <span className="rounded-full border border-hairline bg-surface px-3.5 py-1.5 text-sm font-medium">
-            {crumb}
-          </span>
-        </span>
-      ))}
-    </p>
+function Shots({
+  shots,
+  step,
+  stepNumber,
+}: {
+  shots: string[];
+  step: InstallStep;
+  stepNumber: number;
+}) {
+  const rail = useRef<HTMLUListElement>(null);
+
+  const count = shots.length || step.shots;
+
+  const slide = (direction: 1 | -1) => {
+    const node = rail.current;
+
+    if (!node) return;
+
+    node.scrollBy({ left: direction * node.clientWidth * 0.8 });
+  };
+
+  return (
+    <div className="relative mt-6">
+      <ul
+        ref={rail}
+        className={cn(
+          "-mx-6 flex snap-x snap-mandatory justify-center-safe gap-3",
+          "overflow-x-auto px-6",
+          "scroll-smooth scroll-subtle md:-mx-8 md:px-8",
+        )}
+      >
+        {Array.from({ length: count }, (_, index) => {
+          const src = shots[index];
+          const name = installShotName(stepNumber, index + 1);
+
+          return (
+            <li key={name} className={frame}>
+              {src ? (
+                <Image
+                  src={src}
+                  alt={
+                    count > 1
+                      ? `${step.title}, screen ${index + 1} of ${count}`
+                      : step.title
+                  }
+                  width={SHOT_WIDTH}
+                  height={SHOT_HEIGHT}
+                  sizes="18rem"
+                  className="block h-auto w-full rounded-sheet"
+                />
+              ) : (
+                <Placeholder name={name} />
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      {count > 2 && (
+        <>
+          <Pressable
+            aria-label="Previous screenshot"
+            onClick={() => slide(-1)}
+            className={cn(arrow, "-left-3")}
+          >
+            <MdChevronLeft aria-hidden className="h-6 w-6" />
+          </Pressable>
+
+          <Pressable
+            aria-label="Next screenshot"
+            onClick={() => slide(1)}
+            className={cn(arrow, "-right-3")}
+          >
+            <MdChevronRight aria-hidden className="h-6 w-6" />
+          </Pressable>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -39,59 +131,56 @@ function StepCard({
   step,
   index,
   total,
+  shots,
 }: {
   step: InstallStep;
   index: number;
   total: number;
+  shots: string[];
 }) {
+  const count = shots.length || step.shots;
+
   return (
-    <li className="relative md:pl-24">
-      <span
-        aria-hidden
+    <li
+      className={cn(
+        "rounded-sheet border border-hairline bg-surface-soft p-6 md:p-8",
+        count > 0 && "pb-0 md:pb-0",
+      )}
+    >
+      <p
         className={cn(
-          "absolute left-0 top-0 hidden h-14 w-14 items-center justify-center md:flex",
-          "rounded-full bg-ink font-display text-xl font-extrabold text-white",
+          "inline-flex rounded-full bg-brand/10 px-3.5 py-1.5",
+          "text-eyebrow uppercase text-brand",
         )}
       >
-        {index + 1}
-      </span>
+        Step {index + 1} of {total}
+      </p>
 
-      {index + 1 < total && (
-        <span
-          aria-hidden
-          className="absolute -bottom-10 left-7 top-16 hidden w-px bg-hairline md:block"
-        />
+      <h2 className="mt-3 max-w-[26ch] text-h3">{step.title}</h2>
+
+      {step.note && (
+        <p className="mt-3 max-w-[48ch] text-sm text-muted">{step.note}</p>
       )}
 
-      <article className="rounded-sheet border border-hairline bg-surface-soft p-6 md:p-8">
-        <p className="text-eyebrow uppercase text-brand">
-          Step {index + 1} of {total}
-        </p>
+      {step.path && (
+        <p className="mt-3 text-sm text-muted">{step.path.join(" → ")}</p>
+      )}
 
-        <h3 className="mt-3 max-w-[28ch] text-h3">{step.title}</h3>
-
-        {step.path && <PathChips path={step.path} />}
-
-        <p className="mt-4 max-w-[62ch] text-base text-muted md:text-lg">
-          {step.body}
-        </p>
-
-        {step.tip && (
-          <div className="mt-5 flex items-start gap-3 rounded-card bg-surface px-4 py-3.5">
-            <MdLightbulbOutline
-              aria-hidden
-              className="mt-0.5 h-5 w-5 shrink-0 text-ink/40"
-            />
-
-            <p className="text-sm text-muted">{step.tip}</p>
-          </div>
-        )}
-      </article>
+      {count > 0 && (
+        <Shots shots={shots} step={step} stepNumber={index + 1} />
+      )}
     </li>
   );
 }
 
-export function InstallSteps({ methods }: { methods: InstallMethod[] }) {
+export function InstallSteps({
+  methods,
+  shots,
+}: {
+  methods: InstallMethod[];
+  /** Screenshots found on disk. Anything missing renders as a placeholder. */
+  shots: InstallShots;
+}) {
   const groupId = useId();
 
   const [activeId, setActiveId] = useState<InstallMethodId>(methods[0].id);
@@ -122,7 +211,7 @@ export function InstallSteps({ methods }: { methods: InstallMethod[] }) {
       <div
         role="tablist"
         aria-label="Installation method"
-        className="mt-10 grid grid-cols-2 gap-1 rounded-full border border-hairline p-1"
+        className="mt-8 flex gap-1 rounded-card border border-hairline p-1"
       >
         {methods.map((method) => {
           const selected = method.id === activeId;
@@ -153,17 +242,14 @@ export function InstallSteps({ methods }: { methods: InstallMethod[] }) {
         role="tabpanel"
         aria-labelledby={`${groupId}-tab-${active.id}`}
       >
-        <p className="mt-6 max-w-[62ch] text-base text-muted md:text-lg">
-          {active.blurb}
-        </p>
-
-        <ol className="mt-10 flex flex-col gap-10">
+        <ol className="mt-6 flex flex-col gap-6">
           {active.steps.map((step, index) => (
             <StepCard
               key={step.title}
               step={step}
               index={index}
               total={active.steps.length}
+              shots={shots[active.id]?.[index] ?? []}
             />
           ))}
         </ol>

@@ -19,7 +19,7 @@ const navLinks = [
   { label: "Countries", href: "/destinations?kind=country" },
   { label: "Regions", href: "/destinations?kind=region" },
   { label: "Global", href: "/destinations?kind=global" },
-  { label: "How to install", href: "/how-to-install" },
+  { label: "Help", href: "/help" },
 ];
 
 function useScrolled(pathname: string) {

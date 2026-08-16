@@ -176,7 +176,7 @@ export function AllDestinations({
                 onClick={() => select(tab.id)}
                 className={cn(
                   "gap-2 rounded-full px-5 py-2.5 text-sm font-medium md:px-6 md:py-3 md:text-base",
-                  selected ? "bg-ink text-white" : "text-ink/60 hover:text-ink",
+                  selected ? "bg-brand text-white" : "text-ink/60 hover:text-ink",
                 )}
               >
                 {tab.label}

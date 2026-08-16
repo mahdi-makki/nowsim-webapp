@@ -21,7 +21,7 @@ import { cn } from "@/lib/cn";
 
 const trigger = cn(
   "rounded-full bg-volt px-4 py-2.5 text-base font-medium text-ink md:px-5",
-  "hover:bg-ink-deep hover:text-volt active:bg-ink-deep active:text-volt",
+  "hover:bg-brand hover:text-white active:bg-brand active:text-white",
 );
 
 export function AccountActionFallback() {
@@ -162,7 +162,7 @@ export function AccountAction() {
         onClick={() => setView("menu")}
         className={cn(
           "h-10 w-10 rounded-full bg-volt text-ink",
-          "hover:bg-ink-deep hover:text-volt active:bg-ink-deep active:text-volt",
+          "hover:bg-brand hover:text-white active:bg-brand active:text-white",
         )}
       >
         <MdPerson aria-hidden className="h-5 w-5" />

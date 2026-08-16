@@ -25,7 +25,7 @@ export default function GlobalError({
         <button
           type="button"
           onClick={() => unstable_retry()}
-          className="cursor-pointer rounded-full bg-ink px-6 py-3.5 text-base font-medium text-white hover:bg-ink-soft"
+          className="cursor-pointer rounded-full bg-brand px-6 py-3.5 text-base font-medium text-white hover:bg-brand-soft"
         >
           Try again
         </button>

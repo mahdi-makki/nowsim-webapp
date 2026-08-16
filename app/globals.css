@@ -8,6 +8,10 @@
   --color-ink-deep: #06314a;
   --color-ink-soft: color-mix(in srgb, var(--color-ink) 86%, #ffffff);
 
+  /* Hover/press pair for filled brand controls, mirroring ink-soft/ink-deep. */
+  --color-brand-soft: color-mix(in srgb, var(--color-brand) 88%, #ffffff);
+  --color-brand-deep: color-mix(in srgb, var(--color-brand) 82%, var(--color-ink));
+
   --color-surface: #ffffff;
   --color-surface-soft: color-mix(in srgb, var(--color-ink) 4%, #ffffff);
   --color-hairline: color-mix(in srgb, var(--color-ink) 12%, transparent);

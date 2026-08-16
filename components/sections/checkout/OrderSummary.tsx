@@ -71,9 +71,9 @@ export function OrderSummary({ order }: { order: Order }) {
       <Pressable
         href={destinationHref(destination.kind, destination.slug)}
         className={cn(
-          "mt-5 w-full rounded-full bg-ink px-6 py-3",
+          "mt-5 w-full rounded-full bg-brand px-6 py-3",
           "text-sm font-bold text-white",
-          "hover:bg-ink-deep active:bg-ink-deep",
+          "hover:bg-brand-deep active:bg-brand-deep",
         )}
       >
         Change plan

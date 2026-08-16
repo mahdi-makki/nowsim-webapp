@@ -1,3 +1,4 @@
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { cn } from "@/lib/cn";
 
 export type LegalBlock =
@@ -114,6 +115,11 @@ export function LegalPage({
   return (
     <section className="px-3 pb-20 pt-28 md:px-4 md:py-28">
       <div className="mx-auto max-w-7xl">
+        <Breadcrumb
+          className="mb-10"
+          items={[{ label: "Home", href: "/" }, { label: title }]}
+        />
+
         <h1 className="max-w-[18ch] font-display text-h1 font-extrabold uppercase tracking-[-0.045em]">
           {title}
         </h1>

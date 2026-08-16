@@ -39,8 +39,9 @@ const action = cn("rounded-full px-5 py-2.5 text-sm font-bold");
 
 const primary = cn(
   action,
-  "gap-2 border border-ink bg-ink text-white",
-  "hover:bg-ink-deep active:bg-ink-deep",
+  "gap-2 border border-brand bg-brand text-white",
+  "hover:border-brand-deep hover:bg-brand-deep",
+  "active:border-brand-deep active:bg-brand-deep",
 );
 
 const secondary = cn(
