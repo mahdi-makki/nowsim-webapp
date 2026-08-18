@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useId, useMemo, useRef, useState, type FormEvent } from "react";
-import { MdClose, MdSearch } from "react-icons/md";
+import { useMemo, useState, type FormEvent } from "react";
 
 import { Pressable } from "@/components/ui/Pressable";
+import { SearchField } from "@/components/ui/SearchField";
 import { createSearchIndex, search } from "@/lib/search/match";
 import { destinationHref, type DestinationSummary } from "@/lib/types";
 import { cn } from "@/lib/cn";
@@ -21,8 +21,6 @@ export function NextTripFinder({
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const inputId = useId();
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const index = useMemo(() => createSearchIndex(destinations), [destinations]);
 
@@ -50,64 +48,14 @@ export function NextTripFinder({
 
   return (
     <>
-      <form
-        role="search"
-        onSubmit={onSubmit}
-        className="group mt-8 w-full max-w-md"
-      >
-        <label htmlFor={inputId} className="sr-only">
-          Search destinations
-        </label>
-
-        <div
-          className={cn(
-            "relative flex items-center gap-2 rounded-full bg-white py-1.5 pl-6 pr-2",
-            "shadow-lg shadow-ink/10",
-            "ring-1 ring-hairline group-focus-within:ring-2 group-focus-within:ring-ink/20",
-            "transition-shadow duration-300 ease-hover motion-reduce:transition-none",
-          )}
-        >
-          <input
-            id={inputId}
-            ref={inputRef}
-            name="q"
-            type="text"
-            autoComplete="off"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search a country or region"
-            className={cn(
-              "min-w-0 flex-1 bg-transparent py-2.5 text-base text-ink",
-              "placeholder:text-muted focus-visible:outline-none",
-            )}
-          />
-
-          {searching ? (
-            <Pressable
-              type="button"
-              press={false}
-              onClick={() => {
-                setQuery("");
-                inputRef.current?.focus();
-              }}
-              className={cn(
-                "h-10 w-10 shrink-0 rounded-full text-muted",
-                "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-                "hover:bg-brand/8 hover:text-ink active:bg-brand/8",
-              )}
-            >
-              <MdClose aria-hidden className="h-5 w-5" />
-              <span className="sr-only">Clear search</span>
-            </Pressable>
-          ) : (
-            <span
-              aria-hidden
-              className="flex h-10 w-10 shrink-0 items-center justify-center text-muted"
-            >
-              <MdSearch className="h-5 w-5" />
-            </span>
-          )}
-        </div>
+      <form role="search" onSubmit={onSubmit} className="mt-8 w-full max-w-md">
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          label="Search destinations"
+          placeholder="Search a country or region"
+          clearable
+        />
       </form>
 
       <div aria-live="polite" className="w-full">

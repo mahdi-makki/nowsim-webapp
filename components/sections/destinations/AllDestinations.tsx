@@ -2,9 +2,9 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { MdSearch } from "react-icons/md";
 
 import { DestinationCard } from "@/components/common/DestinationCard";
+import { SearchField } from "@/components/ui/SearchField";
 import { Tabs } from "@/components/ui/Tabs";
 import { createSearchIndex, search } from "@/lib/search/match";
 import {
@@ -12,7 +12,6 @@ import {
   type DestinationFilter,
   type DestinationSummary,
 } from "@/lib/types";
-import { cn } from "@/lib/cn";
 
 const tabs: { id: DestinationFilter; label: string; badge?: string }[] = [
   { id: "all", label: "All" },
@@ -92,45 +91,14 @@ export function AllDestinations({
   return (
     <>
       <div className="mt-10 flex flex-col-reverse gap-4 md:mt-12 md:flex-row md:items-stretch md:gap-5">
-        <div className="group relative min-w-0 flex-1">
-          <MdSearch
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute left-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2",
-              "text-ink/40 transition-colors duration-300 ease-hover",
-              "group-focus-within:text-ink",
-              "motion-reduce:transition-none",
-            )}
-          />
-
-          <span
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute -inset-1 rounded-full bg-brand/15 blur-md",
-              "scale-95 opacity-0 transition-[opacity,transform] duration-500 ease-hover",
-              "group-focus-within:scale-100 group-focus-within:opacity-100",
-              "motion-reduce:transition-none motion-reduce:scale-100",
-            )}
-          />
-
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search for a destination"
-            aria-label="Search for a destination"
-            className={cn(
-              "relative w-full rounded-full border border-hairline bg-surface py-4 pl-13 pr-5",
-              "md:h-full md:py-0",
-              "text-base font-medium text-ink placeholder:text-ink/40",
-              "transition-[border-color,box-shadow] duration-300 ease-hover",
-              "hover:border-ink/25",
-              "focus-visible:border-ink/45 focus-visible:outline-none",
-              "focus-visible:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-ink)_10%,transparent)]",
-              "motion-reduce:transition-none",
-            )}
-          />
-        </div>
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          label="Search for a destination"
+          placeholder="Search for a destination"
+          className="flex-1"
+          inputClassName="md:h-full md:py-0"
+        />
 
         <Tabs
           items={tabs}
