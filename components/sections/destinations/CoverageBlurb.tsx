@@ -40,11 +40,11 @@ export function CoverageBlurb({
           onClick={() => setOpen(true)}
           press={false}
           className={cn(
-            "inline text-left font-bold text-ink",
-            "underline decoration-dotted decoration-ink/20 underline-offset-4",
-            "hover:decoration-ink",
+            "inline text-left font-bold text-brand",
+            "underline decoration-dotted decoration-brand/30 underline-offset-4",
+            "hover:decoration-brand",
             "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-            "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink",
+            "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand",
           )}
         >
           {coverage}

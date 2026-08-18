@@ -177,10 +177,10 @@ export function DestinationSearch({
               }
               className={cn(
                 "w-full justify-start gap-3 rounded-control px-3 py-2.5 text-left",
-                position === highlight ? "bg-ink/[0.07]" : "bg-transparent",
+                position === highlight ? "bg-brand/8" : "bg-transparent",
               )}
             >
-              <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-ink/8">
+              <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-brand/12">
                 {destination.art ? (
                   <Image
                     src={destination.art}

@@ -93,7 +93,7 @@ export function NextTripFinder({
               className={cn(
                 "h-10 w-10 shrink-0 rounded-full text-muted",
                 "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-                "hover:bg-ink/[0.07] hover:text-ink active:bg-ink/[0.07]",
+                "hover:bg-brand/8 hover:text-ink active:bg-brand/8",
               )}
             >
               <MdClose aria-hidden className="h-5 w-5" />
@@ -124,13 +124,12 @@ export function NextTripFinder({
                   href={destinationHref(destination.kind, destination.slug)}
                   className={cn(
                     "w-24 flex-col gap-3 rounded-control px-2 py-3 align-top md:w-28",
-                    "bg-transparent hover:bg-ink/[0.07] active:bg-ink/[0.07]",
+                    "bg-transparent hover:bg-brand/8 active:bg-brand/8",
                   )}
                 >
                   <span
                     className={cn(
-                      "relative h-12 w-12 overflow-hidden rounded-full bg-ink/8 md:h-14 md:w-14",
-                      "ring-1 ring-hairline",
+                      "relative h-12 w-12 overflow-hidden rounded-full bg-brand/12 md:h-14 md:w-14",
                     )}
                   >
                     <Image

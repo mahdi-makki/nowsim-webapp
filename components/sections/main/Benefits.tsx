@@ -59,7 +59,7 @@ function Card({
     <li
       className={cn(
         "flex flex-col rounded-sheet bg-surface-soft p-6 md:p-8",
-        "transition-colors duration-300 ease-hover hover:bg-ink/[0.07]",
+        "transition-colors duration-300 ease-hover hover:bg-brand/10",
         "motion-reduce:transition-none",
         className,
       )}

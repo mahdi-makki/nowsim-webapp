@@ -9,10 +9,10 @@ function Empty() {
     <div
       className={cn(
         "flex flex-col items-center justify-center rounded-sheet",
-        "border border-hairline bg-surface-soft px-6 py-24 text-center",
+        "bg-brand/6 px-6 py-24 text-center",
       )}
     >
-      <span className="flex h-14 w-14 items-center justify-center rounded-card bg-brand/10">
+      <span className="flex h-14 w-14 items-center justify-center rounded-card bg-brand/12">
         <MdReceiptLong aria-hidden className="h-7 w-7 text-brand" />
       </span>
 

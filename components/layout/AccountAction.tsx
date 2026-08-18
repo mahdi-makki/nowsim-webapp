@@ -20,8 +20,10 @@ import { providerNames } from "@/lib/auth/providers";
 import { cn } from "@/lib/cn";
 
 const trigger = cn(
-  "rounded-full bg-volt px-4 py-2.5 text-base font-medium text-ink md:px-5",
-  "hover:bg-brand hover:text-white active:bg-brand active:text-white",
+  "rounded-full bg-brand/12 px-4 py-2.5 md:px-5",
+  "text-base font-semibold text-brand",
+  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+  "hover:bg-brand/20 active:bg-brand/20",
 );
 
 export function AccountActionFallback() {
@@ -161,8 +163,9 @@ export function AccountAction() {
         aria-expanded={view !== null}
         onClick={() => setView("menu")}
         className={cn(
-          "h-10 w-10 rounded-full bg-volt text-ink",
-          "hover:bg-brand hover:text-white active:bg-brand active:text-white",
+          "h-10 w-10 rounded-full bg-brand/12 text-brand",
+          "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+          "hover:bg-brand/20 active:bg-brand/20",
         )}
       >
         <MdPerson aria-hidden className="h-5 w-5" />

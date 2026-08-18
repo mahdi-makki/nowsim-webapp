@@ -16,7 +16,7 @@ export function NextTrip({
     >
       <div
         className={cn(
-          "mx-auto flex max-w-7xl flex-col items-center rounded-sheet bg-ink/[0.06] text-center",
+          "mx-auto flex max-w-7xl flex-col items-center rounded-sheet bg-brand/6 text-center",
           "px-6 pt-14 pb-9 md:px-10 md:pt-20 md:pb-14",
         )}
       >

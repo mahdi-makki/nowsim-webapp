@@ -20,10 +20,10 @@ export function DestinationCard({
       className={cn(
         "group w-full justify-start gap-4 rounded-card px-5 text-left",
         note ? "py-4 md:py-4" : "py-5 md:py-6",
-        "bg-surface-soft hover:bg-ink/[0.07] active:bg-ink/[0.07]",
+        "hover:bg-brand/6 active:bg-brand/6",
       )}
     >
-      <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-ink/8">
+      <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-brand/12">
         <Image
           src={destination.art}
           alt=""
@@ -58,7 +58,7 @@ export function DestinationCard({
 
       <MdChevronRight
         aria-hidden
-        className="h-4 w-4 shrink-0 text-ink/30 transition-[color,translate] duration-300 ease-hover group-hover:translate-x-0.5 group-hover:text-ink/60 motion-reduce:transition-none"
+        className="h-5 w-5 shrink-0 text-ink/60 transition-[color,translate] duration-300 ease-hover group-hover:translate-x-0.5 group-hover:text-ink motion-reduce:transition-none"
       />
     </Pressable>
   );

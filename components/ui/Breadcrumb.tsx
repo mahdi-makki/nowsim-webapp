@@ -17,7 +17,7 @@ export function Breadcrumb({
 }) {
   return (
     <nav aria-label="Breadcrumb" className={className}>
-      <ol className="-ml-3 flex flex-wrap items-center text-sm font-medium md:text-base">
+      <ol className="-ml-4 flex flex-wrap items-center text-sm font-medium md:text-base">
         {items.map((item, index) => {
           const last = index === items.length - 1;
 
@@ -33,7 +33,7 @@ export function Breadcrumb({
               {last || !item.href ? (
                 <span
                   aria-current={last ? "page" : undefined}
-                  className="px-3 py-1 text-ink"
+                  className="px-4 py-2 text-ink"
                 >
                   {item.label}
                 </span>
@@ -42,7 +42,7 @@ export function Breadcrumb({
                   href={item.href}
                   hit
                   className={cn(
-                    "rounded-full px-3 py-1 text-muted",
+                    "rounded-full px-4 py-2 text-muted",
                     "hover:bg-surface-soft hover:text-ink",
                     "active:bg-surface-soft active:text-ink",
                   )}

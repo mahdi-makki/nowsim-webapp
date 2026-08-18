@@ -1,7 +1,6 @@
 import Image from "next/image";
-import { MdAddCircleOutline, MdReceiptLong } from "react-icons/md";
+import { MdReceiptLong } from "react-icons/md";
 
-import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
 import { formatMoney } from "@/lib/money";
 import type { Purchase } from "@/lib/types";
@@ -10,13 +9,13 @@ import { formatDay } from "@/lib/units";
 const spec = cn(
   "shrink-0 rounded-full px-2.5 py-0.5",
   "text-[0.8125rem]/[1.125rem] font-medium text-muted",
-  "border border-hairline bg-surface-soft",
+  "bg-brand/10",
 );
 
-const secondary = cn(
-  "rounded-full px-5 py-2.5 text-sm font-bold",
-  "border border-hairline text-ink",
-  "hover:border-ink/25 hover:bg-surface-soft active:bg-surface-soft",
+const pill = cn(
+  "shrink-0 rounded-full px-3 py-1",
+  "text-[0.8125rem]/[1.125rem] font-bold",
+  "bg-brand/15 text-brand",
 );
 
 const factLabel = "text-[0.8125rem]/[1.125rem] text-muted";
@@ -27,7 +26,7 @@ function Fact({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
       <dt className={factLabel}>{label}</dt>
-      <dd className={cn(factValue, "truncate")}>{value}</dd>
+      <dd className={cn(factValue, "break-all")}>{value}</dd>
     </div>
   );
 }
@@ -36,11 +35,11 @@ export function PurchaseCard({ purchase }: { purchase: Purchase }) {
   const { plan, price } = purchase;
 
   return (
-    <li className="rounded-sheet border border-hairline bg-surface p-5 md:p-6">
+    <li className="rounded-sheet bg-brand/6 p-5 md:p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3.5">
           {plan?.art ? (
-            <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-hairline bg-ink/8">
+            <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-brand/12">
               <Image
                 src={plan.art}
                 alt=""
@@ -52,7 +51,7 @@ export function PurchaseCard({ purchase }: { purchase: Purchase }) {
               />
             </span>
           ) : (
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/12">
               <MdReceiptLong aria-hidden className="h-5 w-5 text-brand" />
             </span>
           )}
@@ -73,11 +72,7 @@ export function PurchaseCard({ purchase }: { purchase: Purchase }) {
           </div>
         </div>
 
-        {price && (
-          <span className="shrink-0 text-base font-bold tracking-[-0.01em]">
-            {formatMoney(price)}
-          </span>
-        )}
+        {price && <span className={pill}>{formatMoney(price)}</span>}
       </div>
 
       <dl className="mt-5 flex flex-wrap gap-x-10 gap-y-4">
@@ -91,15 +86,6 @@ export function PurchaseCard({ purchase }: { purchase: Purchase }) {
           <Fact label="Payment" value={purchase.paymentId} />
         )}
       </dl>
-
-      {plan && (
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Pressable href={plan.href} className={cn(secondary, "gap-2")}>
-            <MdAddCircleOutline aria-hidden className="h-4 w-4" />
-            Buy {plan.destination} again
-          </Pressable>
-        </div>
-      )}
     </li>
   );
 }

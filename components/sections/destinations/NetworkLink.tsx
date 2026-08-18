@@ -17,9 +17,10 @@ export function NetworkLink({ operators }: { operators: string[] }) {
         aria-expanded={open}
         onClick={() => setOpen(true)}
         className={cn(
-          "gap-2 rounded-full border border-hairline px-5 py-2.5",
-          "text-sm font-semibold text-ink",
-          "hover:border-ink/25 hover:bg-surface-soft active:bg-surface-soft",
+          "gap-2 rounded-full bg-brand/12 px-5 py-2.5",
+          "text-sm font-semibold text-brand",
+          "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+          "hover:bg-brand/20 active:bg-brand/20",
         )}
       >
         View all {operators.length} networks

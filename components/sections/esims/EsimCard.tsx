@@ -14,7 +14,12 @@ import { emailEsim, type MailState } from "@/app/actions/esims";
 import { InstallDialog } from "@/components/sections/esims/InstallDialog";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
-import { esimStateLabels, type Esim, type EsimState } from "@/lib/types";
+import {
+  esimStateLabels,
+  isLiveEsim,
+  type Esim,
+  type EsimState,
+} from "@/lib/types";
 import { formatData, formatDay } from "@/lib/units";
 
 const pill = cn(
@@ -25,12 +30,12 @@ const pill = cn(
 const spec = cn(
   "shrink-0 rounded-full px-2.5 py-0.5",
   "text-[0.8125rem]/[1.125rem] font-medium text-muted",
-  "border border-hairline bg-surface-soft",
+  "bg-brand/10",
 );
 
 const pillTone: Record<EsimState, string> = {
   active: "bg-success/12 text-success",
-  ready: "bg-brand/10 text-brand",
+  ready: "bg-brand/15 text-brand",
   expired: "bg-ink/8 text-muted",
   removed: "bg-ink/8 text-muted",
 };
@@ -39,18 +44,17 @@ const action = cn("rounded-full px-5 py-2.5 text-sm font-bold");
 
 const primary = cn(
   action,
-  "gap-2 border border-brand bg-brand text-white",
-  "hover:border-brand-deep hover:bg-brand-deep",
-  "active:border-brand-deep active:bg-brand-deep",
+  "gap-2 bg-brand text-white",
+  "hover:bg-brand-deep active:bg-brand-deep",
 );
 
 const secondary = cn(
   action,
-  "border border-hairline text-ink",
-  "hover:border-ink/25 hover:bg-surface-soft active:bg-surface-soft",
+  "bg-surface text-ink",
+  "hover:bg-surface/70 active:bg-surface/70",
 );
 
-const quiet = cn(action, "border border-hairline text-muted");
+const quiet = cn(action, "bg-surface/60 text-muted");
 
 const factLabel = "text-[0.8125rem]/[1.125rem] text-muted";
 
@@ -74,7 +78,7 @@ export function EsimCard({ esim }: { esim: Esim }) {
 
   const spent = usage ? Math.round((usage.usedMb / usage.totalMb) * 100) : 0;
 
-  const live = state === "active" || state === "ready";
+  const live = isLiveEsim(esim);
 
   const installable = Boolean(
     esim.qrImage || esim.activationCode || esim.installLocked,
@@ -106,11 +110,11 @@ export function EsimCard({ esim }: { esim: Esim }) {
   }
 
   return (
-    <li className="rounded-sheet border border-hairline bg-surface p-5 md:p-6">
+    <li className="rounded-sheet bg-brand/6 p-5 md:p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3.5">
           {plan?.art ? (
-            <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-hairline bg-ink/8">
+            <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-brand/12">
               <Image
                 src={plan.art}
                 alt=""
@@ -122,7 +126,7 @@ export function EsimCard({ esim }: { esim: Esim }) {
               />
             </span>
           ) : (
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/12">
               <MdSimCard aria-hidden className="h-5 w-5 text-brand" />
             </span>
           )}
@@ -166,7 +170,7 @@ export function EsimCard({ esim }: { esim: Esim }) {
             aria-valuenow={spent}
             aria-valuemin={0}
             aria-valuemax={100}
-            className="mt-2 h-2 overflow-hidden rounded-full bg-ink/8"
+            className="mt-2 h-2 overflow-hidden rounded-full bg-brand/15"
           >
             <div
               className={cn(

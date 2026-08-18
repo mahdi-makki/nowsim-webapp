@@ -6,13 +6,12 @@ import { useCallback, useState } from "react";
 import { darkTone, EmailSignIn } from "@/components/auth/EmailSignIn";
 import { Dialog } from "@/components/ui/Dialog";
 import { Pressable } from "@/components/ui/Pressable";
-import { authProviders, legalLinks, type ProviderId } from "@/lib/auth/providers";
+import { authProviders, legalLinks } from "@/lib/auth/providers";
 import { cn } from "@/lib/cn";
 
-const tones: Record<ProviderId, string> = {
-  google: "bg-volt text-ink hover:bg-volt/85 active:bg-volt/85",
-  email: "bg-white/10 text-white hover:bg-white/20 active:bg-white/20",
-};
+const providers = authProviders.filter((provider) => provider.id !== "google");
+
+const tone = "bg-white/10 text-white hover:bg-white/20 active:bg-white/20";
 
 function Legal() {
   return (
@@ -82,7 +81,7 @@ export function SignInDialog({
       ) : (
         <>
           <ul className="mt-6 flex flex-col gap-3">
-            {authProviders.map((provider) => (
+            {providers.map((provider) => (
               <li key={provider.id}>
                 <Pressable
                   onClick={provider.ready ? () => setEmail(true) : undefined}
@@ -90,7 +89,7 @@ export function SignInDialog({
                   className={cn(
                     "w-full gap-3 rounded-full px-5 py-3.5",
                     "text-base font-bold tracking-[-0.01em]",
-                    tones[provider.id],
+                    tone,
                   )}
                 >
                   <provider.Icon aria-hidden className="h-5 w-5 shrink-0" />

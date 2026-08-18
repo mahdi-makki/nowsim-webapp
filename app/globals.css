@@ -13,7 +13,8 @@
   --color-brand-deep: color-mix(in srgb, var(--color-brand) 82%, var(--color-ink));
 
   --color-surface: #ffffff;
-  --color-surface-soft: color-mix(in srgb, var(--color-ink) 4%, #ffffff);
+  /* Soft surfaces carry a brand tint, not grey — the house theme is purple. */
+  --color-surface-soft: color-mix(in srgb, var(--color-brand) 6%, #ffffff);
   --color-hairline: color-mix(in srgb, var(--color-ink) 12%, transparent);
 
   --color-muted: color-mix(in srgb, var(--color-ink) 62%, transparent);
@@ -214,8 +215,8 @@
   }
 
   ::selection {
-    background-color: var(--color-volt);
-    color: var(--color-ink);
+    background-color: var(--color-brand);
+    color: #ffffff;
   }
 
   @media (prefers-reduced-motion: reduce) {

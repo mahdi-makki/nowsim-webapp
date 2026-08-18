@@ -12,11 +12,11 @@ export function OrderSummary({ order }: { order: Order }) {
   const { destination, plan, quantity, unitPrice, total } = order;
 
   return (
-    <div className="rounded-sheet border border-hairline bg-surface-soft p-6 md:p-8">
+    <div className="rounded-sheet bg-surface-soft p-6 md:p-8">
       <h2 className="text-h3 font-bold">Order summary</h2>
 
       <div className="mt-6 flex items-center gap-4">
-        <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-ink/8">
+        <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-brand/12">
           <Image
             src={destination.art}
             alt=""

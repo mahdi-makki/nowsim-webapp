@@ -106,7 +106,7 @@ export function WebNavbar() {
               >
                 <NowsimLogo
                   id="nowsim-logo-header"
-                  className="h-6 w-auto md:h-7"
+                  className="h-6 w-auto text-brand md:h-7"
                 />
               </Pressable>
 
@@ -122,7 +122,7 @@ export function WebNavbar() {
                         hit
                         className={cn(
                           "rounded-full px-4 py-2.5 text-base font-medium",
-                          "hover:bg-ink/5 active:bg-ink/10",
+                          "hover:bg-brand/6 active:bg-brand/10",
                         )}
                       >
                         {link.label}

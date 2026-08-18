@@ -1,19 +1,6 @@
 import Image from "next/image";
 import { cacheLife } from "next/cache";
-import type { IconType } from "react-icons";
-import {
-  FaCcAmex,
-  FaCcApplePay,
-  FaCcDinersClub,
-  FaCcDiscover,
-  FaCcJcb,
-  FaCcMastercard,
-  FaCcPaypal,
-  FaCcVisa,
-  FaInstagram,
-  FaLinkedinIn,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaCcStripe } from "react-icons/fa6";
 
 import { NowsimLogo } from "@/components/ui/NowsimLogo";
 import { Pressable } from "@/components/ui/Pressable";
@@ -62,47 +49,12 @@ const groups: LinkGroup[] = [
   },
 ];
 
-type PaymentMethod = {
-  label: string;
-  Icon: IconType;
-};
-
-const payments: PaymentMethod[] = [
-  { label: "Visa", Icon: FaCcVisa },
-  { label: "Mastercard", Icon: FaCcMastercard },
-  { label: "American Express", Icon: FaCcAmex },
-  { label: "Discover", Icon: FaCcDiscover },
-  { label: "Diners Club", Icon: FaCcDinersClub },
-  { label: "JCB", Icon: FaCcJcb },
-  { label: "PayPal", Icon: FaCcPaypal },
-  { label: "Apple Pay", Icon: FaCcApplePay },
-];
-
-type SocialLink = {
-  label: string;
-  href: string;
-  Icon: IconType;
-};
-
-const socials: SocialLink[] = [
-  { label: "nowsim on X", href: "#", Icon: FaXTwitter },
-  { label: "nowsim on Instagram", href: "#", Icon: FaInstagram },
-  { label: "nowsim on LinkedIn", href: "#", Icon: FaLinkedinIn },
-];
-
 const badgeSize = { width: 120, height: 40 };
 
+/** Shown as artwork only — the apps are not published yet. */
 const storeBadges = [
-  {
-    label: "Download on the App Store",
-    href: "#",
-    src: "/buttons/app-store.svg",
-  },
-  {
-    label: "Get it on Google Play",
-    href: "#",
-    src: "/buttons/google-play.svg",
-  },
+  { label: "Download on the App Store", src: "/buttons/app-store.svg" },
+  { label: "Get it on Google Play", src: "/buttons/google-play.svg" },
 ];
 
 const bottomPadding =
@@ -144,19 +96,20 @@ export async function Footer() {
               </p>
             </div>
 
-            <ul className="flex flex-wrap items-center gap-3 md:shrink-0">
+            <ul
+              aria-hidden
+              className="flex flex-wrap items-center gap-3 opacity-45 md:shrink-0"
+            >
               {storeBadges.map((badge) => (
                 <li key={badge.label}>
-                  <Pressable href={badge.href} className="rounded-lg">
-                    <Image
-                      src={badge.src}
-                      alt={badge.label}
-                      width={badgeSize.width}
-                      height={badgeSize.height}
-                      unoptimized
-                      className="h-[3.25rem] w-auto"
-                    />
-                  </Pressable>
+                  <Image
+                    src={badge.src}
+                    alt=""
+                    width={badgeSize.width}
+                    height={badgeSize.height}
+                    unoptimized
+                    className="h-[3.25rem] w-auto select-none"
+                  />
                 </li>
               ))}
             </ul>
@@ -174,23 +127,6 @@ export async function Footer() {
                 wherever&rsquo;s next.
               </p>
 
-              <ul className="mt-7 flex items-center gap-2">
-                {socials.map((social) => (
-                  <li key={social.label}>
-                    <Pressable
-                      href={social.href}
-                      hit
-                      className={cn(
-                        "h-11 w-11 rounded-full border border-white/15 text-white",
-                        "hover:bg-white/10 active:bg-white/10",
-                      )}
-                    >
-                      <social.Icon aria-hidden className="h-4.5 w-4.5" />
-                      <span className="sr-only">{social.label}</span>
-                    </Pressable>
-                  </li>
-                ))}
-              </ul>
             </div>
 
             <div className="flex flex-wrap gap-x-12 gap-y-8 md:shrink-0">
@@ -223,17 +159,10 @@ export async function Footer() {
           <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-sm text-white/45 md:flex-row md:items-center md:justify-between">
             <p>&copy; {year} nowsim. All rights reserved.</p>
 
-            <ul
-              aria-label="Accepted payment methods"
-              className="flex flex-wrap items-center gap-x-4 gap-y-3 text-white/70"
-            >
-              {payments.map((payment) => (
-                <li key={payment.label}>
-                  <payment.Icon aria-hidden className="h-7 w-auto" />
-                  <span className="sr-only">{payment.label}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="flex items-center text-white/70">
+              <FaCcStripe aria-hidden className="h-7 w-auto" />
+              <span className="sr-only">Payments powered by Stripe</span>
+            </div>
           </div>
         </div>
       </div>

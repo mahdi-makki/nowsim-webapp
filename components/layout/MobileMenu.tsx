@@ -42,7 +42,7 @@ export function MenuToggle({
       aria-expanded={open}
       aria-controls={panelId}
       hit
-      className="-m-2 rounded-full p-2 hover:bg-ink/5 active:bg-ink/10 md:hidden"
+      className="-m-2 rounded-full p-2 hover:bg-brand/6 active:bg-brand/10 md:hidden"
     >
       <ToggleIcon open={open} />
       <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
@@ -102,7 +102,7 @@ export function MenuPanel({
                 <Pressable
                   href={link.href}
                   onClick={onClose}
-                  className="w-full justify-start rounded-full px-5 py-3 text-base hover:bg-ink/5 active:bg-ink/10"
+                  className="w-full justify-start rounded-full px-5 py-3 text-base hover:bg-brand/6 active:bg-brand/10"
                 >
                   {link.label}
                 </Pressable>

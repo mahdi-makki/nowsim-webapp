@@ -118,8 +118,8 @@ export function HelpCenter({
                       "w-full justify-start rounded-full px-5 py-2.5 text-base font-medium",
                       "md:py-3",
                       selected
-                        ? "bg-volt text-ink"
-                        : "text-muted hover:bg-ink/5 hover:text-ink active:bg-ink/10",
+                        ? "bg-brand/12 text-brand"
+                        : "text-muted hover:bg-brand/6 hover:text-ink active:bg-brand/10",
                     )}
                   >
                     {filter.label}

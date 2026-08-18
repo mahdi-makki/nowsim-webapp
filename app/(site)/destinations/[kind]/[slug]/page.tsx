@@ -93,7 +93,7 @@ export default async function DestinationPage({ params }: PageProps) {
                   "text-[clamp(2rem,1.4rem+2.6vw,3rem)] leading-[1.03]",
                 )}
               >
-                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-hairline bg-ink/8">
+                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-brand/12">
                   <Image
                     src={art}
                     alt=""
@@ -114,12 +114,9 @@ export default async function DestinationPage({ params }: PageProps) {
                 className="mt-5 max-w-[52ch] text-base font-medium text-muted md:text-lg"
               />
 
-              <h2 className="mt-12 text-xl font-bold tracking-[-0.02em]">
-                Get an eSIM data plan for {name}
-              </h2>
-
               <PlanPicker
                 plans={plans}
+                heading={`Get an eSIM data plan for ${name}`}
                 destinationName={name}
                 destinationKind={kind}
                 destinationSlug={destination.slug}
