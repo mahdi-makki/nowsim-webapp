@@ -17,6 +17,23 @@ import type {
 
 const collator = new Intl.Collator("en");
 
+const excludedCountries = new Set(["israel"]);
+
+const excludedCodes = new Set(["il", "isr"]);
+
+function isExcludedCountry(name: string): boolean {
+  return excludedCountries.has(name.trim().toLowerCase());
+}
+
+function isExcludedCountryPlan(plan: ApiPlan): boolean {
+  return (
+    plan.countries_included.some(isExcludedCountry) ||
+    plan.countryIso2.some((code) => excludedCodes.has(code.toLowerCase())) ||
+    plan.iso3.some((code) => excludedCodes.has(code.toLowerCase())) ||
+    isExcludedCountry(destinationName(plan.name))
+  );
+}
+
 export function destinationName(planName: string): string {
   const [beforeDigit] = planName.split(/\d/);
 
@@ -26,6 +43,27 @@ export function destinationName(planName: string): string {
     .trim();
 
   return cleaned || planName.trim();
+}
+
+const regionNames: Record<string, string> = {
+  latam: "Latin America",
+  "latin america": "Latin America",
+  asia: "Asia Pacific",
+  "asia pacific": "Asia Pacific",
+  "middle east": "Middle East",
+  sea: "South East Asia",
+};
+
+export function regionName(name: string): string {
+  return regionNames[name.trim().toLowerCase()] ?? name;
+}
+
+const countryNames: Record<string, string> = {
+  "palestinian territory": "Palestine",
+};
+
+export function countryName(name: string): string {
+  return countryNames[name.trim().toLowerCase()] ?? name;
 }
 
 export function kindOf(plan: ApiPlan): DestinationKind {
@@ -39,15 +77,15 @@ function groupKey(plan: ApiPlan, kind: DestinationKind): string {
     return `country:${plan.countryIso2[0]?.toUpperCase() ?? destinationName(plan.name).toLowerCase()}`;
   }
 
-  return `${kind}:${destinationName(plan.name).toLowerCase()}`;
+  return `${kind}:${regionName(destinationName(plan.name)).toLowerCase()}`;
 }
 
 function displayName(plan: ApiPlan, kind: DestinationKind): string {
   if (kind === "country" && plan.countries_included.length === 1) {
-    return plan.countries_included[0];
+    return countryName(plan.countries_included[0]);
   }
 
-  return destinationName(plan.name);
+  return regionName(destinationName(plan.name));
 }
 
 function planPrice(plan: ApiPlan): Money {
@@ -100,7 +138,7 @@ function factsByCountry(apiPlans: ApiPlan[]): Map<string, CountryFacts> {
   for (const plan of apiPlans) {
     if (plan.countries_included.length !== 1) continue;
 
-    const key = plan.countries_included[0].toLowerCase();
+    const key = countryName(plan.countries_included[0]).toLowerCase();
     const codes = [...plan.countryIso2, ...plan.iso3]
       .filter(Boolean)
       .map((code) => code.toLowerCase());
@@ -123,7 +161,9 @@ function coverageOf(
   const names = new Set<string>();
 
   for (const plan of apiPlans) {
-    for (const country of plan.countries_included) names.add(country);
+    for (const country of plan.countries_included) {
+      if (!isExcludedCountry(country)) names.add(countryName(country));
+    }
   }
 
   return [...names].sort(collator.compare).map((name) => {
@@ -330,6 +370,9 @@ export function toDestinations(apiPlans: ApiPlan[]): Destination[] {
 
   for (const plan of apiPlans) {
     const kind = kindOf(plan);
+
+    if (kind === "country" && isExcludedCountryPlan(plan)) continue;
+
     const key = groupKey(plan, kind);
 
     const bucket = groups.get(key);

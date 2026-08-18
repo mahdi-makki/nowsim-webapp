@@ -12,7 +12,10 @@ const folders: Record<DestinationKind, string> = {
   global: "global",
 };
 
-const overrides: Partial<Record<`${DestinationKind}:${string}`, string>> = {};
+const overrides: Partial<Record<`${DestinationKind}:${string}`, string>> = {
+  "region:asia-pacific": "/images/regions/asia.jpg",
+  "region:latin-america": "/images/regions/south-america.jpg",
+};
 
 const extensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 
