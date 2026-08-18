@@ -1,0 +1,129 @@
+<!doctype html>
+<!--
+  PREVIEW ONLY. Not shipped, not imported.
+
+  Sign-in code (OTP) email, purple-leaning nowsim theme. Once you are happy
+  with this, it gets ported into body() in lib/auth/mailer.ts (plus the
+  plain-text twin, which does not change).
+
+  What moved off grey, versus the current live template:
+    page background   #f2f4f5  ->  #f1eefc   (brand at ~8%)
+    code box          #f2f4f5  ->  #efecfd
+    code digits       #0a2233  ->  #5f47eb   (weight left at 400)
+    logo              text wordmark -> public/brand/nowsim-logo.png
+    new              thin #5f47eb rule across the top of the card
+    new              hairline above the footer, footer sits on a brand tint
+  Body copy stays ink so the mail still reads like a document, not a poster.
+
+  Palette pulled from app/globals.css:
+    brand        #5f47eb      brand tint   #efecfd
+    ink          #0a2233      page bg      #f1eefc
+    muted        #5a6b78      faint        #8a97a0
+    hairline     #e6e2f7
+
+  Sample data -> real fields (lib/auth/mailer.ts body(email, code, minutes)):
+    "263408"                         code
+    "5"                              minutes  (expiresIn / 60, rounded)
+    "mahdi.makki07@gmail.com"        email    (escapeHtml'd when ported)
+    2026                             new Date().getUTCFullYear()
+
+  Logo src is relative so this file previews straight off disk. The shipped
+  template cannot use a URL — nowsim.com still serves a lander, and clients
+  block remote images anyway — so it inlines the wordmark as a cid: attachment
+  from lib/mail/logo.ts (a 300x50 copy, drawn at 150x25). Clients that block
+  images fall back to the alt text, so the alt stays "nowsim".
+
+  Also fixed here: the live template reads "you can safely ignore i nobody
+  can sign in without the code" — a dropped word. Corrected below.
+-->
+<html lang="en">
+  <body style="margin:0;padding:0;background:#f1eefc">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f1eefc">
+      <tr>
+        <td align="center" style="padding:32px 12px">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;background:#ffffff">
+
+            <!-- ============ brand rule ============ -->
+            <tr>
+              <td style="background:#5f47eb;height:4px;line-height:4px;font-size:0">&nbsp;</td>
+            </tr>
+
+            <!-- ============ header ============ -->
+            <tr>
+              <td style="padding:40px 40px 0">
+                <img src="../public/brand/nowsim-logo.png" alt="nowsim" width="150" height="25" style="display:block;width:150px;height:25px;border:0;outline:none;text-decoration:none" />
+              </td>
+            </tr>
+
+            <!-- ============ hero ============ -->
+            <tr>
+              <td style="padding:36px 40px 0">
+                <h1 style="font-family:Arial,Helvetica,sans-serif;margin:0;font-size:22px;font-weight:700;line-height:1.25;letter-spacing:-0.02em;color:#0a2233">
+                  Verify your email address
+                </h1>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="font-family:Arial,Helvetica,sans-serif;padding:20px 40px 0;font-size:15px;line-height:1.5;color:#0a2233">
+                Dear traveller, your nowsim confirmation code is:
+              </td>
+            </tr>
+
+            <!-- ============ code ============ -->
+            <tr>
+              <td style="padding:20px 40px 0">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="font-family:Arial,Helvetica,sans-serif;background:#efecfd;padding:16px 28px;font-size:28px;font-weight:400;letter-spacing:0.3em;color:#5f47eb">
+                      263408
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="font-family:Arial,Helvetica,sans-serif;padding:24px 40px 0;font-size:15px;line-height:1.6;color:#0a2233">
+                Use this temporary code to finish signing in on the nowsim
+                website. It expires in 5 minutes and can be used once.
+              </td>
+            </tr>
+
+            <!-- ============ small print ============ -->
+            <tr>
+              <td style="font-family:Arial,Helvetica,sans-serif;padding:36px 40px 0;font-size:13px;line-height:1.6;color:#8a97a0">
+                If you received this email in error, you can safely ignore it.
+                Nobody can sign in without the code.
+              </td>
+            </tr>
+
+            <tr>
+              <td style="font-family:Arial,Helvetica,sans-serif;padding:18px 40px 0;font-size:13px;line-height:1.6;color:#5a6b78">
+                Account email:
+                <span style="color:#5f47eb;font-weight:700">mahdi.makki07@gmail.com</span>
+              </td>
+            </tr>
+
+            <!-- ============ footer ============ -->
+            <tr>
+              <td style="padding:36px 0 0">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="background:#e6e2f7;height:1px;line-height:1px;font-size:0">&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" style="font-family:Arial,Helvetica,sans-serif;background:#f7f5fe;padding:26px 40px;font-size:12px;line-height:1.6;color:#8a97a0">
+                Copyright © 2026 nowsim. All rights reserved.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
