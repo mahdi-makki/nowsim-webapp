@@ -16,7 +16,15 @@ export function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-export type Attachment = { filename: string; content: string };
+/**
+ * `contentId` turns the file into an inline part the HTML can reference with
+ * `src="cid:<contentId>"`. Without it the file only rides along as a download.
+ */
+export type Attachment = {
+  filename: string;
+  content: string;
+  contentId?: string;
+};
 
 export type Message = {
   to: string;
