@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "The binding terms that govern the purchase and use of nowsim Products and Services, including eSIMs, Data Plans, Virtual Numbers and VPN.",
 };
 
-const supportEmail = "support@nowsim.app";
+const supportEmail = "support@nowsim.com";
 
 function Url({ href }: { href: string }) {
   return (
@@ -47,9 +47,9 @@ const sections: LegalSection[] = [
         body: (
           <>
             nowsim processes personal data in accordance with the Privacy Policy
-            published at <Url href="https://nowsim.app/privacy-policy/" />,
+            published at <Url href="https://nowsim.com/privacy-policy/" />,
             including Agreement on the Storage of the Cardholder’s Credentials
-            published at <Url href="https://nowsim.app/cof/" />.
+            published at <Url href="https://nowsim.com/cof/" />.
           </>
         ),
       },
@@ -64,7 +64,7 @@ const sections: LegalSection[] = [
           <>
             1.1. &quot;Acceptable Use Policy&quot; or &quot;AUP&quot; means the
             acceptable use policy published by nowsim at{" "}
-            <Url href="https://nowsim.app/acceptable-use-policy/" />, as amended
+            <Url href="https://nowsim.com/acceptable-use-policy/" />, as amended
             from time to time.
           </>
         ),
@@ -142,7 +142,7 @@ const sections: LegalSection[] = [
         body: (
           <>
             1.19. &quot;Privacy Policy&quot; means the privacy policy published
-            by nowsim at <Url href="https://nowsim.app/privacy-policy/" />, as
+            by nowsim at <Url href="https://nowsim.com/privacy-policy/" />, as
             amended from time to time.
           </>
         ),
@@ -154,7 +154,7 @@ const sections: LegalSection[] = [
             1.20. &quot;Product Description&quot; means the description of a
             specific nowsim Product or Service as displayed in the nowsim
             Application and/or on the Website (
-            <Url href="https://nowsim.app/" />) at the time of purchase,
+            <Url href="https://nowsim.com/" />) at the time of purchase,
             including, as applicable, the product type, service scope, supported
             features and functionality, included allowances, quotas or usage
             parameters (including data volume, call minutes, SMS, VPN usage and
@@ -205,7 +205,7 @@ const sections: LegalSection[] = [
             the proprietary software application offered by nowsim, including,
             as applicable, any web-based interface, the browser version
             (&quot;Website&quot;) available at{" "}
-            <Url href="https://nowsim.app/" /> or online platform operated by or
+            <Url href="https://nowsim.com/" /> or online platform operated by or
             on behalf of nowsim through which nowsim Products or Services may be
             accessed, purchased or managed.
           </>
@@ -752,7 +752,7 @@ const sections: LegalSection[] = [
   },
   {
     summary:
-      "This page is still being published. Clauses from 6.4.3 onward, together with the remaining sections and the Effective Date, will be added shortly. For the complete Terms in the meantime, contact support@nowsim.app.",
+      "This page is still being published. Clauses from 6.4.3 onward, together with the remaining sections and the Effective Date, will be added shortly. For the complete Terms in the meantime, contact support@nowsim.com.",
   },
 ];
 

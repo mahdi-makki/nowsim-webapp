@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "How refunds work on data plans and top-ups: the 30-day window, what counts as activation, refund methods, and processing times.",
 };
 
-const supportEmail = "support@nowsim.app";
+const supportEmail = "support@nowsim.com";
 
 const sections: LegalSection[] = [
   {

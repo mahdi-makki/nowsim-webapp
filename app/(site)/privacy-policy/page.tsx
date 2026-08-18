@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "What personal data we collect, why we collect it, how we use and share it, how long we keep it, and the rights you have over it.",
 };
 
-const supportEmail = "support@nowsim.app";
+const supportEmail = "support@nowsim.com";
 
 function SupportLink() {
   return (
