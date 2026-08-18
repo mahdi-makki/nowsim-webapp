@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { MdSearch } from "react-icons/md";
 
 import { DestinationCard } from "@/components/common/DestinationCard";
-import { Pressable } from "@/components/ui/Pressable";
+import { Tabs } from "@/components/ui/Tabs";
 import { createSearchIndex, search } from "@/lib/search/match";
 import {
   isDestinationFilter,
@@ -40,7 +40,6 @@ export function AllDestinations({
 }) {
   const router = useRouter();
   const params = useSearchParams();
-  const tablistRef = useRef<HTMLDivElement>(null);
 
   const kindParam = params.get("kind") ?? undefined;
   const active: DestinationFilter = isDestinationFilter(kindParam)
@@ -90,28 +89,6 @@ export function AllDestinations({
   const direct = results.filter(({ coverageHits }) => !coverageHits.length);
   const covering = results.filter(({ coverageHits }) => coverageHits.length);
 
-  const onTablistKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
-    if (!keys.includes(event.key)) return;
-
-    event.preventDefault();
-
-    const index = tabs.findIndex((tab) => tab.id === active);
-    const next =
-      event.key === "Home"
-        ? 0
-        : event.key === "End"
-          ? tabs.length - 1
-          : event.key === "ArrowLeft"
-            ? (index - 1 + tabs.length) % tabs.length
-            : (index + 1) % tabs.length;
-
-    select(tabs[next].id);
-    tablistRef.current
-      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-      [next]?.focus();
-  };
-
   return (
     <>
       <div className="mt-10 flex flex-col-reverse gap-4 md:mt-12 md:flex-row md:items-stretch md:gap-5">
@@ -129,7 +106,7 @@ export function AllDestinations({
           <span
             aria-hidden
             className={cn(
-              "pointer-events-none absolute -inset-1 rounded-full bg-ink/15 blur-md",
+              "pointer-events-none absolute -inset-1 rounded-full bg-brand/15 blur-md",
               "scale-95 opacity-0 transition-[opacity,transform] duration-500 ease-hover",
               "group-focus-within:scale-100 group-focus-within:opacity-100",
               "motion-reduce:transition-none motion-reduce:scale-100",
@@ -155,46 +132,15 @@ export function AllDestinations({
           />
         </div>
 
-        <div
-          ref={tablistRef}
-          role="tablist"
-          aria-label="Destination type"
-          onKeyDown={onTablistKeyDown}
-          className="flex w-fit shrink-0 items-center gap-1 rounded-full border border-hairline bg-surface-soft p-1"
-        >
-          {tabs.map((tab) => {
-            const selected = tab.id === active;
-
-            return (
-              <Pressable
-                key={tab.id}
-                role="tab"
-                id={`all-destinations-tab-${tab.id}`}
-                aria-selected={selected}
-                aria-controls="all-destinations-panel"
-                tabIndex={selected ? 0 : -1}
-                onClick={() => select(tab.id)}
-                className={cn(
-                  "gap-2 rounded-full px-5 py-2.5 text-sm font-medium md:px-6 md:py-3 md:text-base",
-                  selected ? "bg-brand text-white" : "text-ink/60 hover:text-ink",
-                )}
-              >
-                {tab.label}
-
-                {tab.badge ? (
-                  <span
-                    className={cn(
-                      "rounded-full bg-volt px-2 py-1 text-ink",
-                      "text-[0.625rem] font-bold uppercase tracking-[0.08em]",
-                    )}
-                  >
-                    {tab.badge}
-                  </span>
-                ) : null}
-              </Pressable>
-            );
-          })}
-        </div>
+        <Tabs
+          items={tabs}
+          value={active}
+          onChange={select}
+          label="Destination type"
+          tabId={(id) => `all-destinations-tab-${id}`}
+          panelId="all-destinations-panel"
+          className="w-fit shrink-0"
+        />
       </div>
 
       <div

@@ -135,6 +135,6 @@ export const esimStateLabels: Record<EsimState, string> = {
   removed: "Removed",
 };
 
-export function isArchivedEsim(esim: Esim): boolean {
-  return esim.state === "expired" || esim.state === "removed";
+export function isLiveEsim(esim: Esim): boolean {
+  return esim.state === "active" || esim.state === "ready";
 }

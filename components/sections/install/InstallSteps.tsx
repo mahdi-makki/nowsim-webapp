@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import type { KeyboardEvent } from "react";
 import { useId, useRef, useState } from "react";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 import { Pressable } from "@/components/ui/Pressable";
+import { Tabs } from "@/components/ui/Tabs";
 import { cn } from "@/lib/cn";
 import type {
   InstallMethod,
@@ -14,15 +14,6 @@ import type {
   InstallStep,
 } from "@/lib/install";
 import { installShotName, SHOT_HEIGHT, SHOT_WIDTH } from "@/lib/install";
-
-const tab = cn(
-  "flex-1 rounded-card px-4 py-3 text-base font-bold",
-  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
-);
-
-const tabActive = cn(tab, "bg-brand text-white");
-
-const tabIdle = cn(tab, "text-muted hover:text-ink");
 
 const frame = "w-60 shrink-0 snap-start sm:w-72";
 
@@ -185,57 +176,20 @@ export function InstallSteps({
 
   const [activeId, setActiveId] = useState<InstallMethodId>(methods[0].id);
 
-  const tabRefs = useRef<
-    Partial<Record<InstallMethodId, HTMLButtonElement | null>>
-  >({});
-
-  const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const step =
-      event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
-
-    if (step === 0) return;
-
-    event.preventDefault();
-
-    const current = methods.findIndex(({ id }) => id === activeId);
-    const next = methods[(current + step + methods.length) % methods.length];
-
-    setActiveId(next.id);
-    tabRefs.current[next.id]?.focus();
-  };
-
   const active = methods.find(({ id }) => id === activeId) ?? methods[0];
 
   return (
     <>
-      <div
-        role="tablist"
-        aria-label="Installation method"
-        className="mt-8 flex gap-1 rounded-card border border-hairline p-1"
-      >
-        {methods.map((method) => {
-          const selected = method.id === activeId;
-
-          return (
-            <Pressable
-              key={method.id}
-              ref={(node) => {
-                tabRefs.current[method.id] = node;
-              }}
-              id={`${groupId}-tab-${method.id}`}
-              role="tab"
-              aria-selected={selected}
-              aria-controls={`${groupId}-panel`}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => setActiveId(method.id)}
-              onKeyDown={onTabKeyDown}
-              className={selected ? tabActive : tabIdle}
-            >
-              {method.label}
-            </Pressable>
-          );
-        })}
-      </div>
+      <Tabs
+        items={methods.map(({ id, label }) => ({ id, label }))}
+        value={activeId}
+        onChange={setActiveId}
+        label="Installation method"
+        tabId={(id) => `${groupId}-tab-${id}`}
+        panelId={`${groupId}-panel`}
+        fill
+        className="mt-8"
+      />
 
       <div
         id={`${groupId}-panel`}

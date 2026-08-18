@@ -1,12 +1,12 @@
 "use client";
 
-import type { KeyboardEvent } from "react";
-import { useCallback, useId, useRef, useState } from "react";
-import { MdStar, MdVerifiedUser } from "react-icons/md";
+import { useCallback, useId, useState } from "react";
+import { MdSmartphone, MdStar, MdVerifiedUser } from "react-icons/md";
 
 import { ActivationNote } from "@/components/sections/destinations/ActivationNote";
 import { DeviceDialog } from "@/components/sections/destinations/DeviceDialog";
 import { Pressable } from "@/components/ui/Pressable";
+import { Tabs } from "@/components/ui/Tabs";
 import { formatMoney, scaleMoney } from "@/lib/money";
 import { MAX_ESIMS, checkoutHref } from "@/lib/checkout";
 import type { DestinationKind, DeviceGroup, Plan } from "@/lib/types";
@@ -34,12 +34,6 @@ const cardIdle = cn(
 
 const cardPicked = "border-brand bg-brand/5";
 
-const tab = "rounded-full px-5 py-2 text-sm font-medium";
-
-const tabActive = cn(tab, "bg-brand text-white");
-
-const tabIdle = cn(tab, "text-muted hover:bg-surface-soft hover:text-ink");
-
 const tabs = [
   { id: "fixed", label: "Prepaid plans" },
   { id: "unlimited", label: "Unlimited plans" },
@@ -49,12 +43,15 @@ type TabId = (typeof tabs)[number]["id"];
 
 export function PlanPicker({
   plans,
+  heading,
   destinationName,
   destinationKind,
   destinationSlug,
   deviceGroups,
 }: {
   plans: Plan[];
+  /** Sits on the same row as the plan-type tabs. */
+  heading: string;
   destinationName: string;
   destinationKind: DestinationKind;
   destinationSlug: string;
@@ -82,26 +79,9 @@ export function PlanPicker({
   const [deviceOpen, setDeviceOpen] = useState(false);
   const closeDevices = useCallback(() => setDeviceOpen(false), []);
 
-  const tabRefs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({});
-
   const pickTab = (id: TabId) => {
     setActiveTab(id);
     setSelectedId(groups[id][0].id);
-  };
-
-  const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const step =
-      event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
-
-    if (step === 0) return;
-
-    event.preventDefault();
-
-    const current = tabs.findIndex(({ id }) => id === activeTab);
-    const next = tabs[(current + step + tabs.length) % tabs.length];
-
-    pickTab(next.id);
-    tabRefs.current[next.id]?.focus();
   };
 
   const selectedPlan =
@@ -111,42 +91,34 @@ export function PlanPicker({
 
   return (
     <>
-      {tabbed && (
-        <div
-          role="tablist"
-          aria-label={`Plan type for ${destinationName}`}
-          className="mt-6 inline-flex items-center gap-1 rounded-full border border-hairline p-1"
-        >
-          {tabs.map(({ id, label }) => {
-            const active = id === activeTab;
+      <div
+        className={cn(
+          "mt-12 flex flex-wrap items-center gap-x-6 gap-y-4",
+          tabbed && "justify-between",
+        )}
+      >
+        <h2 className="min-w-[15rem] flex-1 text-xl font-bold tracking-[-0.02em]">
+          {heading}
+        </h2>
 
-            return (
-              <Pressable
-                key={id}
-                ref={(node) => {
-                  tabRefs.current[id] = node;
-                }}
-                id={`${groupId}-tab-${id}`}
-                role="tab"
-                aria-selected={active}
-                aria-controls={`${groupId}-panel`}
-                tabIndex={active ? 0 : -1}
-                onClick={() => pickTab(id)}
-                onKeyDown={onTabKeyDown}
-                className={active ? tabActive : tabIdle}
-              >
-                {label}
-              </Pressable>
-            );
-          })}
-        </div>
-      )}
+        {tabbed && (
+          <Tabs
+            items={tabs}
+            value={activeTab}
+            onChange={pickTab}
+            label={`Plan type for ${destinationName}`}
+            tabId={(id) => `${groupId}-tab-${id}`}
+            panelId={`${groupId}-panel`}
+            className="shrink-0"
+          />
+        )}
+      </div>
 
       <fieldset
         id={tabbed ? `${groupId}-panel` : undefined}
         role={tabbed ? "tabpanel" : undefined}
         aria-labelledby={tabbed ? `${groupId}-tab-${activeTab}` : undefined}
-        className={tabbed ? "mt-4" : "mt-6"}
+        className="mt-6"
       >
         <legend className="sr-only">
           Choose a data plan for {destinationName}
@@ -258,7 +230,7 @@ export function PlanPicker({
           selectedPlan.id,
           quantity,
         )}
-        className="mt-8 w-full rounded-full bg-volt px-8 py-4 text-base font-bold text-ink hover:bg-volt/85"
+        className="mt-8 w-full rounded-full bg-brand px-8 py-4 text-base font-bold text-white hover:bg-brand/85"
       >
         Go to checkout - {total}
       </Pressable>
@@ -268,11 +240,13 @@ export function PlanPicker({
         aria-expanded={deviceOpen}
         onClick={() => setDeviceOpen(true)}
         className={cn(
-          "mt-3 w-full rounded-full border border-brand px-8 py-4",
+          "mt-3 w-full gap-2 rounded-full bg-brand/12 px-8 py-4",
           "text-base font-bold text-brand",
-          "hover:bg-brand/5",
+          "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+          "hover:bg-brand/20 active:bg-brand/20",
         )}
       >
+        <MdSmartphone aria-hidden className="h-5 w-5 shrink-0" />
         Device compatibility
       </Pressable>
 

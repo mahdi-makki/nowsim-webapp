@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
-
+import { useState } from "react";
 import { MdChevronRight } from "react-icons/md";
 
 import { DestinationCard } from "@/components/common/DestinationCard";
 import { Pressable } from "@/components/ui/Pressable";
+import { Tabs } from "@/components/ui/Tabs";
 import type { DestinationKind, DestinationSummary } from "@/lib/types";
 import { cn } from "@/lib/cn";
 
@@ -21,29 +21,6 @@ export function Destinations({
   previews: Record<DestinationKind, DestinationSummary[]>;
 }) {
   const [active, setActive] = useState<DestinationKind>("country");
-  const tablistRef = useRef<HTMLDivElement>(null);
-
-  const onTablistKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
-    if (!keys.includes(event.key)) return;
-
-    event.preventDefault();
-
-    const index = tabs.findIndex((tab) => tab.id === active);
-    const next =
-      event.key === "Home"
-        ? 0
-        : event.key === "End"
-          ? tabs.length - 1
-          : event.key === "ArrowLeft"
-            ? (index - 1 + tabs.length) % tabs.length
-            : (index + 1) % tabs.length;
-
-    setActive(tabs[next].id);
-    tablistRef.current
-      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-      [next]?.focus();
-  };
 
   return (
     <section
@@ -60,7 +37,7 @@ export function Destinations({
                 "text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.02]",
               )}
             >
-              Every network worth using
+              Popular Destinations
             </h2>
 
             <p className="mt-5 max-w-[46ch] text-lg text-muted md:text-xl">
@@ -70,48 +47,15 @@ export function Destinations({
             </p>
           </div>
 
-          <div
-            ref={tablistRef}
-            role="tablist"
-            aria-label="Destination type"
-            onKeyDown={onTablistKeyDown}
-            className="inline-flex shrink-0 items-center gap-1 self-start rounded-full border border-hairline bg-surface-soft p-1 md:self-auto"
-          >
-            {tabs.map((tab) => {
-              const selected = tab.id === active;
-
-              return (
-                <Pressable
-                  key={tab.id}
-                  role="tab"
-                  id={`destinations-tab-${tab.id}`}
-                  aria-selected={selected}
-                  aria-controls={`destinations-panel-${tab.id}`}
-                  tabIndex={selected ? 0 : -1}
-                  onClick={() => setActive(tab.id)}
-                  className={cn(
-                    "gap-2 rounded-full px-5 py-2.5 text-sm font-medium md:px-6 md:py-3 md:text-base",
-                    selected
-                      ? "bg-brand text-white"
-                      : "text-ink/60 hover:text-ink",
-                  )}
-                >
-                  {tab.label}
-
-                  {tab.badge ? (
-                    <span
-                      className={cn(
-                        "rounded-full bg-volt px-2 py-1 text-ink",
-                        "text-[0.625rem] font-bold uppercase tracking-[0.08em]",
-                      )}
-                    >
-                      {tab.badge}
-                    </span>
-                  ) : null}
-                </Pressable>
-              );
-            })}
-          </div>
+          <Tabs
+            items={tabs}
+            value={active}
+            onChange={setActive}
+            label="Destination type"
+            tabId={(id) => `destinations-tab-${id}`}
+            panelId={(id) => `destinations-panel-${id}`}
+            className="shrink-0 self-start md:self-auto"
+          />
         </div>
 
         <div
@@ -133,12 +77,20 @@ export function Destinations({
           <Pressable
             href="/destinations"
             className={cn(
-              "gap-2 rounded-full bg-brand px-6 py-3.5 text-base font-medium text-white",
+              "group gap-2 rounded-full bg-brand px-6 py-3.5",
+              "text-base font-bold text-white",
+              "transition-colors duration-300 ease-hover motion-reduce:transition-none",
               "hover:bg-brand-soft active:bg-brand-soft",
             )}
           >
-            Browse all destinations
-            <MdChevronRight aria-hidden className="h-4 w-4" />
+            Show all destinations
+            <MdChevronRight
+              aria-hidden
+              className={cn(
+                "h-5 w-5 shrink-0 transition-transform duration-300 ease-hover",
+                "group-hover:translate-x-0.5 motion-reduce:transition-none",
+              )}
+            />
           </Pressable>
         </div>
       </div>
