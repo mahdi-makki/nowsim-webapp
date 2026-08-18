@@ -22,7 +22,6 @@ export const providerNames: Record<ProviderId, string> = {
 };
 
 export const legalLinks = [
-  { label: "Terms of Service", href: "#" },
-  { label: "Privacy Policy", href: "#" },
-  { label: "Storage of the Cardholder's Credential", href: "#" },
+  { label: "Terms of Service", href: "/terms-of-service" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
 ];

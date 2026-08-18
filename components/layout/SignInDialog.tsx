@@ -37,6 +37,7 @@ function Legal() {
               : ""}
         </span>
       ))}
+      .
     </p>
   );
 }
