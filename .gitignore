@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# The template is the exception: it holds no values, only the list of names a
+# deployment has to set. Ignoring it hid REVALIDATE_SECRET from every clone.
+!.env.example
 
 # vercel
 .vercel
