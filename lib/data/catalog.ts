@@ -4,7 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 
 import { toDestinations } from "@/lib/api/mappers";
 import { plansResponseSchema } from "@/lib/api/schemas";
-import { fetchYesim } from "@/lib/api/yesim";
+import { SLOW_OPTIONS, fetchYesim } from "@/lib/api/yesim";
 import {
   fallbackCount,
   featuredSlugs,
@@ -24,10 +24,16 @@ export const CATALOG_TAG = "catalog";
 export async function getDestinations(): Promise<Destination[]> {
   "use cache";
 
-  cacheLife({ stale: 300, revalidate: 1800, expire: 86_400 });
+  // `revalidate` refreshes in the background, which is the safe path: if Yesim
+  // fails there, the last good catalogue keeps being served. `expire` is the
+  // unsafe one — once it passes, the next request regenerates *synchronously*
+  // and waits on a 16-35s upstream call with nothing to fall back on. Keeping
+  // it a week means only a week of zero site-wide traffic could trigger that,
+  // while the 30 minute background refresh still keeps the data current.
+  cacheLife({ stale: 300, revalidate: 1800, expire: 604_800 });
   cacheTag(CATALOG_TAG);
 
-  const plans = await fetchYesim("plans", plansResponseSchema);
+  const plans = await fetchYesim("plans", plansResponseSchema, SLOW_OPTIONS);
 
   return toDestinations(plans);
 }
