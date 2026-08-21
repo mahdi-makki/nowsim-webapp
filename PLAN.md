@@ -160,12 +160,10 @@ failure refunds instead of swallowing the money.
       2 global); regenerate with `node --env-file=.env.local scripts/hero-names.mjs`.
       Those `.txt` files sit under `public/` and are publicly served. Move them if that
       matters.
-- [ ] Delete or use `components/sections/main/Benefits.tsx` and `EveryMoment.tsx`. Both
-      are complete section components that nothing imports.
 - [ ] Rewrite `README.md`. Still create-next-app boilerplate referencing Geist and
       `app/page.tsx`.
-- [ ] Decide the upstream naming overrides: `MIDDLE EAST` is uppercase, `LATAM` / `SEA` /
-      `CIS` are abbreviations, and they render as Yesim writes them.
+- [ ] Decide the upstream naming overrides: `MIDDLE EAST` is uppercase and `LATAM` / `SEA`
+      are abbreviations, and they render as Yesim writes them. `CIS` now maps to `Eurasia`.
 - [ ] Confirm the duplicate destinations are intentional. Grouping the live catalog by
       kind produces `LATAM` alongside `Latin America`, `Asia` alongside `Asia Pacific` and
       `SEA`, and `Japan` as both a country and a region. Each gets its own page, its own
