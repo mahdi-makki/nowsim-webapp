@@ -16,20 +16,25 @@ export function CheckoutHeader() {
           )}
         />
 
-        <div className="relative mx-auto flex h-(--header-height) max-w-6xl items-center justify-between gap-4 px-5 md:px-8">
-          <Pressable
-            href="/"
-            hit
-            aria-label="nowsim home"
-            className="-m-2 shrink-0 rounded-full p-2"
-          >
-            <NowsimLogo id="nowsim-logo-checkout" className="h-6 w-auto md:h-7" />
-          </Pressable>
+        <div className="px-6 md:px-12">
+          <div className="relative mx-auto flex h-(--header-height) max-w-6xl items-center justify-between gap-4">
+            <Pressable
+              href="/"
+              hit
+              aria-label="nowsim home"
+              className="-m-2 shrink-0 rounded-full p-2"
+            >
+              <NowsimLogo
+                id="nowsim-logo-checkout"
+                className="h-6 w-auto text-brand md:h-7"
+              />
+            </Pressable>
 
-          <p className="flex items-center gap-2 text-sm font-bold md:text-base">
-            <MdLock aria-hidden className="h-4 w-4 text-success" />
-            Secure checkout
-          </p>
+            <p className="flex items-center gap-2 text-sm font-bold md:text-base">
+              <MdLock aria-hidden className="h-4 w-4 text-success" />
+              Secure checkout
+            </p>
+          </div>
         </div>
       </div>
     </header>

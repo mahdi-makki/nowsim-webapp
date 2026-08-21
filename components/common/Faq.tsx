@@ -69,7 +69,8 @@ export function Faq() {
             id="faq-heading"
             className="max-w-[18ch] font-display text-h1 font-extrabold uppercase tracking-[-0.045em]"
           >
-            Questions about the local plans?
+            Questions about{" "}
+            <span className="text-brand">the local plans?</span>
           </h2>
 
           <p className="mt-5 max-w-[40ch] text-lg text-muted">
@@ -95,7 +96,8 @@ export function Faq() {
                   className={cn(
                     "w-full gap-6 py-6 text-left",
                     "text-lg font-bold tracking-[-0.02em]",
-                    "transition-colors duration-300 ease-hover hover:text-ink/70",
+                    "transition-colors duration-300 ease-hover hover:text-brand",
+                    expanded && "text-brand",
                     "motion-reduce:transition-none",
                   )}
                 >
@@ -104,7 +106,7 @@ export function Faq() {
                   <MdExpandMore
                     aria-hidden
                     className={cn(
-                      "h-5 w-5 shrink-0",
+                      "h-5 w-5 shrink-0 text-brand",
                       "transition-transform duration-300 ease-ios",
                       expanded && "-rotate-180",
                       "motion-reduce:transition-none",

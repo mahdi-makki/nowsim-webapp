@@ -88,7 +88,10 @@ export async function Footer() {
             )}
           >
             <div>
-              <h2 className="text-h3">Download nowsim for your next journey</h2>
+              <h2 className="text-h3">
+                Download nowsim for your{" "}
+                <span className="text-volt">next journey</span>
+              </h2>
 
               <p className="mt-3 max-w-[52ch] text-base text-muted-invert">
                 Buy a plan, install the eSIM, and land connected. Free on iOS
@@ -132,18 +135,18 @@ export async function Footer() {
             <div className="flex flex-wrap gap-x-12 gap-y-8 md:shrink-0">
               {groups.map((group) => (
                 <div key={group.title} className="min-w-36">
-                  <h3 className="text-eyebrow uppercase text-white/45">
+                  <h3 className="text-eyebrow uppercase text-volt">
                     {group.title}
                   </h3>
 
-                  <ul className="mt-4 flex flex-col">
+                  <ul className="mt-3 flex flex-col">
                     {group.links.map((link) => (
                       <li key={link.label}>
                         <Pressable
                           href={link.href}
                           className={cn(
                             "-mx-1 px-1 py-1.5",
-                            "text-base font-medium text-muted-invert hover:text-volt",
+                            "text-base font-medium text-muted-invert hover:text-white",
                           )}
                         >
                           {link.label}

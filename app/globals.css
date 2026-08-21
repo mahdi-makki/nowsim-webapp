@@ -72,6 +72,14 @@
   --header-height: 4.5rem;
 }
 
+/*
+ * Hover and press feedback for Pressable. Colours ease over --duration-hover,
+ * the scale snaps back in 120ms.
+ *
+ * Never put a `transition-*` utility on an element that also carries `press`:
+ * it replaces this transition-property list, transform drops out, and the
+ * scale jumps instead of easing. Colour transitions are already covered here.
+ */
 @utility press {
   transition-property:
     color, background-color, border-color, box-shadow, opacity, filter,

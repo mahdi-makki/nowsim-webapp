@@ -22,7 +22,6 @@ import { cn } from "@/lib/cn";
 const trigger = cn(
   "rounded-full bg-brand/12 px-4 py-2.5 md:px-5",
   "text-base font-semibold text-brand",
-  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
   "hover:bg-brand/20 active:bg-brand/20",
 );
 
@@ -164,7 +163,6 @@ export function AccountAction() {
         onClick={() => setView("menu")}
         className={cn(
           "h-10 w-10 rounded-full bg-brand/12 text-brand",
-          "transition-colors duration-300 ease-hover motion-reduce:transition-none",
           "hover:bg-brand/20 active:bg-brand/20",
         )}
       >

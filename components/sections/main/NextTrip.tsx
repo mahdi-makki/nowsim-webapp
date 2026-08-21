@@ -27,7 +27,8 @@ export function NextTrip({
             "whitespace-nowrap text-[clamp(1.125rem,5.2vw,3.5rem)] leading-[1.03]",
           )}
         >
-          Where&rsquo;s life taking you next?
+          Where&rsquo;s life taking you{" "}
+          <span className="text-brand">next?</span>
         </h2>
 
         <p className="mt-4 max-w-[42ch] text-lg text-muted md:text-xl">

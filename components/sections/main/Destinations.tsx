@@ -37,7 +37,7 @@ export function Destinations({
                 "text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.02]",
               )}
             >
-              Popular Destinations
+              Popular <span className="text-brand">Destinations</span>
             </h2>
 
             <p className="mt-5 max-w-[46ch] text-lg text-muted md:text-xl">
@@ -79,7 +79,6 @@ export function Destinations({
             className={cn(
               "group gap-2 rounded-full bg-brand px-6 py-3.5",
               "text-base font-bold text-white",
-              "transition-colors duration-300 ease-hover motion-reduce:transition-none",
               "hover:bg-brand-soft active:bg-brand-soft",
             )}
           >

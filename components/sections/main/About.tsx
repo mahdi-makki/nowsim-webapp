@@ -9,7 +9,7 @@ export function About() {
         <div className="flex flex-col gap-6">
           <div>
             <h2 className="font-display text-h1 font-extrabold uppercase tracking-[-0.045em]">
-              The future of mobile data
+              The future of <span className="text-brand">mobile data</span>
             </h2>
 
             <p className="mt-5 max-w-[36ch] text-base text-muted">

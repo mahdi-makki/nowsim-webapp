@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MdCheck, MdSearch } from "react-icons/md";
+import { MdCheck } from "react-icons/md";
 
+import { SearchField } from "@/components/ui/SearchField";
 import { deviceQuery, filterDeviceGroups } from "@/lib/devices";
 import type { DeviceGroup } from "@/lib/types";
 import { cn } from "@/lib/cn";
@@ -21,35 +22,13 @@ export function DeviceExplorer({ groups }: { groups: DeviceGroup[] }) {
 
   return (
     <>
-      <div className="group relative mt-10 max-w-xl md:mt-12">
-        <MdSearch
-          aria-hidden
-          className={cn(
-            "pointer-events-none absolute left-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2",
-            "text-ink/40 transition-colors duration-300 ease-hover",
-            "group-focus-within:text-ink",
-            "motion-reduce:transition-none",
-          )}
-        />
-
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search for devices"
-          aria-label="Search for devices"
-          className={cn(
-            "relative w-full rounded-full border border-hairline bg-surface py-4 pl-13 pr-5",
-            "text-base font-medium text-ink placeholder:text-ink/40",
-            "transition-[border-color,box-shadow] duration-300 ease-hover",
-            "hover:border-ink/25",
-            "focus-visible:border-ink/45 focus-visible:outline-none",
-            "focus-visible:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-ink)_10%,transparent)]",
-            "motion-reduce:transition-none",
-            "[&::-webkit-search-cancel-button]:appearance-none",
-          )}
-        />
-      </div>
+      <SearchField
+        value={query}
+        onChange={setQuery}
+        label="Search for devices"
+        placeholder="Search for devices"
+        className="mt-10 max-w-xl md:mt-12"
+      />
 
       <p aria-live="polite" className="sr-only">
         {total} devices match

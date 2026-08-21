@@ -9,7 +9,7 @@ import { Pressable } from "@/components/ui/Pressable";
 import { authProviders, legalLinks } from "@/lib/auth/providers";
 import { cn } from "@/lib/cn";
 
-const providers = authProviders.filter((provider) => provider.id !== "google");
+const providers = authProviders;
 
 const tone = "bg-white/10 text-white hover:bg-white/20 active:bg-white/20";
 

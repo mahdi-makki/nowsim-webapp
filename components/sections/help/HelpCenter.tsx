@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MdSearch } from "react-icons/md";
 
 import { HelpCard } from "@/components/sections/help/HelpCard";
 import { Pressable } from "@/components/ui/Pressable";
+import { SearchField } from "@/components/ui/SearchField";
 import { cn } from "@/lib/cn";
 import { helpArticles, helpTopics, type HelpTopicId } from "@/lib/help";
 import { normalize } from "@/lib/search/match";
@@ -59,34 +59,14 @@ export function HelpCenter({
           "md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)]",
         )}
       >
-        <div className="group relative md:col-start-2 md:row-start-1">
-          <MdSearch
-            aria-hidden
-            className={cn(
-              "pointer-events-none absolute right-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2",
-              "text-ink/40 transition-colors duration-300 ease-hover",
-              "group-focus-within:text-ink",
-              "motion-reduce:transition-none",
-            )}
-          />
-
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search"
-            aria-label="Search help articles"
-            className={cn(
-              "relative w-full rounded-full border border-hairline bg-surface py-4 pl-6 pr-13",
-              "text-base font-medium text-ink placeholder:text-ink/40",
-              "transition-[border-color,box-shadow] duration-300 ease-hover",
-              "hover:border-ink/25",
-              "focus-visible:border-ink/45 focus-visible:outline-none",
-              "focus-visible:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-ink)_10%,transparent)]",
-              "motion-reduce:transition-none",
-            )}
-          />
-        </div>
+        <SearchField
+          value={query}
+          onChange={setQuery}
+          label="Search help articles"
+          placeholder="Search"
+          iconSide="right"
+          className="md:col-start-2 md:row-start-1"
+        />
 
         <nav
           aria-label="Help topics"

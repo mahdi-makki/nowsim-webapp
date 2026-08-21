@@ -28,7 +28,7 @@ const providerButton = cn(
 
 function Legal() {
   return (
-    <p className="mt-5 text-xs leading-relaxed text-muted">
+    <p className="mt-5 text-center text-xs leading-relaxed text-muted">
       By continuing, you agree to our{" "}
       {legalLinks.map((item, index) => (
         <span key={item.label}>

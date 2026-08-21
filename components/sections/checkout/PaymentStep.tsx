@@ -59,8 +59,9 @@ export function PaymentStep({
         disabled={locked}
         aria-describedby={locked ? hintId : undefined}
         className={cn(
-          "mt-6 w-full rounded-full bg-volt px-8 py-4",
-          "text-base font-bold text-ink hover:bg-volt/85",
+          "mt-6 w-full rounded-full bg-brand px-8 py-4",
+          "text-base font-bold text-white",
+          "hover:bg-brand-soft active:bg-brand-soft",
         )}
       >
         Pay {total}

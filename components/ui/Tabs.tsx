@@ -5,12 +5,13 @@ import { useRef, type KeyboardEvent, type ReactNode } from "react";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
 
-const list = "inline-flex items-center gap-1 rounded-full bg-surface p-1";
-
-const tab = cn(
-  "gap-2 rounded-full px-5 py-2.5 text-base font-semibold md:px-6 md:py-3",
-  "transition-colors duration-300 ease-hover motion-reduce:transition-none",
+const list = cn(
+  "inline-flex items-center gap-1 rounded-full p-1",
+  "border border-hairline bg-surface",
 );
+
+const tab =
+  "gap-2 rounded-full px-5 py-2.5 text-base font-semibold md:px-6 md:py-3";
 
 const tabActive = "bg-brand/12 text-brand";
 

@@ -82,7 +82,7 @@ export function HowItWorks() {
             "font-display text-h1 font-extrabold tracking-[-0.045em]",
           )}
         >
-          How nowsim works
+          How nowsim <span className="text-brand">works</span>
         </h2>
 
         <ol className="mt-10 md:mt-16">

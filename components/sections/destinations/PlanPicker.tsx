@@ -242,7 +242,6 @@ export function PlanPicker({
         className={cn(
           "mt-3 w-full gap-2 rounded-full bg-brand/12 px-8 py-4",
           "text-base font-bold text-brand",
-          "transition-colors duration-300 ease-hover motion-reduce:transition-none",
           "hover:bg-brand/20 active:bg-brand/20",
         )}
       >

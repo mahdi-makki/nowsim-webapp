@@ -20,7 +20,7 @@ export function DestinationCard({
       className={cn(
         "group w-full justify-start gap-4 rounded-card px-5 text-left",
         note ? "py-4 md:py-4" : "py-5 md:py-6",
-        "hover:bg-brand/6 active:bg-brand/6",
+        "bg-brand/4 hover:bg-brand/10 active:bg-brand/10",
       )}
     >
       <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-brand/12">

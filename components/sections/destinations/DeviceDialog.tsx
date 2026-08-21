@@ -1,10 +1,11 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { MdCheck, MdExpandMore, MdSearch } from "react-icons/md";
+import { MdCheck, MdExpandMore } from "react-icons/md";
 
 import { Dialog } from "@/components/ui/Dialog";
 import { Pressable } from "@/components/ui/Pressable";
+import { SearchField } from "@/components/ui/SearchField";
 import { deviceQuery, filterDeviceGroups } from "@/lib/devices";
 import type { DeviceGroup } from "@/lib/types";
 import { cn } from "@/lib/cn";
@@ -41,29 +42,14 @@ export function DeviceDialog({
         likely doesn&rsquo;t support eSIM
       </p>
 
-      <div className="relative mt-6">
-        <MdSearch
-          aria-hidden
-          className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/45"
-        />
-
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search for devices"
-          aria-label="Search for devices"
-          className={cn(
-            "w-full rounded-control bg-white/10 py-3.5 pl-11 pr-4",
-            "text-base text-white placeholder:text-white/45",
-            "outline-none transition-colors duration-300 ease-hover",
-            "hover:bg-white/[0.14] focus:bg-white/[0.14]",
-            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-volt",
-            "motion-reduce:transition-none",
-            "[&::-webkit-search-cancel-button]:appearance-none",
-          )}
-        />
-      </div>
+      <SearchField
+        value={query}
+        onChange={setQuery}
+        label="Search for devices"
+        placeholder="Search for devices"
+        tone="dark"
+        className="mt-6"
+      />
 
       <div
         className={cn(
