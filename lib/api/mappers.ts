@@ -52,6 +52,7 @@ const regionNames: Record<string, string> = {
   "asia pacific": "Asia Pacific",
   "middle east": "Middle East",
   sea: "South East Asia",
+  cis: "Eurasia",
 };
 
 export function regionName(name: string): string {
@@ -60,6 +61,7 @@ export function regionName(name: string): string {
 
 const countryNames: Record<string, string> = {
   "palestinian territory": "Palestine",
+  "russian federation": "Russia",
 };
 
 export function countryName(name: string): string {

@@ -19,6 +19,8 @@ export const aliases: Record<string, string> = {
   "south america": "Latin America",
   sea: "South East Asia",
   "southeast asia": "South East Asia",
+  cis: "Eurasia",
+  "commonwealth of independent states": "Eurasia",
 
   ksa: "Saudi Arabia",
   "saudi arabia ksa": "Saudi Arabia",
@@ -34,7 +36,7 @@ export const aliases: Record<string, string> = {
   holland: "Netherlands",
   czechia: "Czech Republic",
   czech: "Czech Republic",
-  russia: "Russian Federation",
+  "russian federation": "Russia",
   "north macedonia": "Macedonia",
   bosnia: "Bosnia and Herzegovina",
   herzegovina: "Bosnia and Herzegovina",

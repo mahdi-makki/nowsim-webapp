@@ -20,7 +20,9 @@ export async function getEsims(): Promise<Esim[] | null> {
   if (!session) return null;
 
   const [user, plans, fresh] = await Promise.all([
-    fetchYesim("user", userResponseSchema, { user_id: session.yesimUserId }),
+    fetchYesim("user", userResponseSchema, {
+      params: { user_id: session.yesimUserId },
+    }),
     getPlanIndex(),
     verifyFreshSession(),
   ]);

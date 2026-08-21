@@ -14,7 +14,7 @@ export async function getPurchases(): Promise<Purchase[] | null> {
 
   const [orders, plans] = await Promise.all([
     fetchYesim("orders", ordersResponseSchema, {
-      search: session.yesimUserId,
+      params: { search: session.yesimUserId },
     }),
     getPlanIndex(),
   ]);

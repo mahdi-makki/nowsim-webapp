@@ -2,6 +2,23 @@ import "server-only";
 
 import { z } from "zod";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+const required =
+  "AUTH_EMAIL_FROM is required. Use an address on a domain verified in Resend";
+
+/**
+ * The sandbox sender only reaches the Resend account owner and fails SPF/DKIM
+ * everywhere else, so production has to name a domain we actually verified.
+ */
+const emailFrom = z
+  .string({ error: required })
+  .min(1, required)
+  .refine(
+    (value) => !isProduction || !value.includes("@resend.dev"),
+    "AUTH_EMAIL_FROM must not use the Resend sandbox domain in production",
+  );
+
 const schema = z.object({
   SESSION_SECRET: z
     .string()
@@ -13,7 +30,9 @@ const schema = z.object({
   UPSTASH_REDIS_REST_URL: z.url("UPSTASH_REDIS_REST_URL must be the REST URL, not the redis:// one"),
   UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
   RESEND_API_KEY: z.string().min(1).optional(),
-  AUTH_EMAIL_FROM: z.string().min(1).default("nowsim <onboarding@resend.dev>"),
+  AUTH_EMAIL_FROM: isProduction
+    ? emailFrom
+    : emailFrom.default("nowsim <onboarding@resend.dev>"),
 });
 
 export type AuthEnv = z.infer<typeof schema>;

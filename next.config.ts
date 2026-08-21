@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  experimental: {
+    // Every prerender worker fills the catalog cache in its own process, so
+    // splitting these pages across many workers means many concurrent copies
+    // of the same slow ~750KB `plans` download, each slowing the others down
+    // until they overrun the 50s `use cache` fill cap. Keep them together.
+    staticGenerationMinPagesPerWorker: 1000,
+  },
   redirects() {
     return Promise.resolve([
       { source: "/how-to-install", destination: "/help", permanent: true },
