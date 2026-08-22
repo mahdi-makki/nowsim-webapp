@@ -40,10 +40,6 @@ export const installSlugs: Record<InstallPlatformId, string> = {
   android: "install-android",
 };
 
-export function isInstallPlatform(value: string): value is InstallPlatformId {
-  return installPlatforms.includes(value as InstallPlatformId);
-}
-
 export function installPlatformFromSlug(
   slug: string,
 ): InstallPlatformId | undefined {
@@ -191,8 +187,4 @@ const guides: Record<InstallPlatformId, InstallGuide> = {
 
 export function getInstallGuide(platform: InstallPlatformId): InstallGuide {
   return guides[platform];
-}
-
-export function getInstallGuides(): InstallGuide[] {
-  return installPlatforms.map(getInstallGuide);
 }

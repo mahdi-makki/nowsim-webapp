@@ -3,7 +3,7 @@ import { MdChevronRight } from "react-icons/md";
 import { Pressable } from "@/components/ui/Pressable";
 import { cn } from "@/lib/cn";
 
-export type Crumb = {
+type Crumb = {
   label: string;
   href?: string;
 };

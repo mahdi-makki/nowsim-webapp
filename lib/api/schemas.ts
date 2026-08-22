@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export const currencySchema = z.enum(["EUR", "USD"]);
+const currencySchema = z.enum(["EUR", "USD"]);
 
 const numeric = z.coerce.number();
 
-export const csv = z
+const csv = z
   .string()
   .default("")
   .transform((value) =>
@@ -14,7 +14,7 @@ export const csv = z
       .filter(Boolean),
   );
 
-export const planSchema = z.object({
+const planSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   days: numeric,
@@ -42,7 +42,7 @@ export const plansResponseSchema = z.union([
   z.object({ data: z.array(planSchema) }).transform((body) => body.data),
 ]);
 
-export const deviceTypeSchema = z.object({
+const deviceTypeSchema = z.object({
   type: z.string().min(1),
   brands: z.array(
     z.object({
@@ -62,7 +62,7 @@ export const newUserResponseSchema = z.object({
 
 const id = z.union([z.string(), z.number()]).transform(String);
 
-export const esimSchema = z.object({
+const esimSchema = z.object({
   id,
   iccid: z.string().default(""),
   created_at: z.string().nullish(),
@@ -95,9 +95,7 @@ export const userResponseSchema = z.object({
   esims: z.array(esimSchema).default([]),
 });
 
-export type ApiUser = z.infer<typeof userResponseSchema>;
-
-export const orderSchema = z.object({
+const orderSchema = z.object({
   id,
   user_id: id.nullish(),
   iccid: z.string().default(""),

@@ -47,7 +47,7 @@ export async function encryptSession(session: Session): Promise<string> {
     .encrypt(sessionKey());
 }
 
-export type Decoded = {
+type Decoded = {
   session: Session;
   tokenIssuedAt: number;
 };

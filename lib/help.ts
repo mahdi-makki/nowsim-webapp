@@ -25,10 +25,6 @@ export const helpTopics: HelpTopic[] = [
   { id: "policies", label: "Policies" },
 ];
 
-export function isHelpTopic(value: string): value is HelpTopicId {
-  return helpTopics.some((topic) => topic.id === value);
-}
-
 export const helpArticles: HelpArticle[] = [
   {
     id: "install-ios",
@@ -120,9 +116,3 @@ export const helpArticles: HelpArticle[] = [
     keywords: ["terms", "conditions", "legal", "agreement"],
   },
 ];
-
-export function getHelpArticles(topic?: HelpTopicId): HelpArticle[] {
-  if (!topic) return helpArticles;
-
-  return helpArticles.filter((article) => article.topic === topic);
-}

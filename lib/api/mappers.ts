@@ -55,7 +55,7 @@ const regionNames: Record<string, string> = {
   cis: "Eurasia",
 };
 
-export function regionName(name: string): string {
+function regionName(name: string): string {
   return regionNames[name.trim().toLowerCase()] ?? name;
 }
 
@@ -64,11 +64,11 @@ const countryNames: Record<string, string> = {
   "russian federation": "Russia",
 };
 
-export function countryName(name: string): string {
+function countryName(name: string): string {
   return countryNames[name.trim().toLowerCase()] ?? name;
 }
 
-export function kindOf(plan: ApiPlan): DestinationKind {
+function kindOf(plan: ApiPlan): DestinationKind {
   if (plan.plan_type === "country") return "country";
 
   return /global/i.test(plan.name) ? "global" : "region";

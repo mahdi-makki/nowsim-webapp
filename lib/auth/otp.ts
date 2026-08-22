@@ -53,7 +53,7 @@ const ISSUE_SCRIPT = `
   redis.call('EXPIRE', KEYS[1], ARGV[2])
 `;
 
-export type RequestResult =
+type RequestResult =
   | { status: "sent"; code: string; expiresIn: number }
   | { status: "cooldown"; retryIn: number }
   | { status: "rate-limited" };
@@ -89,7 +89,7 @@ export async function requestCode(
   return { status: "sent", code, expiresIn: TTL_SECONDS };
 }
 
-export type VerifyResult = "ok" | "invalid" | "expired" | "locked";
+type VerifyResult = "ok" | "invalid" | "expired" | "locked";
 
 type OtpRecord = { code: string; attempts: number };
 

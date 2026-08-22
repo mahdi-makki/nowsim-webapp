@@ -35,7 +35,7 @@ const schema = z.object({
     : emailFrom.default("nowsim <onboarding@resend.dev>"),
 });
 
-export type AuthEnv = z.infer<typeof schema>;
+type AuthEnv = z.infer<typeof schema>;
 
 let cached: AuthEnv | null = null;
 
