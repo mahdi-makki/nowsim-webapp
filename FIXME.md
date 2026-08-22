@@ -4,7 +4,7 @@ Audit of the repo ahead of launch, grouped A–I. Each item carries a file
 reference and a status. Statuses are:
 
 - `open` — not triaged yet
-- `parked` — deliberately deferred, with the reason recorded
+- `pending` — deliberately deferred, with the reason recorded
 - `done` — fixed
 
 The codebase is clean on the usual hygiene axes: no `any`, no `@ts-ignore`, no
@@ -18,7 +18,7 @@ follows is leftovers and unfinished features, not code rot.
 
 Ship-stoppers. Not cleanup.
 
-### A1. Checkout takes no money but advertises Stripe — `parked`
+### A1. Checkout takes no money but advertises Stripe — `pending` 🔴
 
 > Working on the payment feature separately.
 
@@ -29,7 +29,7 @@ to `"button"`, so the primary checkout CTA is inert.
 
 Compounding it, the surrounding copy makes a security claim the app cannot
 honour. [`PaymentStep.tsx:36`](components/sections/checkout/PaymentStep.tsx)
-states *"Card details are entered on Stripe's secure page"* and renders
+states _"Card details are entered on Stripe's secure page"_ and renders
 `FaStripe`, `FaCcVisa`, `FaCcMastercard`, `FaCcAmex`, `FaCcApplePay`. There is
 no `stripe` dependency in `package.json`, no webhook route, and no `new_esim`
 purchase call anywhere. Same claim repeats at
@@ -40,7 +40,7 @@ Either finish the integration or gate `/checkout` behind a coming-soon state.
 Shipping an inert button under a Stripe badge is a misrepresentation, not just
 dead code.
 
-### A2. "Delete account" button does nothing — `parked`
+### A2. "Delete account" button does nothing — `pending` 🔴
 
 > Waiting on the account-deletion API.
 
@@ -50,16 +50,16 @@ clicks it will reasonably believe their account was deleted.
 
 Until the API exists, prefer disabling the button over leaving it live.
 
-### A3. Terms of Service is truncated and publicly routed — `parked`
+### A3. Terms of Service is truncated and publicly routed — `pending` 🔴
 
 > Fresh document coming from the legal sector.
 
 [`app/(site)/terms-of-service/page.tsx:755`](<app/(site)/terms-of-service/page.tsx>) —
-final block reads *"This page is still being published. Clauses from 6.4.3
+final block reads _"This page is still being published. Clauses from 6.4.3
 onward, together with the remaining sections and the Effective Date, will be
-added shortly."* No Effective Date anywhere on the page.
+added shortly."_ No Effective Date anywhere on the page.
 
-### A4. Two 404 links inside Terms — `parked`
+### A4. Two 404 links inside Terms — `pending` 🔴
 
 > Will be resolved with the legal-sector rewrite.
 
@@ -68,11 +68,11 @@ added shortly."* No Effective Date anywhere on the page.
 
 Neither has a page under `app/`.
 
-### A5. `AUTH_EMAIL_FROM` fails open to Resend's sandbox sender — `open`
+### A5. `AUTH_EMAIL_FROM` fails open to Resend's sandbox sender — `done` 🟢
 
 **The configured value is correct.** `.env.local` sets
-`AUTH_EMAIL_FROM="nowsim <hello@mail.nowsim.com>"`. The defect is the *shape of
-the fallback*, at [`lib/auth/env.ts:16`](lib/auth/env.ts):
+`AUTH_EMAIL_FROM="nowsim <hello@mail.nowsim.com>"`. The defect is the _shape of
+the fallback_, at [`lib/auth/env.ts:16`](lib/auth/env.ts):
 
 ```ts
 AUTH_EMAIL_FROM: z.string().min(1).default("nowsim <onboarding@resend.dev>"),
@@ -85,20 +85,19 @@ silently swapped for Resend's shared sandbox address.
 
 Every neighbouring auth variable fails closed. This one does not:
 
-| Variable | Missing in prod | Result |
-|---|---|---|
-| `SESSION_SECRET` | throws at [`lib/auth/env.ts:37`](lib/auth/env.ts) | Loud |
-| `RESEND_API_KEY` | throws at [`lib/auth/mailer.ts:135`](lib/auth/mailer.ts) | Loud |
-| `AUTH_EMAIL_FROM` | boots fine | **Silent** |
+| Variable          | Missing in prod                                         | Result     |
+| ----------------- | ------------------------------------------------------- | ---------- |
+| `SESSION_SECRET`  | throws at[`lib/auth/env.ts:37`](lib/auth/env.ts)        | Loud       |
+| `RESEND_API_KEY`  | throws at[`lib/auth/mailer.ts:135`](lib/auth/mailer.ts) | Loud       |
+| `AUTH_EMAIL_FROM` | boots fine                                              | **Silent** |
 
 Why the fallback address in particular is dangerous: Resend restricts
 `onboarding@resend.dev` to delivering **only to the address that owns the Resend
 account**. With the default active:
 
-- Signing in during a smoke test works — the tester *is* the account owner.
+- Signing in during a smoke test works — the tester _is_ the account owner.
 - Every real customer is rejected by Resend →
-  [`lib/mail/send.ts:51`](lib/mail/send.ts) throws `"Resend refused the
-  message"` → caught at [`app/actions/auth.ts:84`](app/actions/auth.ts) → the
+  [`lib/mail/send.ts:51`](lib/mail/send.ts) throws `"Resend refused the message"` → caught at [`app/actions/auth.ts:84`](app/actions/auth.ts) → the
   user sees a generic sign-in failure.
 
 The result is a total sign-in outage that passes manual verification, because
@@ -120,7 +119,7 @@ AUTH_EMAIL_FROM: z
 
 Then confirm the variable is set in the production environment.
 
-### A6. Yesim API token travels in the URL query string — `open`
+### A6. Yesim API token travels in the URL query string — `open` 🟡
 
 **Not a live exploit, and nothing leaks to the browser.**
 [`lib/api/yesim.ts:1`](lib/api/yesim.ts) is `import "server-only"`, so the token
@@ -151,32 +150,28 @@ remotely reachable vulnerability.
 
 Actions:
 
-- Ask Yesim whether they accept `Authorization: Bearer` or `X-API-Key`. Many
-  providers with a `?token=` API support a header and simply do not document it.
-  If so, it is a two-line change in `urlFor`/`request`.
-- If not, rotate the token before launch — it has been through dev logs and
-  shell history — and do not enable URL-capturing tracing without a scrubber.
+- **Ask Yesim this question** — blocks the rest of this item:
 
-**Related one-liner, worth doing regardless.**
-[`lib/api/yesim.ts:33-43`](lib/api/yesim.ts) sets the token and *then* applies
-caller params, so a caller passing `params: { token: … }` would silently replace
-the credentials. No caller does this today; cheap insurance:
+  > Does your API accept the API token in a request **header** — either
+  > `Authorization: Bearer <token>` or `X-API-Key: <token>` — instead of as the
+  > `?token=` query parameter? We want to keep the token out of URL access logs.
+  > If a header is supported, please confirm which one and whether the
+  > `?token=` parameter can then be omitted entirely.
 
-```ts
-function urlFor(path: string, params?: Record<string, string>): URL {
-  const url = new URL(path.replace(/^\/+/, ""), `${env.YESIM_API_BASE}/`);
+  Many providers with a `?token=` API support a header and simply do not
+  document it. If they do, it is a two-line change in `urlFor`/`request`.
 
-  for (const [key, value] of Object.entries(params ?? {})) {
-    url.searchParams.set(key, value);
-  }
+- If they do not, rotate the token before launch — it has been through dev logs
+  and shell history — and do not enable URL-capturing tracing without a
+  scrubber.
 
-  url.searchParams.set("token", env.YESIM_API_TOKEN);  // last wins
+**Related one-liner — `done` 🟢.** [`lib/api/yesim.ts:33-43`](lib/api/yesim.ts)
+used to set the token and _then_ apply caller params, so a caller passing
+`params: { token: … }` would have silently replaced the credentials. No caller
+did this, but the order is now flipped — caller params first, token written
+last, so the credentials always win. See **F6**.
 
-  return url;
-}
-```
-
-### A7. Contradictory review scores in a single session — `parked`
+### A7. Contradictory review scores in a single session — `pending` 🔴
 
 > Marketing/legal copy will be supplied.
 
@@ -189,12 +184,12 @@ Three different ratings are reachable without leaving the site, all unsourced:
 Plus [`About.tsx:74`](components/sections/main/About.tsx) — `1,657,382,391`
 "Gigabytes delivered on nowsim".
 
-### A8. FAQ claims a compatibility check that does not exist — `parked`
+### A8. FAQ claims a compatibility check that does not exist — `pending` 🔴
 
 > Copy will be supplied.
 
-[`components/common/Faq.tsx:23`](components/common/Faq.tsx) — *"We check
-compatibility at checkout, so you'll know before you pay."* No such check
+[`components/common/Faq.tsx:23`](components/common/Faq.tsx) — _"We check
+compatibility at checkout, so you'll know before you pay."_ No such check
 exists; `DeviceDialog` lives on the destination page instead.
 
 ---
@@ -203,38 +198,107 @@ exists; `DeviceDialog` lives on the destination page instead.
 
 Zero-risk deletions.
 
-- [ ] **B1.** [`components/sections/main/Benefits.tsx`](components/sections/main/Benefits.tsx) — 122 lines, never imported. Its copy describes a **virtual-number product** ("Local number", "Unlimited calling, SMS, and text included"), not the data eSIM this app sells. Delete rather than revive.
-- [ ] **B2.** [`components/sections/main/EveryMoment.tsx`](components/sections/main/EveryMoment.tsx) — 58 lines, never imported.
-- [ ] **B3.** Four dead functions, each confirmed to occur exactly once in `app/`, `components/`, `lib/`:
-  - [`lib/help.ts:28`](lib/help.ts) `isHelpTopic`
-  - [`lib/help.ts:124`](lib/help.ts) `getHelpArticles`
-  - [`lib/install.ts:43`](lib/install.ts) `isInstallPlatform`
-  - [`lib/install.ts:196`](lib/install.ts) `getInstallGuides`
+- [x] **B1.** ~~`components/sections/main/Benefits.tsx` — 122 lines, never imported. Its copy describes a **virtual-number product** ("Local number", "Unlimited calling, SMS, and text included"), not the data eSIM this app sells.~~ Deleted in `5170b78`. 🟢
+- [x] **B2.** ~~`components/sections/main/EveryMoment.tsx` — 58 lines, never imported.~~ Deleted in `5170b78`. 🟢
+- [x] **B3.** ~~Four dead functions, each confirmed to occur exactly once in `app/`, `components/`, `lib/`: `isHelpTopic`, `getHelpArticles` ([`lib/help.ts`](lib/help.ts)); `isInstallPlatform`, `getInstallGuides` ([`lib/install.ts`](lib/install.ts)).~~ All four deleted. 🟢
 
-  ⚠️ `getInstallGuide` (singular, [`lib/install.ts:192`](lib/install.ts)) is
-  **live** and is consumed by `readInstallShots`. Easy to delete by mistake.
-- [ ] **B4.** ~25 symbols exported but referenced only within their own file — the `export` keyword is the dead part, not the symbol. Concentrated in [`lib/api/schemas.ts`](lib/api/schemas.ts) and [`lib/api/mappers.ts`](lib/api/mappers.ts), plus type aliases across `lib/auth/`, `lib/data/`, `components/ui/`. Cosmetic; batch it or skip it. Leave `proxy.ts` `config` alone — required Next.js convention.
+  Verified before deleting: a repo-wide `git grep` over every tracked file —
+  not just `app/`/`components/`/`lib/` — returned only their own definition
+  lines. No orphaned types were left behind; `typecheck` and `lint` both pass.
+
+  ⚠️ `getInstallGuide` (singular, [`lib/install.ts:188`](lib/install.ts)) was
+  **kept** — it is live, consumed by
+  [`app/(site)/help/[guide]/page.tsx`](<app/(site)/help/[guide]/page.tsx>) and
+  `readInstallShots`.
+
+- [x] **B4.** ~~~25 symbols exported but referenced only within their own file — the `export` keyword is the dead part, not the symbol.~~ Cleaned. 🟢 (`proxy.ts` `config` left alone — required Next.js convention.)
+
+  **`lib/api/` done.** `export` dropped from `currencySchema`, `csv`,
+  `planSchema`, `deviceTypeSchema`, `esimSchema`, `orderSchema`
+  ([`lib/api/schemas.ts`](lib/api/schemas.ts)) and `regionName`, `countryName`,
+  `kindOf` ([`lib/api/mappers.ts`](lib/api/mappers.ts)). Each is still used
+  inside its own file — only the keyword went. `ApiUser` was the one genuinely
+  unused symbol and was deleted outright.
+
+  **`lib/auth/` and `Breadcrumb` done.** `export` dropped from `Crumb`
+  ([`components/ui/Breadcrumb.tsx:6`](components/ui/Breadcrumb.tsx)), `AuthEnv`
+  ([`lib/auth/env.ts:38`](lib/auth/env.ts)), `RequestResult` and `VerifyResult`
+  ([`lib/auth/otp.ts`](lib/auth/otp.ts)), `Decoded`
+  ([`lib/auth/token.ts:50`](lib/auth/token.ts)). Types are erased at compile
+  time, so this is a zero-runtime change — `typecheck`, `lint`, and a full
+  `build` all pass unchanged. `lib/data/` had no local-only exported types.
+
+  **Closed, not outstanding:** `PressableProps`
+  ([`components/ui/Pressable.tsx:33`](components/ui/Pressable.tsx)), `TabItem`
+  ([`components/ui/Tabs.tsx:20`](components/ui/Tabs.tsx)), and `AuthProvider`
+  ([`lib/auth/providers.ts:6`](lib/auth/providers.ts)) stay exported by
+  decision. These are the prop types of shared UI primitives; exporting them is
+  the convention, so the next component that wraps a `Pressable` or `Tabs` can
+  extend them. The original audit swept them in with genuinely dead code — they
+  do not belong in that bucket. **Do not re-flag.**
 
 ---
 
 ## C. Repo weight
 
-`public/` is **205 MB**.
+`public/` was **205 MB**, now **159 MB** (C1 + C2 done).
 
-| Item | Size | Note |
-|---|---|---|
-| `public/videos/hero.mp4` | **34.1 MB** | **Referenced nowhere.** |
-| `public/videos/hero.webm` | 13.9 MB | Live, but heavy for a hero. |
-| `public/images/countries/` | ~157 MB total | 95 JPGs, many 1.8–2.4 MB each. |
-| `lib/api/__fixtures__/plans.json` | 905 KB | Tracked, imported by nothing. |
-| `preview/` | 76 KB | 4 tracked files, dev scratch. |
+| Item                              | Size          | Note                           |
+| --------------------------------- | ------------- | ------------------------------ |
+| ~~`public/videos/hero.mp4`~~      | ~~34.1 MB~~   | Deleted. 🟢                    |
+| `public/videos/hero.webm`         | 2.2 MB        | Re-encoded from 13.9 MB. 🟢    |
+| `public/images/countries/`        | ~148 MB total | 95 JPGs, many 1.8–2.4 MB each. |
+| ~~`lib/api/__fixtures__/`~~       | ~~911 KB~~    | Deleted. 🟢                    |
+| ~~`preview/`~~                    | ~~76 KB~~     | Deleted. 🟢                    |
 
-- [ ] **C1.** Delete `public/videos/hero.mp4`. [`components/sections/main/Hero.tsx:25`](components/sections/main/Hero.tsx) references only `hero.webm`, and there is no `<source>` fallback element. Confirmed by repo-wide grep — one hit, `.webm`. Instant 34 MB.
-- [ ] **C2.** Re-encode `hero.webm`. 13.9 MB is a large above-the-fold download.
-- [ ] **C3.** Compress `public/images/countries/`. These are unoptimized source photographs; `next/image` handles delivery, but they still inflate the repo and the deploy bundle. Largest: `barbados.jpg` 2.4 MB, `italy.jpg` 2.2 MB, `czech-republic.jpg` 2.1 MB.
-- [ ] **C4.** Remove `lib/api/__fixtures__/plans.json` (905 KB) and `plans.sample.json` (6 KB). Both git-tracked, neither imported by any source file — only *written* by `scripts/probe-yesim.mjs`. Keep only if the test fixtures described in `PLAN.md:112` are imminent.
-- [ ] **C5.** Remove `preview/` — `esim-email.html`, `esim-email.rendered.html`, `esim-email.rendered.txt`, `otp-email.html`. All tracked, referenced by nothing. The raw files use relative `../public/brand/nowsim-logo.png` paths, so they only render when opened from disk.
-- [ ] **C6.** Delete `tsconfig.tsbuildinfo` (153 KB) from the working tree. Already gitignored; local-only.
+- [x] **C1.** ~~Delete `public/videos/hero.mp4`.~~ Deleted. 🟢 [`Hero.tsx`](components/sections/main/Hero.tsx) referenced only `hero.webm`, with no `<source>` fallback. 34 MB reclaimed.
+- [x] **C2.** ~~Re-encode `hero.webm`. 13.9 MB is a large above-the-fold download.~~ Done. 🟢 **13.9 MB → 2.2 MB (−84%).**
+
+  Two-pass VP9, 800k target: `1440×800 @30fps` → `1280×712 @24fps`, audio stripped
+  (the element is `muted`). Duration unchanged at 22.5 s. The clip is a 4×4 video
+  mosaic sitting behind a 70 % `bg-ink/70` overlay
+  ([`Hero.tsx:28`](components/sections/main/Hero.tsx)), so the quality budget is
+  generous — residual softness in a few tiles is not visible through the scrim.
+
+  Also added [`public/videos/hero-poster.webp`](public/videos/hero-poster.webp)
+  (46 KB, 960 px) as the `poster`, so the hero paints immediately instead of
+  showing a black box while the video buffers.
+
+  ⚠️ `preload` was changed `"auto"` → `"metadata"`, but **this is not what saved
+  the bytes.** Browsers ignore `preload` entirely when `autoPlay` is set — the
+  video downloads regardless. The size win is the re-encode; the perceived win is
+  the poster. Do not expect `preload` to defer anything here.
+
+- [ ] **C3.** Compress `public/images/countries/`. These are unoptimized source photographs; `next/image` handles delivery, but they still inflate the repo and the deploy bundle. Largest: `barbados.jpg` 2.4 MB, `italy.jpg` 2.2 MB, `czech-republic.jpg` 2.1 MB. **In progress** — being handled separately.
+- [x] **C4.** ~~Remove `lib/api/__fixtures__/plans.json` (905 KB) and `plans.sample.json` (6 KB).~~ Both removed via `git rm`. 🟢
+
+  ⚠️ **This deletes the intended test input.** [`PLAN.md:186-189`](PLAN.md) (not
+  `:112` — the original reference was wrong) specifies Vitest coverage for the
+  mappers running against `plans.json`: 1520 real plans, no network, and four
+  specific traps that only this capture exposes — `data: "Unlimited"`,
+  `old_id: null`, the `UNLIM_UAE_7D` / `St. Kitts` grouping, and the
+  `japan` / `japan-region` collision. Removed by explicit decision anyway.
+
+  **Recovery when those tests are written:** `git checkout 2ede650 -- lib/api/__fixtures__/`
+  restores the exact capture with its four traps intact. `npm run probe` also
+  rewrites `plans.json` — [`scripts/probe-yesim.mjs:40`](scripts/probe-yesim.mjs)
+  does `mkdir(…, { recursive: true })`, so the deleted directory is recreated —
+  but a fresh probe reflects Yesim's catalogue *today* and is not guaranteed to
+  still contain those edge cases. Prefer the `git checkout` path.
+
+- [x] **C5.** ~~Remove `preview/` — `esim-email.html`, `esim-email.rendered.html`, `esim-email.rendered.txt`, `otp-email.html`.~~ Removed via `git rm`. 🟢
+
+  Design-time snapshots from `28a6727` and `2dfcb64`, referenced by no code. The
+  live templates are generated in [`lib/mail/esim.ts`](lib/mail/esim.ts), so these
+  copies could only drift out of step with the real emails, and no npm script
+  regenerated them. Deleting removes a stale source of truth, not just 76 KB.
+
+- [x] **C6.** ~~Delete `tsconfig.tsbuildinfo` (153 KB) from the working tree.~~ **Closed — not doing.** 🟢
+
+  Not a repo-weight item. It is `tsc --noEmit`'s incremental cache, already
+  covered by [`.gitignore:43`](.gitignore) (`*.tsbuildinfo`), never tracked, never
+  deployed, and regenerated by the next `typecheck`. Deleting it frees space on
+  one developer's machine and slows the next run. **Do not re-flag.**
 
 ---
 
@@ -265,7 +329,7 @@ Positive: root metadata is real, 15 routes export `metadata`/`generateMetadata`,
 - [ ] **F3.** Google sign-in is advertised but not implemented. [`lib/auth/providers.ts:18`](lib/auth/providers.ts) lists `google` in `providerNames`, while `authProviders` ships email only. Remove the entry until the provider exists.
 - [ ] **F4.** `/purchases` is absent from `PROTECTED` in [`proxy.ts:12`](proxy.ts) (only `/esims` is listed). Not a vulnerability — [`lib/data/purchases.ts`](lib/data/purchases.ts) returns `null` without a session — but unauthenticated users get a rendered empty page instead of a redirect, inconsistent with `/esims`.
 - [ ] **F5.** `NEXT_PUBLIC_SITE_URL` is validated by nothing. Present in `.env.example`, absent from `.env.local`, missing from both [`lib/env.ts`](lib/env.ts) and [`lib/auth/env.ts`](lib/auth/env.ts). Its only consumer falls back silently: [`lib/mail/esim.ts:11`](lib/mail/esim.ts) — `process.env.NEXT_PUBLIC_SITE_URL ?? "https://nowsim.com"`. A wrong value ships bad links in customer eSIM emails with no error. Same failure shape as A5.
-- [ ] **F6.** Caller `params` can override the API token — see the patch under **A6**.
+- [x] **F6.** ~~Caller `params` can override the API token~~ — fixed. `urlFor` now applies caller params first and writes `token` last, so credentials always win. See **A6**.
 - [ ] **F7.** Dev-only console output prints PII. [`lib/auth/mailer.ts:140`](lib/auth/mailer.ts) prints a live OTP and the user's email; [`lib/mail/esim.ts:721`](lib/mail/esim.ts) prints an ICCID and email. Both sit behind a production throw ([`mailer.ts:135`](lib/auth/mailer.ts), [`esim.ts:715`](lib/mail/esim.ts)) so they cannot fire in production — verify those guards hold before launch.
 
 ---
