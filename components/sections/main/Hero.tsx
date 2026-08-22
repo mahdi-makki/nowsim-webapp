@@ -20,7 +20,8 @@ export function Hero({ destinations }: { destinations: DestinationSummary[] }) {
           loop
           muted
           playsInline
-          preload="auto"
+          preload="metadata"
+          poster="/videos/hero-poster.webp"
           className="absolute inset-0 h-full w-full rounded-screen object-cover md:rounded-screen-lg"
           src="/videos/hero.webm"
         />
