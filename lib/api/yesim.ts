@@ -32,11 +32,12 @@ export function redactToken(value: string): string {
 function urlFor(path: string, params?: Record<string, string>): URL {
   const url = new URL(path.replace(/^\/+/, ""), `${env.YESIM_API_BASE}/`);
 
-  url.searchParams.set("token", env.YESIM_API_TOKEN);
-
   for (const [key, value] of Object.entries(params ?? {})) {
     url.searchParams.set(key, value);
   }
+
+  // Written last so a caller param named `token` can never replace the credentials.
+  url.searchParams.set("token", env.YESIM_API_TOKEN);
 
   return url;
 }
