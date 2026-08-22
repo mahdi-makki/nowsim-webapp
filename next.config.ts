@@ -32,8 +32,30 @@ const nextConfig: NextConfig = {
     ],
   },
   images: {
-    qualities: [75, 90, 100],
-    formats: ["image/avif", "image/webp"],
+    // Every `<Image>` in the app asks for 90. Allowing 75 and 100 only widens
+    // the set of variants the optimizer can be made to produce.
+    qualities: [90],
+
+    // WebP only. AVIF is ~20% smaller but doubles the variants — each format is
+    // cached separately — and Vercel bills per transformation. The hero photos
+    // sit behind a 70% scrim, so the extra 20% buys nothing visible.
+    formats: ["image/webp"],
+
+    // The source photographs are 1440x1080, so the 2048 and 3840 defaults ask
+    // the optimizer to render a country hero wider than the file it came from.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+
+    // 31 days, up from the 4-hour default. Most of the 95 country pages are
+    // long-tail: at 4 hours the cached variant usually expires before the next
+    // visitor arrives, so nearly every visit paid for a fresh transformation of
+    // a photo that never changes.
+    //
+    // There is no cache-invalidation mechanism. Adding a new image is safe — a
+    // new path is a new cache entry — but overwriting a file while keeping its
+    // name can serve the old version for up to 31 days. `united-states.jpg` is
+    // still due for recompression; rename it or accept the delay.
+    minimumCacheTTL: 2678400,
+
     remotePatterns: [{ protocol: "https", hostname: "cdn.yesim.app" }],
   },
 };
